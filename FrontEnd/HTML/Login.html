@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medique - Healthcare Login</title>
+   <link rel="stylesheet" href="/StyleSheet/login.css">
+   <script src="/JS/Login.js"></script>
+</head>
+<body>
+    <div class="main-container">
+        <div class="left-section">
+            <div class="logo-section">
+                <h1>Medique</h1>
+                <p>Your trusted healthcare companion. Sign in to access your medical dashboard and connect with healthcare professionals.</p>
+            </div>
+
+            <div class="form-container">
+                <form id="loginForm">
+                    <!-- Role Selection Section -->
+                    <div class="role-section">
+                        <label>👤 Select Your Role</label>
+                        <div class="role-options">
+                            <div class="role-option" onclick="selectRole('patient')">
+                                <input type="radio" name="role" value="patient" id="patient">
+                                <div class="role-icon">🤒</div>
+                                <div class="role-info">
+                                    <div class="role-title">Patient</div>
+                                    <div class="role-description">Access your medical records, appointments, and health data</div>
+                                </div>
+                            </div>
+                            
+                            <div class="role-option" onclick="selectRole('hospital_staff')">
+                                <input type="radio" name="role" value="hospital_staff" id="hospital_staff">
+                                <div class="role-icon">👩‍⚕️</div>
+                                <div class="role-info">
+                                    <div class="role-title">Hospital Staff</div>
+                                    <div class="role-description">Manage patient care, schedules, and medical operations</div>
+                                </div>
+                            </div>
+                            
+                            <div class="role-option" onclick="selectRole('admin')">
+                                <input type="radio" name="role" value="admin" id="admin">
+                                <div class="role-icon">⚙️</div>
+                                <div class="role-info">
+                                    <div class="role-title">Administrator</div>
+                                    <div class="role-description">System management, user control, and analytics dashboard</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="name">📧 User Name</label>
+                        <input type="name" id="name" name="name" placeholder="Enter yourUser Name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">🔒 Password</label>
+                        <div class="password-container">
+                            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                            <button type="button" class="show-password" onclick="togglePassword()">Show</button>
+                        </div>
+                    </div>
+
+                    <div class="remember-forgot">
+                        <div class="remember-me">
+                            <input type="checkbox" id="remember" name="remember">
+                            <label for="remember">Remember me</label>
+                        </div>
+                        <a href="#" class="forgot-password" onclick="forgotPassword()">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="login-btn">🩺 Sign In to Medique</button>
+                </form>
+
+                <div class="divider">
+                    <span>or continue with</span>
+                </div>
+
+                <button class="google-btn" onclick="signInWithGoogle()">
+                    <svg class="google-icon" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    Continue with Google
+                </button>
+
+                <div class="signup-link">
+                    <p>New to healthcare digital services? <a href="#" onclick="signUp()">Create Account</a></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-section">
+            <img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
+                 alt="Healthcare Professional" class="medical-hero">
+            
+            <div class="image-overlay">
+                <div class="hero-content">
+                    <h2>Healthcare Excellence</h2>
+                    <p>Join thousands of patients and healthcare professionals in our secure digital health platform.</p>
+                    
+                    <div class="medical-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">10K+</div>
+                            <div class="stat-label">Patients</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">500+</div>
+                            <div class="stat-label">Doctors</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">99.9%</div>
+                            <div class="stat-label">Uptime</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="floating-elements">
+                    <div class="floating-card card1">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 14px; height: 14px; background: #10b981; border-radius: 50%; animation: pulse 2s infinite;"></div>
+                            <span style="font-size: 14px; color: #1e293b; font-weight: 600;">156 Online Doctors</span>
+                        </div>
+                    </div>
+                    
+                    <div class="floating-card card2">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span style="font-size: 28px;">🏥</span>
+                            <div>
+                                <div style="font-size: 18px; font-weight: 700; color: #1e293b;">24/7</div>
+                                <div style="font-size: 13px; color: #64748b;">Emergency Care</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="floating-card card3">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span style="font-size: 28px;">💊</span>
+                            <div>
+                                <div style="font-size: 16px; font-weight: 600; color: #1e293b;">Smart Prescriptions</div>
+                                <div style="font-size: 13px; color: #64748b;">AI-Powered</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+</body>
+</html>
