@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Medique - Create Account</title>
-    <link rel="stylesheet" href="/StyleSheet/SignUp.css">
-    <script src="/JS/SignUp.js"></script>
+    <link rel="stylesheet" href="../StyleSheet/SignUp.css">
+
 </head>
 <body>
     <div class="main-container">
@@ -52,9 +52,9 @@
                             <label for="gender">⚧ Gender</label>
                             <select id="gender" name="gender" required>
                                 <option value="">Select Gender</option>
-                                <option value="male">Male</option>
-                                <option value="female">Female</option>
-                                <option value="other">Other</option>
+                                <option value="MALE">Male</option>
+                                <option value="FEMALE">Female</option>
+                                <option value="OTHER">Other</option>
                                 <option value="prefer-not-to-say">Prefer not to say</option>
                             </select>
                             <div class="error-message">Please select your gender</div>
@@ -97,7 +97,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="signup-btn" id="submitBtn">🏥 Create Medique Account</button>
+                    <button type="button" class="signup-btn" id="submitBtn">🏥 Create Medique Account</button>
                 </form>
 
                 <div class="divider">
@@ -225,6 +225,9 @@
         </div>
     </div>
 
-    
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="../JS/SignUp.js"></script>
 </body>
 </html>

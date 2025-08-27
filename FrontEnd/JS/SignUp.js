@@ -1,161 +1,174 @@
+$(document).ready(function () {
 
-       // Show/hide password fields
-function togglePassword(fieldId) {
-    const field = document.getElementById(fieldId);
-    if (field.type === 'password') {
-        field.type = 'text';
-    } else {
-        field.type = 'password';
+
+    // =================================================================
+    // SECTION 1: UI INTERACTION HELPERS (No changes here)
+    // =================================================================
+
+    // Toggles password visibility
+    window.togglePassword = function(fieldId) {
+        const field = $(`#${fieldId}`);
+        const button = field.next('button');
+        if (field.attr('type') === 'password') {
+            field.attr('type', 'text');
+            button.text('Hide');
+        } else {
+            field.attr('type', 'password');
+            button.text('Show');
+        }
     }
-}
 
-// Show Terms and Privacy modals
-function showTerms() {
-    document.getElementById('termsModal').style.display = 'block';
-}
-function showPrivacy() {
-    document.getElementById('privacyModal').style.display = 'block';
-}
-function closeModal(modalId) {
-    document.getElementById(modalId).style.display = 'none';
-}
+    // Modal functions
+    window.showTerms = () => $('#termsModal').show();
+    window.showPrivacy = () => $('#privacyModal').show();
+    window.closeModal = (modalId) => $(`#${modalId}`).hide();
+    
+    // Page navigation functions
+    window.signIn = () => window.location.href = 'Login.html';
+    window.signUpWithGoogle = () => alert('Google signup is not implemented yet.');
 
-// Password strength checker
-const passwordInput = document.getElementById('password');
-const strengthBar = document.getElementById('strengthBar');
-const strengthText = document.getElementById('strengthText');
 
-if (passwordInput) {
-    passwordInput.addEventListener('input', function() {
-        const val = passwordInput.value;
+    // =================================================================
+    // SECTION 2: PASSWORD STRENGTH CHECKER (No changes here)
+    // =================================================================
+
+    $('#password').on('input', function() {
+        const val = $(this).val();
         let strength = 0;
         if (val.length >= 8) strength++;
         if (/[A-Z]/.test(val)) strength++;
         if (/[0-9]/.test(val)) strength++;
         if (/[^A-Za-z0-9]/.test(val)) strength++;
 
-        if (strength === 0) {
-            strengthBar.className = 'strength-fill strength-weak';
-            strengthText.textContent = 'Password strength: Weak';
-        } else if (strength === 1) {
-            strengthBar.className = 'strength-fill strength-weak';
-            strengthText.textContent = 'Password strength: Weak';
-        } else if (strength === 2) {
-            strengthBar.className = 'strength-fill strength-fair';
-            strengthText.textContent = 'Password strength: Fair';
+        let strengthClass = 'strength-fill strength-weak';
+        let text = 'Password strength: Weak';
+
+        if (strength === 2) {
+            strengthClass = 'strength-fill strength-fair';
+            text = 'Password strength: Fair';
         } else if (strength === 3) {
-            strengthBar.className = 'strength-fill strength-good';
-            strengthText.textContent = 'Password strength: Good';
+            strengthClass = 'strength-fill strength-good';
+            text = 'Password strength: Good';
         } else if (strength === 4) {
-            strengthBar.className = 'strength-fill strength-strong';
-            strengthText.textContent = 'Password strength: Strong';
+            strengthClass = 'strength-fill strength-strong';
+            text = 'Password strength: Strong';
         }
+        
+        $('#strengthBar').attr('class', strengthClass);
+        $('#strengthText').text(text);
     });
-}
 
-// Form validation
-function validateForm() {
-    let valid = true;
-    // Clear previous errors
-    document.querySelectorAll('.form-group').forEach(g => g.classList.remove('error'));
 
-    // First Name
-    const firstName = document.getElementById('firstName');
-    if (!firstName.value.trim()) {
-        firstName.parentElement.classList.add('error');
-        valid = false;
-    }
-    // Last Name
-    const lastName = document.getElementById('lastName');
-    if (!lastName.value.trim()) {
-        lastName.parentElement.classList.add('error');
-        valid = false;
-    }
-    // Email
-    const email = document.getElementById('email');
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(email.value.trim())) {
-        email.parentElement.classList.add('error');
-        valid = false;
-    }
-    // Phone
-    const phone = document.getElementById('phone');
-    const phonePattern = /^[0-9\-\+\s\(\)]{7,}$/;
-    if (!phonePattern.test(phone.value.trim())) {
-        phone.parentElement.classList.add('error');
-        valid = false;
-    }
-    // Date of Birth
-    const dob = document.getElementById('dateOfBirth');
-    if (!dob.value) {
-        dob.parentElement.classList.add('error');
-        valid = false;
-    }
-    // Gender
-    const gender = document.getElementById('gender');
-    if (!gender.value) {
-        gender.parentElement.classList.add('error');
-        valid = false;
-    }
-    // Account Type
-    const accountType = document.getElementById('accountType');
-    if (!accountType.value) {
-        accountType.parentElement.classList.add('error');
-        valid = false;
-    }
-    // Password
-    const password = document.getElementById('password');
-    if (password.value.length < 8) {
-        password.parentElement.parentElement.classList.add('error');
-        valid = false;
-    }
-    // Confirm Password
-    const confirmPassword = document.getElementById('confirmPassword');
-    if (confirmPassword.value !== password.value || !confirmPassword.value) {
-        confirmPassword.parentElement.parentElement.classList.add('error');
-        valid = false;
-    }
-    // Terms
-    const terms = document.getElementById('terms');
-    if (!terms.checked) {
-        terms.parentElement.classList.add('error');
-        valid = false;
-    }
-    return valid;
-}
+    // =================================================================
+    // SECTION 3: FORM VALIDATION & AJAX SUBMISSION
+    // =================================================================
 
-// Handle form submission
-const signupForm = document.getElementById('signupForm');
-if (signupForm) {
-    signupForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const submitBtn = document.getElementById('submitBtn');
-        const originalText = submitBtn.innerHTML;
-        if (validateForm()) {
-            submitBtn.innerHTML = 'Creating Account...';
-            submitBtn.disabled = true;
-            setTimeout(() => {
-                document.getElementById('successMessage').style.display = 'block';
-                signupForm.reset();
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-                // Optionally scroll to success message
-                document.getElementById('successMessage').scrollIntoView({behavior: 'smooth'});
-            }, 1500);
+    function validateForm() {
+        let isValid = true;
+        // Hide previous messages
+        $('#successMessage, #errorMessage').hide();
+        // Clear previous errors
+        $('.form-group').removeClass('error');
+
+        // First Name
+        if ($('#firstName').val().trim() === '') {
+            $('#firstName').parent().addClass('error');
+            isValid = false;
+        }
+        // Last Name
+        if ($('#lastName').val().trim() === '') {
+            $('#lastName').parent().addClass('error');
+            isValid = false;
+        }
+        // Email
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test($('#email').val().trim())) {
+            $('#email').parent().addClass('error');
+            isValid = false;
+        }
+        // Password
+        if ($('#password').val().length < 8) {
+            $('#password').closest('.form-group').addClass('error');
+            isValid = false;
+        }
+        // Confirm Password
+        if ($('#confirmPassword').val() !== $('#password').val() || $('#confirmPassword').val() === '') {
+            $('#confirmPassword').closest('.form-group').addClass('error');
+            isValid = false;
+        }
+        // Terms
+        if (!$('#terms').is(':checked')) {
+            // Finding a better element to show error for checkbox
+            $('.terms-checkbox').addClass('error'); 
+            isValid = false;
         } else {
-            // Optionally scroll to first error
-            const firstError = document.querySelector('.form-group.error');
-            if (firstError) firstError.scrollIntoView({behavior: 'smooth'});
+             $('.terms-checkbox').removeClass('error');
+        }
+
+        return isValid;
+    }
+
+    // Handle the button click event for AJAX submission
+    $('#submitBtn').on('click', function() {
+
+        alert("aawoooo")
+        
+        if (validateForm()) {
+            // 1. Collect form data into a JavaScript object
+            const formData = {
+                firstName: $('#firstName').val(),
+                lastName: $('#lastName').val(),
+                email: $('#email').val(),
+                contactNumber: $('#phone').val(),
+                dateOfBirth: $('#dateOfBirth').val(),
+                gender: $('#gender').val(),
+                username: $('#name').val(), 
+                password: $('#password').val(),
+                role: "PATIENT"
+
+            };
+                
+                
+
+            const submitBtn = $(this);
+            const originalText = submitBtn.html();
+            submitBtn.html('Creating Account...').prop('disabled', true);
+
+            // 2. Perform the AJAX request
+            $.ajax({
+                type: "POST",
+                // !!! IMPORTANT: Replace this URL with your actual backend API endpoint !!!
+                url: "http://localhost:8080/auth/register", 
+                contentType: "application/json",
+                data: JSON.stringify(formData),
+                success: function(response) {
+                    // This function runs if the server responds with success (e.g., status 200 or 201)
+                    $('#successMessage').show();
+                    $('#signupForm')[0].reset(); // Reset form fields
+                    // Scroll to success message
+
+                     window.location.href = '../HTML/Login.html'; 
+                  
+                },
+                error: function(xhr, status, error) {
+                    alert("fksdjlfks")
+                    // This function runs if the request fails
+                    $('#errorMessage').text('❌ ' + (xhr.responseJSON?.message || 'An unknown error occurred.')).show();
+                     // Scroll to error message
+                   
+                },
+                complete: function() {
+                    // This function runs after success or error, for cleanup
+                    submitBtn.html(originalText).prop('disabled', false);
+                }
+            });
+
+        } else {
+            // If validation fails, scroll to the first field with an error
+            const firstError = $('.form-group.error').first();
+            if (firstError.length) {
+                 $('html, body').animate({ scrollTop: firstError.offset().top - 20 }, 500);
+            }
         }
     });
-}
-
-// Sign in link handler (redirect or show login modal)
-function signIn() {
-    window.location.href = 'Login.html';
-}
-
-// Google signup placeholder
-function signUpWithGoogle() {
-    alert('Google signup is not implemented in this demo.');
-}
+});

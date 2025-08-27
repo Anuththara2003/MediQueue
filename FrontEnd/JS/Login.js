@@ -1,142 +1,111 @@
+$(document).ready(function() {
 
-        // Role selection functionality
-        function selectRole(role) {
-            // Remove selected class from all options
-            document.querySelectorAll('.role-option').forEach(option => {
-                option.classList.remove('selected');
-            });
-            
-            // Add selected class to clicked option
-            document.querySelector(`[onclick="selectRole('${role}')"]`).classList.add('selected');
-            
-            // Update radio button
-            document.getElementById(role).checked = true;
-            
-            // Update login button text based on role
-            const loginBtn = document.querySelector('.login-btn');
-            const roleTexts = {
-                'patient': '🤒 Sign In as Patient',
-                'hospital_staff': '👩‍⚕️ Sign In as Staff',
-                'admin': '⚙️ Sign In as Admin'
-            };
-            loginBtn.innerHTML = roleTexts[role] || '🩺 Sign In to Medique';
+    // =================================================================
+    // SECTION 1: UI INTERACTION HELPERS
+    // =================================================================
+
+    // Handles visual selection of roles
+    window.selectRole = function(selectedRole) {
+        // Remove 'active' class from all options
+        $('.role-option').removeClass('active');
+        // Add 'active' class to the clicked option
+        const selectedElement = $(`input[value='${selectedRole}']`).closest('.role-option');
+        selectedElement.addClass('active');
+        // Also check the radio button programmatically
+        $(`#${selectedRole}`).prop('checked', true);
+    }
+
+    // Toggles password visibility
+    window.togglePassword = function() {
+        const passwordField = $('#password');
+        const button = passwordField.next('button');
+        if (passwordField.attr('type') === 'password') {
+            passwordField.attr('type', 'text');
+            button.text('Hide');
+        } else {
+            passwordField.attr('type', 'password');
+            button.text('Show');
+        }
+    }
+
+    // Placeholder and navigation functions
+    window.forgotPassword = () => alert('Forgot password functionality is not implemented yet.');
+    window.signInWithGoogle = () => alert('Google Sign-In is not implemented yet.');
+    window.signUp = () => window.location.href = 'SignUp.html'; // Assuming the signup page is SignUp.html
+
+
+    // =================================================================
+    // SECTION 2: FORM VALIDATION & AJAX SUBMISSION
+    // =================================================================
+
+    $('#loginForm').on('submit', function(e) {
+        e.preventDefault(); // Prevent default form submission
+
+        const loginErrorDiv = $('#loginError');
+        loginErrorDiv.hide(); // Hide previous errors
+
+        // 1. Collect form data
+        const username = $('#name').val().trim();
+        const password = $('#password').val();
+        const role = $('input[name="role"]:checked').val();
+
+        // 2. Basic Validation
+        if (!role) {
+            loginErrorDiv.text('❌ Please select your role.').show();
+            return;
+        }
+        if (!username || !password) {
+            loginErrorDiv.text('❌ Please enter both username and password.').show();
+            return;
         }
 
-        // Form submission with role-based authentication
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const selectedRole = document.querySelector('input[name="role"]:checked');
-            
-            if (!selectedRole) {
-                alert('⚠️ Please select your role before signing in.');
-                return;
-            }
-            
-            if (email && password) {
-                const loginBtn = document.querySelector('.login-btn');
-                const originalText = loginBtn.innerHTML;
-                loginBtn.innerHTML = '🔄 Authenticating...';
-                loginBtn.disabled = true;
-                
-                setTimeout(() => {
-                    const roleNames = {
-                        'patient': 'Patient',
-                        'hospital_staff': 'Hospital Staff',
-                        'admin': 'Administrator'
-                    };
+        // Create the data object to send to the server
+        const loginData = {
+            username: username,
+            password: password
+            // Note: The role is used for redirection, not sent to this specific backend endpoint
+        };
+
+        const submitBtn = $('.login-btn');
+        const originalText = submitBtn.html();
+        submitBtn.html('Signing In...').prop('disabled', true);
+
+        // 3. Perform AJAX request
+        $.ajax({
+            type: "POST",
+            // !!! IMPORTANT: Replace this URL with your actual login API endpoint !!!
+            url: "http://localhost:8080/auth/login",
+            contentType: "application/json",
+            data: JSON.stringify(loginData),
+            success: function(response) {
+                // Assuming the server response contains a token, like: { "token": "ey..." }
+                // Store the token for future requests
+                localStorage.setItem('authToken', response.data.accessToken);
+               console.log(response.data.accessToken);
+               alert("Successfully Loging😉👌")
+
+                console.log(response);
+                // REDIRECT based on the selected role
+                if (response.data.role === 'ADMIN') {
+                    window.location.href = '../HTML/AdminDashBoard.html'; 
                     
-                    const dashboardUrls = {
-                        'patient': '/patient-dashboard',
-                        'hospital_staff': '/staff-dashboard',
-                        'admin': '/admin-dashboard'
-                    };
-                    
-                    alert(`🏥 Welcome to Medique!\n\nLogin successful as: ${roleNames[selectedRole.value]}\nEmail: ${email}\n\nYou would now be redirected to your ${roleNames[selectedRole.value]} dashboard at: ${dashboardUrls[selectedRole.value]}`);
-                    
-                    loginBtn.innerHTML = originalText;
-                    loginBtn.disabled = false;
-                }, 2000);
+                } else {
+                    // Default to patient dashboard
+                    window.location.href = '../HTML/PatientDashBoard.html'; 
+                }
+            },
+            error: function(xhr, status, error) {
+                // If login fails (e.g., 401 Unauthorized, 403 Forbidden)
+                let errorMessage = 'Invalid username or password.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+                loginErrorDiv.text('❌ ' + errorMessage).show();
+            },
+            complete: function() {
+                // This runs after success or error
+                submitBtn.html(originalText).prop('disabled', false);
             }
         });
-
-        // Toggle password visibility
-        function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const toggleBtn = document.querySelector('.show-password');
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                toggleBtn.textContent = 'Hide';
-            } else {
-                passwordInput.type = 'password';
-                toggleBtn.textContent = 'Show';
-            }
-        }
-
-        // Google sign in with role awareness
-        function signInWithGoogle() {
-            const selectedRole = document.querySelector('input[name="role"]:checked');
-            
-            if (!selectedRole) {
-                alert('⚠️ Please select your role before continuing with Google.');
-                return;
-            }
-            
-            const googleBtn = document.querySelector('.google-btn');
-            const originalContent = googleBtn.innerHTML;
-            googleBtn.innerHTML = '<span style="opacity: 0.7;">🔄 Connecting to Google Healthcare...</span>';
-            googleBtn.disabled = true;
-            
-            setTimeout(() => {
-                const roleNames = {
-                    'patient': 'Patient',
-                    'hospital_staff': 'Hospital Staff',
-                    'admin': 'Administrator'
-                };
-                
-                alert(`🏥 Google Healthcare Sign-In\n\nSigning in as: ${roleNames[selectedRole.value]}\n\nSecure authentication with Google would be implemented here for HIPAA compliance!`);
-                googleBtn.innerHTML = originalContent;
-                googleBtn.disabled = false;
-            }, 1500);
-        }
-
-        // Role-aware forgot password
-        function forgotPassword() {
-            const selectedRole = document.querySelector('input[name="role"]:checked');
-            let roleText = selectedRole ? ` for ${selectedRole.value}` : '';
-            alert(`🔐 Secure Password Reset${roleText}\n\nFor security compliance, you would receive a secure reset link via your registered email and SMS.`);
-        }
-
-        // Role-aware sign up
-        function signUp() {
-            alert('🩺 Join Medique\n\nChoose your role during registration:\n• Patient - Access your health records\n• Hospital Staff - Manage patient care\n• Administrator - System management\n\nNew user registration would redirect to our secure HIPAA-compliant registration form.');
-        }
-
-        // Enhanced input animations
-        document.querySelectorAll('input').forEach(input => {
-            input.addEventListener('focus', function() {
-                this.style.transform = 'translateY(-2px)';
-            });
-            
-            input.addEventListener('blur', function() {
-                this.style.transform = 'translateY(0)';
-            });
-        });
-
-        // Add pulse animation for online indicator
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes pulse {
-                0%, 100% { opacity: 1; transform: scale(1); }
-                50% { opacity: 0.7; transform: scale(1.1); }
-            }
-        `;
-        document.head.appendChild(style);
-
-        // Auto-select patient role by default
-        window.addEventListener('load', function() {
-            selectRole('patient');
-        });
+    });
+});
