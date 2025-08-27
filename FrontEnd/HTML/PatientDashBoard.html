@@ -10,7 +10,6 @@
     <div class="container">
         <div class="header">
             <div class="language-selector">
-                <!-- onclick ඉවත් කර data-lang එකතු කර ඇත -->
                 <button class="language-btn" data-lang="en">English</button>
                 <button class="language-btn" data-lang="si">සිංහල</button>
                 <button class="language-btn" data-lang="ta">தமிழ்</button>
@@ -18,7 +17,6 @@
             <h1 data-translate-key="welcomeTitle">🏥 Patient Dashboard</h1>
             <p class="welcome-text" data-translate-key="welcomeText">Welcome, Kamal Perera</p>
         </div>
-
         <div class="main-content">
             <div class="dashboard-grid">
                 <div class="card">
@@ -30,19 +28,13 @@
                         <option value="">Select Hospital...</option>
                         <option value="colombo-general">Colombo General Hospital</option>
                         <option value="kandy-general">Kandy General Hospital</option>
-                        <option value="galle-general">Galle General Hospital</option>
-                        <option value="negombo-hospital">Negombo Base Hospital</option>
                     </select>
-                    
                     <select class="hospital-selector" id="clinicSelect" onchange="updateClinicInfo()" style="margin-top: 15px;">
                         <option value="">Select Clinic...</option>
                         <option value="cardiology">Cardiology</option>
                         <option value="diabetes">Diabetes Clinic</option>
-                        <option value="orthopedic">Orthopedic</option>
-                        <option value="pediatric">Pediatric</option>
                     </select>
                 </div>
-
                 <div class="card">
                     <div class="card-header">
                         <div class="card-icon">🎫</div>
@@ -54,7 +46,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="dashboard-grid">
                 <div class="card">
                     <div class="status-grid">
@@ -73,14 +64,11 @@
                             </div>
                         </div>
                     </div>
-                    
                     <div class="your-token">
                         <div class="your-token-number" id="yourTokenNumber">52</div>
-                        <!-- data-translate-key මෙතනින් ඉවත් කර ඇත, કારણ કે මෙය JS එකෙන් handle වේ -->
                         <div class="queue-info" id="queueInfo">7 more patients to go</div>
                     </div>
                 </div>
-
                 <div class="card">
                     <div class="card-header">
                         <div class="card-icon">🔔</div>
@@ -97,31 +85,23 @@
                     </div>
                 </div>
             </div>
-
             <div class="health-tip">
                 <h3 data-translate-key="healthTipTitle">💡 Health Tip of the Day</h3>
                 <p id="healthTipText" data-translate-key="healthTipText">Stay hydrated by drinking at least 8 glasses of water daily.</p>
             </div>
-
             <div class="action-buttons">
-                <button class="btn btn-primary" onclick="registerToken()" data-translate-key="registerBtn">Register New Token</button>
+                <!-- RegisterToken.html වෙත link කිරීම -->
+                <a href="RegisterToken.html" class="btn btn-primary" data-translate-key="registerBtn">Register New Token</a>
                 <button class="btn btn-secondary" onclick="manageToken()" data-translate-key="manageBtn">Manage Token</button>
             </div>
         </div>
     </div>
-
     <div class="notification" id="notification">
         <span id="notificationText">SMS alerts enabled successfully!</span>
     </div>
-
     <!-- SCRIPT TAGS (AT THE END OF BODY) -->
-    <!-- 1. jQuery (අනිවාර්යයෙන්ම පළමුව) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
-    <!-- 2. අපේ මධ්‍යගත Translator Script එක -->
-    <script src="../JS/translation.js" defer></script> 
-    
-    <!-- 3. Dashboard එකට පමණක් අදාළ Script එක -->
+    <script src="../JS/translation.js" defer></script>
     <script src="../JS/PatientDashBoard.js" defer></script>
 </body>
 </html>

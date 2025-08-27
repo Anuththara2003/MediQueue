@@ -1,5 +1,5 @@
 // =================================================================
-// PATIENT DASHBOARD - PAGE SPECIFIC SCRIPT
+// PATIENT DASHBOARD - PAGE SPECIFIC SCRIPT (JS-ONLY TRANSLATION)
 // =================================================================
 
 let smsEnabled = true;
@@ -67,16 +67,17 @@ function showNotification(message) {
     }, 3000);
 }
 
-function registerToken() { showNotification("Simulating token registration..."); 
-     window.location.href = '../HTML/RegisterToken.html';
-} 
-function manageToken() { showNotification("Opening token management options..."); }
+function manageToken() { 
+    showNotification("Opening token management options..."); 
+    // Note: The 'Register New Token' button is now a link (<a> tag), so it doesn't need a JS function.
+}
 
 $(document).ready(function() {
     $('#currentToken').text(currentToken);
     $('#yourTokenNumber').text(yourToken);
     updateDynamicTexts();
 
+    // This is a simulation of the token number increasing over time
     setInterval(() => {
         if (currentToken < yourToken) {
             currentToken++;
