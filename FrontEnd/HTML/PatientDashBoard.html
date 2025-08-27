@@ -1,128 +1,3 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient Dashboard</title>
-   <link rel="stylesheet" href="/StyleSheet/PatientDashBoard.css">
-   <script src="../JS/PatientDashBoard.js"></script>
-
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <div class="language-selector">
-                <button class="language-btn active" onclick="changeLanguage('en')">English</button>
-                <button class="language-btn" onclick="changeLanguage('si')">සිංහල</button>
-                <button class="language-btn" onclick="changeLanguage('ta')">தமிழ்</button>
-            </div>
-            <h1 id="welcomeTitle">🏥 Patient Dashboard</h1>
-            <p class="welcome-text" id="welcomeText">Welcome, Kamal Perera</p>
-        </div>
-
-        <div class="main-content">
-            <div class="dashboard-grid">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon">🏥</div>
-                        <div class="card-title" id="hospitalSelectTitle">Select Hospital & Clinic</div>
-                    </div>
-                    <select class="hospital-selector" id="hospitalSelect" onchange="updateHospitalInfo()">
-                        <option value="">Select Hospital...</option>
-                        <option value="colombo-general">Colombo General Hospital</option>
-                        <option value="kandy-general">Kandy General Hospital</option>
-                        <option value="galle-general">Galle General Hospital</option>
-                        <option value="negombo-hospital">Negombo Base Hospital</option>
-                    </select>
-                    
-                    <select class="hospital-selector" id="clinicSelect" onchange="updateClinicInfo()" style="margin-top: 15px;">
-                        <option value="">Select Clinic...</option>
-                        <option value="cardiology">Cardiology</option>
-                        <option value="diabetes">Diabetes Clinic</option>
-                        <option value="orthopedic">Orthopedic</option>
-                        <option value="pediatric">Pediatric</option>
-                    </select>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon">🎫</div>
-                        <div class="card-title" id="tokenStatusTitle">Current Token Status</div>
-                    </div>
-                    <div class="token-display pulse">
-                        <div class="current-token" id="currentToken">45</div>
-                        <div class="token-label" id="currentTokenLabel">Current Token</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="dashboard-grid">
-                <div class="card">
-                    <div class="status-grid">
-                        <div class="status-item">
-                            <div class="status-icon">⏱️</div>
-                            <div>
-                                <div class="status-text" id="waitTimeLabel">Estimated Wait</div>
-                                <div id="waitTime">25 minutes</div>
-                            </div>
-                        </div>
-                        <div class="status-item">
-                            <div class="status-icon">👥</div>
-                            <div>
-                                <div class="status-text" id="queueLabel">In Queue</div>
-                                <div id="queueCount">12 patients</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="your-token">
-                        <div class="your-token-number" id="yourTokenNumber">52</div>
-                        <div class="queue-info" id="queueInfo">7 more patients to go</div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon">🔔</div>
-                        <div class="card-title" id="alertsTitle">SMS Alerts</div>
-                    </div>
-                    <div class="sms-toggle">
-                        <div>
-                            <div style="font-weight: 600; margin-bottom: 5px;" id="smsStatusText">SMS Notifications</div>
-                            <div style="color: #6b7280; font-size: 0.9rem;" id="smsDescription">Get notified when your turn approaches</div>
-                        </div>
-                        <div class="toggle-switch active" onclick="toggleSMS()">
-                            <div class="toggle-slider"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="health-tip">
-                <h3 id="healthTipTitle">💡 Health Tip of the Day</h3>
-                <p id="healthTipText">Stay hydrated by drinking at least 8 glasses of water daily. Proper hydration helps maintain your body temperature and supports overall health.</p>
-            </div>
-
-            <div class="action-buttons">
-                <button class="btn btn-primary" onclick="registerToken()" id="registerBtn">Register New Token</button>
-                <button class="btn btn-secondary" onclick="manageToken()" id="manageBtn">Manage Token</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="notification" id="notification">
-        <span id="notificationText">SMS alerts enabled successfully!</span>
-    </div>
-
-
-</body>
-</html>
-             -->
-
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -135,9 +10,10 @@
     <div class="container">
         <div class="header">
             <div class="language-selector">
-                <button class="language-btn" onclick="changeLanguage('en')">English</button>
-                <button class="language-btn" onclick="changeLanguage('si')">සිංහල</button>
-                <button class="language-btn" onclick="changeLanguage('ta')">தமிழ்</button>
+                <!-- onclick ඉවත් කර data-lang එකතු කර ඇත -->
+                <button class="language-btn" data-lang="en">English</button>
+                <button class="language-btn" data-lang="si">සිංහල</button>
+                <button class="language-btn" data-lang="ta">தமிழ்</button>
             </div>
             <h1 data-translate-key="welcomeTitle">🏥 Patient Dashboard</h1>
             <p class="welcome-text" data-translate-key="welcomeText">Welcome, Kamal Perera</p>
@@ -200,7 +76,8 @@
                     
                     <div class="your-token">
                         <div class="your-token-number" id="yourTokenNumber">52</div>
-                        <div class="queue-info" id="queueInfo" data-translate-key="queueInfo">7 more patients to go</div>
+                        <!-- data-translate-key මෙතනින් ඉවත් කර ඇත, કારણ કે මෙය JS එකෙන් handle වේ -->
+                        <div class="queue-info" id="queueInfo">7 more patients to go</div>
                     </div>
                 </div>
 
@@ -223,7 +100,7 @@
 
             <div class="health-tip">
                 <h3 data-translate-key="healthTipTitle">💡 Health Tip of the Day</h3>
-                <p id="healthTipText" data-translate-key="healthTipText">Stay hydrated by drinking at least 8 glasses of water daily. Proper hydration helps maintain your body temperature and supports overall health.</p>
+                <p id="healthTipText" data-translate-key="healthTipText">Stay hydrated by drinking at least 8 glasses of water daily.</p>
             </div>
 
             <div class="action-buttons">
@@ -237,14 +114,14 @@
         <span id="notificationText">SMS alerts enabled successfully!</span>
     </div>
 
-    <!-- SCRIPT TAGS MOVED TO THE END FOR BETTER PERFORMANCE -->
-    <!-- 1. jQuery Library (MUST BE FIRST) -->
+    <!-- SCRIPT TAGS (AT THE END OF BODY) -->
+    <!-- 1. jQuery (අනිවාර්යයෙන්ම පළමුව) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
-    <!-- 2. Central Translation Script (NEW) -->
+    <!-- 2. අපේ මධ්‍යගත Translator Script එක -->
     <script src="../JS/translation.js" defer></script> 
     
-    <!-- 3. Page-Specific Script (YOUR UPDATED FILE) -->
+    <!-- 3. Dashboard එකට පමණක් අදාළ Script එක -->
     <script src="../JS/PatientDashBoard.js" defer></script>
 </body>
 </html>
