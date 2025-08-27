@@ -1,0 +1,24 @@
+package documents.aad.javaee.test_project.mediqueue.dto;
+
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor 
+public class HealthTipDto {
+
+    // Health Tip එකේ ID එක
+    private Long id;
+
+    // Health Tip එකේ මාතෘකාව (e.g., "Drink More Water")
+    private String title;
+
+    // Health Tip එකේ සම්පූර්ණ විස්තරය
+    private String content;
+
+    // Health Tip එකට අදාළ භාෂාව (e.g., "en", "si")
+    private String language;
+}

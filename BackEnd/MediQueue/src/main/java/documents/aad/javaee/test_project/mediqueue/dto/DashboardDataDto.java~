@@ -1,0 +1,4 @@
+package documents.aad.javaee.test_project.mediqueue.dto;
+
+public class DashboardDataDto {
+}
