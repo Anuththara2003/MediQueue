@@ -5,6 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Dashboard</title>
    <link rel="stylesheet" href="/StyleSheet/PatientDashBoard.css">
+   <style>
+        /* Add this style for the search results dropdown */
+        .search-results-container {
+            position: relative;
+        }
+        #hospitalSearchResults {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            z-index: 1000;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .result-item {
+            padding: 10px;
+            cursor: pointer;
+        }
+        .result-item:hover {
+            background-color: #f0f0f0;
+        }
+   </style>
 </head>
 <body>
     <div class="container">
@@ -24,11 +49,12 @@
                         <div class="card-icon">🏥</div>
                         <div class="card-title" data-translate-key="hospitalSelectTitle">Select Hospital & Clinic</div>
                     </div>
-                    <select class="hospital-selector" id="hospitalSelect" onchange="updateHospitalInfo()">
-                        <option value="">Select Hospital...</option>
-                        <option value="colombo-general">Colombo General Hospital</option>
-                        <option value="kandy-general">Kandy General Hospital</option>
-                    </select>
+                    <!-- ============ වෙනස් කළ කොටස මෙතැන් සිට ============ -->
+                    <div class="search-results-container">
+                        <input type="text" id="hospitalSearchInput" class="hospital-selector" placeholder="Search for a private hospital...">
+                        <div id="hospitalSearchResults"></div>
+                    </div>
+                    <!-- ============ වෙනස් කළ කොටස මෙතැනින් අවසන් ============ -->
                     <select class="hospital-selector" id="clinicSelect" onchange="updateClinicInfo()" style="margin-top: 15px;">
                         <option value="">Select Clinic...</option>
                         <option value="cardiology">Cardiology</option>
@@ -90,7 +116,6 @@
                 <p id="healthTipText" data-translate-key="healthTipText">Stay hydrated by drinking at least 8 glasses of water daily.</p>
             </div>
             <div class="action-buttons">
-                <!-- RegisterToken.html වෙත link කිරීම -->
                 <a href="RegisterToken.html" class="btn btn-primary" data-translate-key="registerBtn">Register New Token</a>
                 <button class="btn btn-secondary" onclick="manageToken()" data-translate-key="manageBtn">Manage Token</button>
             </div>
