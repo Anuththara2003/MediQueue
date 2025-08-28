@@ -2,17 +2,12 @@
 // PATIENT DASHBOARD - PAGE SPECIFIC SCRIPT
 // =================================================================
 
-// ++++++++++++++++ LocationIQ API සඳහා වූ කොටස ++++++++++++++++
-// ඔබගේ LocationIQ API යතුර මෙතන ඇතුලත් කරන්න
+// LocationIQ API සඳහා වූ කොටස (වෙනසක් නැත)
 const LOCATIONIQ_API_KEY = 'pk.620a0f57de48be49621910e59f1a0ec9'; 
 let searchTimeout;
 
-// API call එක සිදු කරන function එක (ඔබ ලබාදුන් Autocomplete URL එක සමඟ)
 function searchPrivateHospitals(query) {
-    // API එකට යවන query එක වඩාත් හොඳ ප්‍රතිඵල සඳහා සකස් කිරීම
     const searchQuery = `private hospital ${query}`;
-    
-    // ඔබ ලබාදුන් නිවැරදි URL එක
     const url = `https://api.locationiq.com/v1/autocomplete.php?key=${LOCATIONIQ_API_KEY}&q=${encodeURIComponent(searchQuery)}&limit=5&countrycodes=LK`;
 
     $.ajax({
@@ -20,21 +15,15 @@ function searchPrivateHospitals(query) {
         method: 'GET',
         success: function(data) {
             const resultsContainer = $('#hospitalSearchResults');
-            resultsContainer.empty(); // පරණ ප්‍රතිඵල ඉවත් කිරීම
-
+            resultsContainer.empty();
             if (data && data.length > 0) {
                 data.forEach(place => {
-                    // ප්‍රතිඵල පෙන්වන div එකට අලුත් item එකක් එකතු කිරීම
-                    // Autocomplete API එකෙන් display_name එක ලැබෙනවා
-                    // resultsContainer.append(`<div class="result-item" data-name="${place.display_name}">${place.display_name}</div>`);
                     resultsContainer.append(`
-    <div class="result-item" data-name="${place.display_name}">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
-        </svg>
-        <span>${place.display_name}</span>
-    </div>
-`);
+                        <div class="result-item" data-name="${place.display_name}">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>${place.display_name}</span>
+                        </div>
+                    `);
                 });
             } else {
                 resultsContainer.append('<div class="result-item">No results found.</div>');
@@ -48,19 +37,18 @@ function searchPrivateHospitals(query) {
         }
     });
 }
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+// Global variables (වෙනසක් නැත)
 let smsEnabled = true;
 let currentToken = 45;
 let yourToken = 52;
 
+// භාෂාව අනුව වෙනස් වන text update කිරීම (වෙනසක් නැත)
 function updateDynamicTexts() {
     const langCode = localStorage.getItem('preferredLanguage') || 'en';
     const remaining = Math.max(0, yourToken - currentToken);
     
-    let queueText;
-    let waitTimeText;
-    let queueCountText;
+    let queueText, waitTimeText, queueCountText;
 
     if (langCode === 'si') {
         queueText = `තවත් රෝගීන් ${remaining} දෙනෙක් ඉදිරියෙන්`;
@@ -75,16 +63,12 @@ function updateDynamicTexts() {
         waitTimeText = "25 minutes";
         queueCountText = "12 patients";
     }
-
     $('#queueInfo').text(queueText);
     $('#waitTime').text(waitTimeText);
     $('#queueCount').text(queueCountText);
 }
 
-$(document).on('languageChange', function() {
-    updateDynamicTexts();
-});
-
+// අනෙකුත් functions (වෙනසක් නැත)
 function updateHospitalInfo() {
     console.log("Hospital selected. Updating token info...");
     currentToken = Math.floor(Math.random() * 20) + 30;
@@ -118,7 +102,9 @@ function manageToken() {
     showNotification("Opening token management options...");
 }
 
+
 $(document).ready(function() {
+    // --- පවතින DASHBOARD ක්‍රියාකාරීත්වය ---
     $('#currentToken').text(currentToken);
     $('#yourTokenNumber').text(yourToken);
     updateDynamicTexts();
@@ -131,11 +117,9 @@ $(document).ready(function() {
         }
     }, 30000);
 
-    // Search input එකේ type කරන විට
     $('#hospitalSearchInput').on('keyup', function() {
         clearTimeout(searchTimeout); 
         const query = $(this).val();
-
         if (query.length > 2) {
             searchTimeout = setTimeout(() => {
                 searchPrivateHospitals(query);
@@ -145,7 +129,6 @@ $(document).ready(function() {
         }
     });
 
-    // Search result එකක් click කල විට
     $(document).on('click', '.result-item', function() {
         const hospitalName = $(this).data('name');
         if(hospitalName) {
@@ -155,10 +138,94 @@ $(document).ready(function() {
         }
     });
 
-    // Search box එකෙන් පිටත click කල විට ප්‍රතිඵල සැඟවීම
     $(document).on('click', function(event) {
         if (!$(event.target).closest('.search-results-container').length) {
             $('#hospitalSearchResults').empty();
         }
+    });
+
+    $(document).on('languageChange', function() {
+        updateDynamicTexts();
+    });
+    
+    // Sidebar එකේ ඇති Profile පින්තූරය upload කිරීමේ ක්‍රියාවලිය
+    $('#profileUpload').on('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                $('#profilePic').attr('src', e.target.result);
+                $('#profilePicPreview').attr('src', e.target.result); // Modal එකේ පින්තූරයත් update කරයි
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Logout Button ක්‍රියාකාරීත්වය
+    $('.logout-btn').on('click', function(e) {
+        e.preventDefault();
+        showNotification("You have been logged out.");
+        console.log("Logout button clicked.");
+    });
+
+    // ==========================================================
+    // === අලුතින් එකතු කළ PROFILE MODAL SCRIPT ===
+    // ==========================================================
+    const profileModal = $('#profileModal');
+
+    // --- Modal විවෘත කිරීම ---
+    // පැරණි navigation ක්‍රමය වෙනුවට modal එක trigger කිරීම
+    $('#profile-modal-trigger').on('click', function(e) {
+        e.preventDefault();
+        profileModal.addClass('show');
+    });
+
+    // --- Modal වැසීම (Close button එකෙන්) ---
+    $('.modal-close').on('click', function() {
+        profileModal.removeClass('show');
+    });
+
+    // --- Modal වැසීම (Overlay එක click කිරීමෙන්) ---
+    profileModal.on('click', function(e) {
+        if ($(e.target).is(profileModal)) {
+            profileModal.removeClass('show');
+        }
+    });
+
+    // --- Tab අතර මාරු වීම ---
+    $('.tab-link').on('click', function() {
+        const target = $(this).data('target');
+        $('.tab-link').removeClass('active');
+        $(this).addClass('active');
+        $('.tab-pane').removeClass('active');
+        $(target).addClass('active');
+    });
+
+    // --- Modal එක තුළ ඇති Profile Picture Upload ක්‍රියාව ---
+    $('#profileUploadInput').on('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                $('#profilePicPreview').attr('src', e.target.result); // Modal එකේ image එක update කිරීම
+                $('#profilePic').attr('src', e.target.result); // Sidebar එකේ image එකත් update කිරීම
+                showNotification('Profile picture updated!');
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // --- Modal එක තුළ ඇති Save/Update buttons ---
+    $('#save-info-btn').on('click', function() {
+        showNotification('Personal information saved!');
+    });
+
+    $('#change-password-btn').on('click', function() {
+        showNotification('Password updated successfully!');
+    });
+
+    // --- Modal එක තුළ ඇති Notification Toggles ---
+    $('#profileModal .toggle-switch').on('click', function() {
+        $(this).toggleClass('active');
     });
 });
