@@ -24,6 +24,7 @@ public class User {
     private String username;
     private String email;
     private String password;
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     @Column(nullable = false)

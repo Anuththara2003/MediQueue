@@ -14,7 +14,7 @@ public class RegisterDto {
     private String username;
     private String email;
     private String password;
-    private Role role;
+    private String role;
     private String firstName;
     private String lastName;
     private String contactNumber;

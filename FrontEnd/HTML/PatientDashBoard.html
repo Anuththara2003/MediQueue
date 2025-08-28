@@ -4,123 +4,143 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Dashboard</title>
-   <link rel="stylesheet" href="/StyleSheet/PatientDashBoard.css">
-   <style>
-        /* Add this style for the search results dropdown */
-        .search-results-container {
-            position: relative;
-        }
-        #hospitalSearchResults {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background-color: white;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            z-index: 1000;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-        .result-item {
-            padding: 10px;
-            cursor: pointer;
-        }
-        .result-item:hover {
-            background-color: #f0f0f0;
-        }
-   </style>
+    <link rel="stylesheet" href="/StyleSheet/PatientDashBoard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="language-selector">
-                <button class="language-btn" data-lang="en">English</button>
-                <button class="language-btn" data-lang="si">සිංහල</button>
-                <button class="language-btn" data-lang="ta">தமிழ்</button>
+    <div class="dashboard-container">
+        <!-- ======================= Sidebar (වම් පැති තීරුව) ======================= -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3><i class="fas fa-heart-pulse"></i> MEDIQUEUE</h3>
             </div>
-            <h1 data-translate-key="welcomeTitle">🏥 Patient Dashboard</h1>
-            <p class="welcome-text" data-translate-key="welcomeText">Welcome, Kamal Perera</p>
-        </div>
-        <div class="main-content">
-            <div class="dashboard-grid">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon">🏥</div>
-                        <div class="card-title" data-translate-key="hospitalSelectTitle">Select Hospital & Clinic</div>
-                    </div>
-                    <!-- ============ වෙනස් කළ කොටස මෙතැන් සිට ============ -->
-                    <div class="search-results-container">
-                        <input type="text" id="hospitalSearchInput" class="hospital-selector" placeholder="Search for a private hospital...">
-                        <div id="hospitalSearchResults"></div>
-                    </div>
-                    <!-- ============ වෙනස් කළ කොටස මෙතැනින් අවසන් ============ -->
-                    <select class="hospital-selector" id="clinicSelect" onchange="updateClinicInfo()" style="margin-top: 15px;">
-                        <option value="">Select Clinic...</option>
-                        <option value="cardiology">Cardiology</option>
-                        <option value="diabetes">Diabetes Clinic</option>
-                    </select>
+
+            <!-- Profile Section -->
+            <div class="profile-section">
+                <div class="profile-image-container">
+                    <img src="https://i.pravatar.cc/150?u=kamal" alt="Profile Picture" id="profilePic">
+                    <label for="profileUpload" class="upload-icon">
+                        <i class="fas fa-camera"></i>
+                    </label>
+                    <input type="file" id="profileUpload" style="display: none;">
                 </div>
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon">🎫</div>
-                        <div class="card-title" data-translate-key="tokenStatusTitle">Current Token Status</div>
-                    </div>
-                    <div class="token-display pulse">
-                        <div class="current-token" id="currentToken">45</div>
-                        <div class="token-label" data-translate-key="currentTokenLabel">Current Token</div>
-                    </div>
-                </div>
+                <h4>Kamal Perera</h4>
+                <p>Patient ID: 78542</p>
             </div>
-            <div class="dashboard-grid">
-                <div class="card">
-                    <div class="status-grid">
-                        <div class="status-item">
-                            <div class="status-icon">⏱️</div>
-                            <div>
-                                <div class="status-text" data-translate-key="waitTimeLabel">Estimated Wait</div>
-                                <div id="waitTime">25 minutes</div>
+
+            <!-- Navigation Links -->
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active"><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="#"><i class="fas fa-calendar-check"></i> My Appointments</a></li>
+                    <li><a href="#"><i class="fas fa-file-medical"></i> Medical Records</a></li>
+                    <li><a href="#"><i class="fas fa-envelope"></i> Messages</a></li>
+                    <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+                    <!-- === එකතු කළ කොටස === -->
+                    <li><a href="#"><i class="fas fa-user"></i> Profile</a></li>
+                    <!-- === එකතු කළ කොටස අවසන් === -->
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="#" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </aside>
+
+        <!-- ======================= Main Content (ප්‍රධාන කොටස) ======================= -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <h1 data-translate-key="welcomeTitle">Patient Dashboard</h1>
+                <div class="header-controls">
+                    <div class="language-selector">
+                        <button class="language-btn" data-lang="en">English</button>
+                        <button class="language-btn" data-lang="si">සිංහල</button>
+                        <button class="language-btn" data-lang="ta">தமிழ்</button>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- ඔබගේ පැරණි HTML එකේ තිබූ සියලුම cards මෙතැනට දමන්න -->
+            <div class="content-area">
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🏥</div>
+                            <div class="card-title" data-translate-key="hospitalSelectTitle">Select Hospital & Clinic</div>
+                        </div>
+                        <div class="search-results-container">
+                            <input type="text" id="hospitalSearchInput" class="hospital-selector" placeholder="Search for a private hospital...">
+                            <div id="hospitalSearchResults"></div>
+                        </div>
+                        <select class="hospital-selector" id="clinicSelect" onchange="updateClinicInfo()" style="margin-top: 15px;">
+                            <option value="">Select Clinic...</option>
+                            <option value="cardiology">Cardiology</option>
+                            <option value="diabetes">Diabetes Clinic</option>
+                        </select>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🎫</div>
+                            <div class="card-title" data-translate-key="tokenStatusTitle">Current Token Status</div>
+                        </div>
+                        <div class="token-display pulse">
+                            <div class="current-token" id="currentToken">45</div>
+                            <div class="token-label" data-translate-key="currentTokenLabel">Current Token</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="status-grid">
+                            <div class="status-item">
+                                <div class="status-icon">⏱️</div>
+                                <div>
+                                    <div class="status-text" data-translate-key="waitTimeLabel">Estimated Wait</div>
+                                    <div id="waitTime">25 minutes</div>
+                                </div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-icon">👥</div>
+                                <div>
+                                    <div class="status-text" data-translate-key="queueLabel">In Queue</div>
+                                    <div id="queueCount">12 patients</div>
+                                </div>
                             </div>
                         </div>
-                        <div class="status-item">
-                            <div class="status-icon">👥</div>
+                        <div class="your-token">
+                            <div class="your-token-number" id="yourTokenNumber">52</div>
+                            <div class="queue-info" id="queueInfo">7 more patients to go</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🔔</div>
+                            <div class="card-title" data-translate-key="alertsTitle">SMS Alerts</div>
+                        </div>
+                        <div class="sms-toggle">
                             <div>
-                                <div class="status-text" data-translate-key="queueLabel">In Queue</div>
-                                <div id="queueCount">12 patients</div>
+                                <div style="font-weight: 600; margin-bottom: 5px;" data-translate-key="smsStatusText">SMS Notifications</div>
+                                <div style="color: #6b7280; font-size: 0.9rem;" data-translate-key="smsDescription">Get notified when your turn approaches</div>
+                            </div>
+                            <div class="toggle-switch active" onclick="toggleSMS()">
+                                <div class="toggle-slider"></div>
                             </div>
                         </div>
                     </div>
-                    <div class="your-token">
-                        <div class="your-token-number" id="yourTokenNumber">52</div>
-                        <div class="queue-info" id="queueInfo">7 more patients to go</div>
-                    </div>
                 </div>
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon">🔔</div>
-                        <div class="card-title" data-translate-key="alertsTitle">SMS Alerts</div>
-                    </div>
-                    <div class="sms-toggle">
-                        <div>
-                            <div style="font-weight: 600; margin-bottom: 5px;" data-translate-key="smsStatusText">SMS Notifications</div>
-                            <div style="color: #6b7280; font-size: 0.9rem;" data-translate-key="smsDescription">Get notified when your turn approaches</div>
-                        </div>
-                        <div class="toggle-switch active" onclick="toggleSMS()">
-                            <div class="toggle-slider"></div>
-                        </div>
-                    </div>
+                <div class="health-tip">
+                    <h3 data-translate-key="healthTipTitle">💡 Health Tip of the Day</h3>
+                    <p id="healthTipText" data-translate-key="healthTipText">Stay hydrated by drinking at least 8 glasses of water daily.</p>
+                </div>
+                <div class="action-buttons">
+                    <a href="RegisterToken.html" class="btn btn-primary" data-translate-key="registerBtn">Register New Token</a>
+                    <button class="btn btn-secondary" onclick="manageToken()" data-translate-key="manageBtn">Manage Token</button>
                 </div>
             </div>
-            <div class="health-tip">
-                <h3 data-translate-key="healthTipTitle">💡 Health Tip of the Day</h3>
-                <p id="healthTipText" data-translate-key="healthTipText">Stay hydrated by drinking at least 8 glasses of water daily.</p>
-            </div>
-            <div class="action-buttons">
-                <a href="RegisterToken.html" class="btn btn-primary" data-translate-key="registerBtn">Register New Token</a>
-                <button class="btn btn-secondary" onclick="manageToken()" data-translate-key="manageBtn">Manage Token</button>
-            </div>
-        </div>
+        </main>
     </div>
+
     <div class="notification" id="notification">
         <span id="notificationText">SMS alerts enabled successfully!</span>
     </div>

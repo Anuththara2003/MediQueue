@@ -4,6 +4,7 @@ import documents.aad.javaee.test_project.mediqueue.dto.ApiResponse;
 import documents.aad.javaee.test_project.mediqueue.dto.AuthDto;
 import documents.aad.javaee.test_project.mediqueue.dto.AuthResponseDto;
 import documents.aad.javaee.test_project.mediqueue.dto.RegisterDto;
+import documents.aad.javaee.test_project.mediqueue.entity.Role;
 import documents.aad.javaee.test_project.mediqueue.entity.User;
 import documents.aad.javaee.test_project.mediqueue.repostry.UserRepository;
 import documents.aad.javaee.test_project.mediqueue.service.AuthService;
@@ -33,7 +34,7 @@ public class AuthServiceImpl implements AuthService {
                 .username(registerDto.getUsername())
                 .email(registerDto.getEmail())
                 .password(passwordEncoder.encode(registerDto.getPassword()))
-                .role(registerDto.getRole())
+                .role(Role.valueOf(registerDto.getRole()))
                 .firstName(registerDto.getFirstName())
                 .lastName(registerDto.getLastName())
                 .contactNumber(registerDto.getContactNumber())
