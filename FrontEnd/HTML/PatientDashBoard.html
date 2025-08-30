@@ -4,9 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Dashboard</title>
+    <!-- Dashboard CSS -->
     <link rel="stylesheet" href="/StyleSheet/PatientDashBoard.css">
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Profile Modal CSS -->
     <link rel="stylesheet" href="/StyleSheet/Profile.css"> 
+    <!-- Manage Token Modal CSS -->
+    <link rel="stylesheet" href="/StyleSheet/ManageToken.css">
+
 </head>
 <body>
     <div class="dashboard-container">
@@ -29,18 +35,14 @@
                 <p>Patient ID: 78542</p>
             </div>
 
-            <!-- Navigation Links - UPDATED -->
+            <!-- Navigation Links -->
             <nav class="sidebar-nav">
                 <ul>
-                    <!-- Dashboard යනු මෙම පිටුවම නිසා active class එක සහ href="#" යොදා ඇත -->
                     <li class="active"><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                    <!-- අනෙකුත් පිටු සඳහා සැබෑ file path යොදා ඇත -->
                     <li><a href="Appointments.html"><i class="fas fa-calendar-check"></i> My Appointments</a></li>
                     <li><a href="MedicalRecords.html"><i class="fas fa-file-medical"></i> Medical Records</a></li>
                     <li><a href="Messages.html"><i class="fas fa-envelope"></i> Messages</a></li>
-                   <li id="profile-modal-trigger"><a href="#"><i class="fas fa-user"></i> Profile</a></li>
-                    <li><a href="Profile.html"><i class="fas fa-cog"></i> Settings</a></li>
-                    
+                    <li id="profile-modal-trigger"><a href="#"><i class="fas fa-user"></i> Profile</a></li>
                 </ul>
             </nav>
 
@@ -63,9 +65,8 @@
                 </div>
             </header>
             
-            <!-- ඔබගේ පැරණි HTML එකේ තිබූ සියලුම cards මෙතැනට දමන්න -->
+            <!-- Dashboard Cards -->
             <div class="content-area">
-                <!-- All your cards and other content goes here... -->
                 <div class="dashboard-grid">
                     <div class="card">
                         <div class="card-header">
@@ -138,104 +139,107 @@
                 </div>
                 <div class="action-buttons">
                     <a href="RegisterToken.html" class="btn btn-primary" data-translate-key="registerBtn">Register New Token</a>
-                    <button class="btn btn-secondary" onclick="manageToken()" data-translate-key="manageBtn">Manage Token</button>
+                    <button class="btn btn-secondary" id="manage-token-btn" data-translate-key="manageBtn">Manage Token</button>
                 </div>
             </div>
         </main>
     </div>
 
+    <!-- Notification Element -->
     <div class="notification" id="notification">
         <span id="notificationText">SMS alerts enabled successfully!</span>
     </div>
-    <!-- SCRIPT TAGS (AT THE END OF BODY) -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="../JS/translation.js" defer></script>
-    <script src="../JS/PatientDashBoard.js" defer></script>
-
-
-
-
-
 
     <!-- ========================================================== -->
-<!-- === අලුතින් එකතු කළ යුතු PROFILE MODAL HTML කේතය === -->
-<!-- ========================================================== -->
-<div class="modal-overlay" id="profileModal">
-    <div class="modal-content">
-        <header class="modal-header">
-            <h2>Profile & Settings</h2>
-            <button class="modal-close">&times;</button>
-        </header>
-        
-        <div class="modal-body">
-            <div class="modal-tabs">
-                <button class="tab-link active" data-target="#tab-info">
-                    <i class="fas fa-user-edit"></i> Personal Info
-                </button>
-                <button class="tab-link" data-target="#tab-security">
-                    <i class="fas fa-shield-alt"></i> Security
-                </button>
-                <button class="tab-link" data-target="#tab-notifications">
-                    <i class="fas fa-bell"></i> Notifications
-                </button>
-            </div>
-
-            <!-- Tab Panes -->
-            <div class="tab-content">
-                <!-- Personal Info Tab -->
-                <div id="tab-info" class="tab-pane active">
-                    <div class="profile-picture-section">
-                        <img src="https://i.pravatar.cc/150?u=kamal" alt="Profile Picture" id="profilePicPreview">
-                        <label for="profileUploadInput" class="upload-btn">
-                            <i class="fas fa-camera"></i> Change Photo
-                        </label>
-                        <input type="file" id="profileUploadInput" accept="image/*" style="display: none;">
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="fullName">Full Name</label>
-                            <input type="text" id="fullName" value="Kamal Perera">
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email Address</label>
-                            <input type="email" id="email" value="kamal.p@email.com">
-                        </div>
-                    </div>
-                    <button class="btn btn-primary btn-full" id="save-info-btn">Save Changes</button>
+    <!-- PROFILE MODAL HTML -->
+    <!-- ========================================================== -->
+    <div class="modal-overlay" id="profileModal">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h2>Profile & Settings</h2>
+                <button class="modal-close">&times;</button>
+            </header>
+            <div class="modal-body">
+                <div class="modal-tabs">
+                    <button class="tab-link active" data-target="#tab-info"><i class="fas fa-user-edit"></i> Personal Info</button>
+                    <button class="tab-link" data-target="#tab-security"><i class="fas fa-shield-alt"></i> Security</button>
+                    <button class="tab-link" data-target="#tab-notifications"><i class="fas fa-bell"></i> Notifications</button>
                 </div>
-
-                <!-- Security Tab -->
-                <div id="tab-security" class="tab-pane">
-                    <h4>Change Password</h4>
-                    <div class="form-group">
-                        <label for="currentPassword">Current Password</label>
-                        <input type="password" id="currentPassword" placeholder="Enter current password">
+                <div class="tab-content">
+                    <div id="tab-info" class="tab-pane active">
+                        <div class="profile-picture-section">
+                            <img src="https://i.pravatar.cc/150?u=kamal" alt="Profile Picture" id="profilePicPreview">
+                            <label for="profileUploadInput" class="upload-btn"><i class="fas fa-camera"></i> Change Photo</label>
+                            <input type="file" id="profileUploadInput" accept="image/*" style="display: none;">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label for="fullName">Full Name</label><input type="text" id="fullName" value="Kamal Perera"></div>
+                            <div class="form-group"><label for="email">Email Address</label><input type="email" id="email" value="kamal.p@email.com"></div>
+                        </div>
+                        <button class="btn btn-primary btn-full" id="save-info-btn">Save Changes</button>
                     </div>
-                    <div class="form-group">
-                        <label for="newPassword">New Password</label>
-                        <input type="password" id="newPassword" placeholder="Enter new password">
+                    <div id="tab-security" class="tab-pane">
+                        <h4>Change Password</h4>
+                        <div class="form-group"><label for="currentPassword">Current Password</label><input type="password" id="currentPassword" placeholder="Enter current password"></div>
+                        <div class="form-group"><label for="newPassword">New Password</label><input type="password" id="newPassword" placeholder="Enter new password"></div>
+                        <button class="btn btn-primary btn-full" id="change-password-btn">Update Password</button>
                     </div>
-                    <button class="btn btn-primary btn-full" id="change-password-btn">Update Password</button>
-                </div>
-
-                <!-- Notifications Tab -->
-                <div id="tab-notifications" class="tab-pane">
-                    <h4>Notification Preferences</h4>
-                    <div class="notification-item">
-                        <i class="fas fa-envelope"></i>
-                        <div><h4>Email Notifications</h4><p>Appointment and update alerts.</p></div>
-                        <div class="toggle-switch active"><div class="toggle-slider"></div></div>
-                    </div>
-                    <div class="notification-item">
-                        <i class="fas fa-comment-sms"></i>
-                        <div><h4>SMS Alerts</h4><p>Token updates and critical alerts.</p></div>
-                        <div class="toggle-switch active"><div class="toggle-slider"></div></div>
+                    <div id="tab-notifications" class="tab-pane">
+                        <h4>Notification Preferences</h4>
+                        <div class="notification-item">
+                            <i class="fas fa-envelope"></i>
+                            <div><h4>Email Notifications</h4><p>Appointment and update alerts.</p></div>
+                            <div class="toggle-switch active"><div class="toggle-slider"></div></div>
+                        </div>
+                        <div class="notification-item">
+                            <i class="fas fa-comment-sms"></i>
+                            <div><h4>SMS Alerts</h4><p>Token updates and critical alerts.</p></div>
+                            <div class="toggle-switch active"><div class="toggle-slider"></div></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<!-- === MODAL HTML අවසානය === -->
+
+    <!-- ========================================================== -->
+    <!-- MANAGE TOKEN MODAL HTML -->
+    <!-- ========================================================== -->
+    <div class="modal-overlay" id="manageTokenModal">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h2>Manage Your Token</h2>
+                <button class="modal-close">&times;</button>
+            </header>
+            <div class="modal-body">
+                <div class="token-info-grid">
+                    <div class="token-details">
+                        <h4>Nawaloka Hospital - Cardiology</h4>
+                        <p>Monday, 28 Aug 2025</p>
+                        <div class="token-number-display">
+                            <span>Your Token</span>
+                            <h1>52</h1>
+                        </div>
+                        <div class="status-display">
+                            <span class="status-dot"></span> Active
+                        </div>
+                    </div>
+                    <div class="qr-code-section">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=Token-52-Nawaloka-Cardiology" alt="Token QR Code">
+                        <p>Scan this QR code at the clinic counter.</p>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" id="get-help-btn"><i class="fas fa-question-circle"></i> Get Help</button>
+                    <button class="btn btn-danger" id="cancel-token-btn"><i class="fas fa-times-circle"></i> Cancel Token</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT TAGS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="../JS/translation.js" defer></script>
+    <script src="../JS/PatientDashBoard.js" defer></script>
 </body>
 </html>

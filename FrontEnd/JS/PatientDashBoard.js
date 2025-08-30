@@ -98,10 +98,7 @@ function showNotification(message) {
     }, 3000);
 }
 
-function manageToken() {
-    showNotification("Opening token management options...");
-}
-
+// manageToken() function එක තවදුරටත් අවශ්‍ය නොවේ. එය ඉවත් කරන ලදී.
 
 $(document).ready(function() {
     // --- පවතින DASHBOARD ක්‍රියාකාරීත්වය ---
@@ -155,7 +152,7 @@ $(document).ready(function() {
             const reader = new FileReader();
             reader.onload = function(e) {
                 $('#profilePic').attr('src', e.target.result);
-                $('#profilePicPreview').attr('src', e.target.result); // Modal එකේ පින්තූරයත් update කරයි
+                $('#profilePicPreview').attr('src', e.target.result); 
             }
             reader.readAsDataURL(file);
         }
@@ -168,31 +165,24 @@ $(document).ready(function() {
         console.log("Logout button clicked.");
     });
 
-    // ==========================================================
-    // === අලුතින් එකතු කළ PROFILE MODAL SCRIPT ===
-    // ==========================================================
+    // --- PROFILE MODAL SCRIPT ---
     const profileModal = $('#profileModal');
-
-    // --- Modal විවෘත කිරීම ---
-    // පැරණි navigation ක්‍රමය වෙනුවට modal එක trigger කිරීම
+    
     $('#profile-modal-trigger').on('click', function(e) {
         e.preventDefault();
         profileModal.addClass('show');
     });
 
-    // --- Modal වැසීම (Close button එකෙන්) ---
-    $('.modal-close').on('click', function() {
+    $('#profileModal .modal-close').on('click', function() {
         profileModal.removeClass('show');
     });
 
-    // --- Modal වැසීම (Overlay එක click කිරීමෙන්) ---
     profileModal.on('click', function(e) {
         if ($(e.target).is(profileModal)) {
             profileModal.removeClass('show');
         }
     });
 
-    // --- Tab අතර මාරු වීම ---
     $('.tab-link').on('click', function() {
         const target = $(this).data('target');
         $('.tab-link').removeClass('active');
@@ -201,21 +191,19 @@ $(document).ready(function() {
         $(target).addClass('active');
     });
 
-    // --- Modal එක තුළ ඇති Profile Picture Upload ක්‍රියාව ---
     $('#profileUploadInput').on('change', function(event) {
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                $('#profilePicPreview').attr('src', e.target.result); // Modal එකේ image එක update කිරීම
-                $('#profilePic').attr('src', e.target.result); // Sidebar එකේ image එකත් update කිරීම
+                $('#profilePicPreview').attr('src', e.target.result); 
+                $('#profilePic').attr('src', e.target.result);
                 showNotification('Profile picture updated!');
             }
             reader.readAsDataURL(file);
         }
     });
-
-    // --- Modal එක තුළ ඇති Save/Update buttons ---
+    
     $('#save-info-btn').on('click', function() {
         showNotification('Personal information saved!');
     });
@@ -224,8 +212,42 @@ $(document).ready(function() {
         showNotification('Password updated successfully!');
     });
 
-    // --- Modal එක තුළ ඇති Notification Toggles ---
     $('#profileModal .toggle-switch').on('click', function() {
         $(this).toggleClass('active');
+    });
+
+    // ==========================================================
+    // === අලුතින් එකතු කළ MANAGE TOKEN MODAL SCRIPT ===
+    // ==========================================================
+    const manageTokenModal = $('#manageTokenModal');
+
+    // --- Modal විවෘත කිරීම ---
+    $('#manage-token-btn').on('click', function() {
+        manageTokenModal.addClass('show');
+    });
+
+    // --- Modal වැසීම (Close button එකෙන්) ---
+    $('#manageTokenModal .modal-close').on('click', function() {
+        manageTokenModal.removeClass('show');
+    });
+
+    // --- Modal වැසීම (Overlay එක click කිරීමෙන්) ---
+    manageTokenModal.on('click', function(e) {
+        if ($(e.target).is(manageTokenModal)) {
+            manageTokenModal.removeClass('show');
+        }
+    });
+
+    // --- Token Cancel කිරීමේ ක්‍රියාවලිය ---
+    $('#cancel-token-btn').on('click', function() {
+        if (confirm("Are you sure you want to cancel this token? This action cannot be undone.")) {
+            manageTokenModal.removeClass('show');
+            showNotification("Your token has been successfully cancelled."); 
+        }
+    });
+
+    // --- Get Help Button ක්‍රියාවලිය ---
+    $('#get-help-btn').on('click', function() {
+        showNotification("Contacting support...");
     });
 });
