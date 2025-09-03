@@ -1,0 +1,157 @@
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #dee2e6
+}
+
+.section-header .search-bar {
+    width: 300px;
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #ccc
+}
+
+/* =================================== */
+/* == NEW STYLES FOR ADDED SECTIONS == */
+/* =================================== */
+
+/* Reports Section */
+.date-range-picker {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.date-range-picker label {
+    font-weight: 500;
+}
+
+.date-input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* SMS & System Health Section */
+.config-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 30px;
+}
+
+.form-section .form-group {
+    margin-bottom: 20px;
+}
+
+.form-section label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+}
+
+.form-section input,
+.form-section textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.form-section input:disabled {
+    background-color: #f2f2f2;
+    cursor: not-allowed;
+}
+
+.form-section textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.status-badge.status-failed {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+/* System Health Section */
+.status-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.status-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 500;
+}
+
+.status-dot {
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.status-dot.operational {
+    background-color: #22c55e;
+}
+
+/* Green */
+.status-dot.outage {
+    background-color: #ef4444;
+}
+
+/* Red */
+.status-text-ok {
+    color: #22c55e;
+    font-weight: 600;
+}
+    
+.status-text-fail {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+.performance-metric {
+    margin-bottom: 20px;
+}
+
+.performance-metric span {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.progress-bar-container {
+    width: 100%;
+    background-color: #e9ecef;
+    border-radius: 5px;
+}
+
+.progress-bar {
+    background-color: #3498db;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 0.8rem;
+}
+
+.log-entry {
+    padding: 8px;
+    border-bottom: 1px solid #f2f2f2;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.log-entry:last-child {
+    border-bottom: none;
+}
