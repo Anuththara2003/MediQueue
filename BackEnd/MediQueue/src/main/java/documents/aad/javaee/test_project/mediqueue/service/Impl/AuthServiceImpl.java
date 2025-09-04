@@ -12,8 +12,6 @@ import documents.aad.javaee.test_project.mediqueue.service.AuthService;
 import documents.aad.javaee.test_project.mediqueue.utill.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -48,21 +46,14 @@ public class AuthServiceImpl implements AuthService {
         return userRepository.save(user);
     }
 
+
     @Override
-    public AuthResponseDto authenticateUser(AuthDto authDto) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        authDto.getUsername(),
-                        authDto.getPassword()
-                )
-        );
+    public AuthResponseDto generateTokenForUser(String username) {
 
-        User user = userRepository.findByUsername(authDto.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + authDto.getUsername()));
+        var user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found after successful authentication"));
 
-
-        String token = jwtUtil.generateToken(user.getUsername());
-
+        String token = jwtUtil.generateToken(user);
 
         return AuthResponseDto.builder()
                 .accessToken(token)

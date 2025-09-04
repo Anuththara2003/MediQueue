@@ -8,6 +8,5 @@ import java.util.Optional;
 
 public interface AuthService {
     Object registerUser(RegisterDto registerDto);
-
-    AuthResponseDto authenticateUser(AuthDto authDto);
+    AuthResponseDto generateTokenForUser(String username);
 }

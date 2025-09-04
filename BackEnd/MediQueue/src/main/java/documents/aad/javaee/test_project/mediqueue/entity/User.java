@@ -4,18 +4,18 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-// === අලුතින් Import කරන්න ===
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collection; // === අලුතින් Import කරන්න ===
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List; // === අලුතින් Import කරන්න ===
+import java.util.List;
 import java.util.Set;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -23,7 +23,7 @@ import java.util.Set;
 @Entity
 @Builder
 @Table(name = "user")
-// === UserDetails interface එක Implement කරන්න ===
+
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,7 +58,9 @@ public class User implements UserDetails {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    // Relationships
+    private String avatarUrl;
+
+
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<MedicalRecord> medicalRecords = new HashSet<>();
 
@@ -66,51 +68,41 @@ public class User implements UserDetails {
     private Set<Token> tokens = new HashSet<>();
 
 
-    // =======================================================
-    // === UserDetails Interface එකට අදාළ Methods එකතු කිරීම ===
-    // =======================================================
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // පරිශීලකයාගේ role එක "ROLE_" උපසර්ගය සමඟ Security වලට ලබා දීම
-        // (උදා: "ROLE_ADMIN", "ROLE_PATIENT")
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override
     public String getPassword() {
-        // Password field එක return කිරීම
-        return this.password;
+
+        return password;
     }
 
     @Override
     public String getUsername() {
-        // Spring Security, "username" ලෙස සලකන්නේ කුමක්දැයි මෙතනින් ලබා දීම.
-        // අපි Login වීමට username field එක භාවිතා කරන නිසා, එය return කරන්න.
         return this.username;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        // ගිණුම කල් ඉකුත් වී නැති බවට (Default: true)
-        return true;
+        return true; // поки що true
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        // ගිණුම lock කර නැති බවට (Default: true)
-        return true;
+        return true; // поки що true
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        // Credentials කල් ඉකුත් වී නැති බවට (Default: true)
-        return true;
+        return true; // поки що true
     }
 
     @Override
     public boolean isEnabled() {
-        // ගිණුම සක්‍රීය බවට (Default: true)
-        return true;
+        return true; // поки що true
     }
 }

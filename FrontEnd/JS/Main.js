@@ -193,51 +193,79 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
         }
+        // Main.js file inside the DOMContentLoaded listener
+
+              // Main.js file inside the DOMContentLoaded listener
+
+                // Main.js file inside the DOMContentLoaded listener
 
         if(profileForm) {
             profileForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
+
+                // 1. JWT Token එක localStorage එකෙන් ලබා ගැනීම
+                const JWT_TOKEN = localStorage.getItem('jwtToken');
+                if (!JWT_TOKEN) {
+                    alert('Authentication token not found. Please log in again.');
+                    return;
+                }
+
                 const formData = new FormData();
-                const profileData = {
-                    firstName: document.getElementById('profileFirstName').value,
-                    lastName: document.getElementById('profileLastName').value,
-                    email: document.getElementById('profileEmail').value,
-                    newPassword: document.getElementById('profilePassword').value
-                };
-                formData.append('profileData', new Blob([JSON.stringify(profileData)], { type: "application/json" }));
+
+                // 2. DTO එකේ fields ටික FormData එකට එකතු කිරීම
+                formData.append('firstName', document.getElementById('profileFirstName').value);
+                formData.append('lastName', document.getElementById('profileLastName').value);
+                formData.append('email', document.getElementById('profileEmail').value);
+                formData.append('newPassword', document.getElementById('profilePassword').value);
+
+                // 3. Image file එක FormData එකට එකතු කිරීම (තිබුනොත්)
+                const avatarUploadInput = document.getElementById('avatarUpload');
                 const imageFile = avatarUploadInput.files[0];
                 if (imageFile) {
                     formData.append('profileImage', imageFile);
                 }
+
                 try {
+                    // 4. fetch call එක, නිවැරදි Headers සමග යැවීම
                     const response = await fetch(`${API_BASE_URL}/profile`, {
                         method: 'PUT',
-                        headers: { 'Authorization': `Bearer ${JWT_TOKEN}` },
+                        headers: {
+                            // Content-Type එක මෙතන දාන්න එපා. FormData යවනකොට browser එක ඒක දාගන්නවා.
+                            // === මෙන්න වැදගත්ම පේළිය ===
+                            'Authorization': `Bearer ${JWT_TOKEN}` 
+                        },
                         body: formData
                     });
-                    if (!response.ok) throw new Error('Failed to update profile.');
-                    const result = await response.text();
-                    alert(result);
-                    profileModal.classList.remove('show');
-                    document.getElementById('headerAdminName').textContent = `${profileData.firstName} ${profileData.lastName}`;
-                    if(imageFile) {
-                        document.getElementById('headerAdminAvatar').src = profileModalAvatar.src;
+
+                    // 5. Backend එකෙන් error එකක් ආවොත්, ඒක handle කිරීම
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        // Status: 403, Message: ... විදිහට console එකේ error එක පෙන්වයි
+                        throw new Error(`Failed to update profile. Status: ${response.status}, Message: ${errorText}`);
                     }
+                    
+                    const result = await response.text();
+                    alert(result); // "Profile updated successfully!"
+                    
+                    // Modal එක close කරලා, UI එක update කිරීම
+                    const profileModal = document.getElementById('profileModal');
+                    if(profileModal) profileModal.classList.remove('show');
+                    
+                    const firstName = document.getElementById('profileFirstName').value;
+                    const lastName = document.getElementById('profileLastName').value;
+                    document.getElementById('headerAdminName').textContent = `${firstName} ${lastName}`;
+                    if(imageFile) {
+                         const profileModalAvatar = document.getElementById('profileModalAvatar');
+                         document.getElementById('headerAdminAvatar').src = profileModalAvatar.src;
+                    }
+
                 } catch (error) {
+                    // මෙතන තමයි ඔයා කලින් දැක්ක error එක console එකේ print වෙන්නේ
                     console.error('Error updating profile:', error);
-                    alert('Error: Could not update profile.');
+                    alert('Error: Could not update profile. Check console for details.');
                 }
             });
         }
-    }
-
-    // Logout Function
-    window.logout = () => { 
-        if(confirm('Are you sure you want to logout?')) {
-            localStorage.removeItem('jwtToken');
-            window.location.href = '../HTML/login.html';
-        }
-    }
     
     // =================================================================
     // LOCATIONIQ SEARCH & UPDATED HOSPITAL MODAL LOGIC
@@ -364,4 +392,5 @@ document.addEventListener('DOMContentLoaded', function () {
     
     // Initial load for the default view
     showSection('overview');
+}
 });

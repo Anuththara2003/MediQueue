@@ -1,12 +1,18 @@
 package documents.aad.javaee.test_project.mediqueue.controller;
 
+import documents.aad.javaee.test_project.mediqueue.dto.AdminProfileDto;
 import documents.aad.javaee.test_project.mediqueue.dto.HospitalDto;
 import documents.aad.javaee.test_project.mediqueue.entity.Hospital;
+import documents.aad.javaee.test_project.mediqueue.service.AdminService;
 import documents.aad.javaee.test_project.mediqueue.service.HospitalService; // Interface එක import කරන්න
+import io.jsonwebtoken.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,23 +24,23 @@ import java.util.stream.Collectors;
 public class AdminController {
 
     @Autowired
+    private AdminService adminService;
+
+    @Autowired
     private HospitalService hospitalService;
     // GET /api/v1/admin/hospitals
     @GetMapping("/hospitals")
     public ResponseEntity<List<HospitalDto>> getAllHospitals() {
         List<Hospital> hospitalList = hospitalService.getAllHospitals();
 
-        // 2. Java Stream API එක භාවිතා කර, එකින් එක Hospital entity, HospitalDto බවට පත් කිරීම
-        List<HospitalDto> hospitalDtoList = hospitalList.stream()
-                .map(this::convertToDto) // සෑම hospital එකක් සඳහාම convertToDto method එක call කරයි
-                .collect(Collectors.toList());
 
-        // 3. DTO ලැයිස්තුව front-end එකට යැවීම
+        List<HospitalDto> hospitalDtoList = hospitalList.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(hospitalDtoList);
     }
 
-    // === මෙම convertToDto method එක Controller එකටත් එකතු කරන්න ===
-// (Service එකේ ඇති method එකමයි, නමුත් controller එක තුළත් තිබීම අවශ්‍යයි)
+
     private HospitalDto convertToDto(Hospital hospital) {
         HospitalDto dto = new HospitalDto();
         dto.setId(hospital.getId().intValue());
@@ -69,5 +75,27 @@ public class AdminController {
     public ResponseEntity<Void> deleteHospital(@PathVariable Integer id) {
         hospitalService.deleteHospital(id);
         return ResponseEntity.noContent().build();
+    }
+
+
+
+
+    @PutMapping("/profile")
+    public ResponseEntity<String> updateProfile(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @ModelAttribute AdminProfileDto profileDto, // <-- @RequestPart වෙනුවට @ModelAttribute
+            @RequestParam(value = "profileImage", required = false) MultipartFile profileImage // <-- @RequestPart වෙනුවට @RequestParam
+    ) {
+        String username = userDetails.getUsername(); // AdminService එකට username එක අවශ්‍ය නිසා
+
+        try {
+            // අපි Service එකට username එක යවනවා (Service එකේ logic එකට අනුව)
+            adminService.updateProfile(username, profileDto, profileImage);
+            return ResponseEntity.ok("Profile updated successfully!");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save image: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error updating profile: " + e.getMessage());
+        }
     }
 }

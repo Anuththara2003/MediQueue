@@ -151,3 +151,47 @@
     cursor: not-allowed;
     opacity: 0.7;
 }
+
+
+/* ==============================================
+ * PROFILE MODAL SPECIFIC STYLES
+ * (මෙම කොටස ගොනුවේ අවසානයටම එකතු කරන්න)
+ * ============================================== */
+
+.profile-picture-section {
+    display: flex;
+    flex-direction: column; /* අංග උඩ සිට පහළට සකස් කිරීම */
+    align-items: center;    /* මැදට සකස් කිරීම */
+    margin-bottom: 25px;    /* පහළින් ඇති form fields වලට ඉඩ තැබීම */
+}
+
+/* Profile පින්තූරය සඳහා style එක */
+#profileModalAvatar {
+    width: 120px;       /* පළල 120px කට සීමා කිරීම */
+    height: 120px;      /* උස 120px කට සීමා කිරීම */
+    border-radius: 50%; /* රවුමක් ලෙස පෙන්වීමට */
+    object-fit: cover;  /* පින්තූරය crop වී, box එක සම්පූර්ණයෙන්ම fill වීම */
+    border: 4px solid #f0f2f5; /* මඳක් විශාල, ලා පැහැති border එකක් */
+    margin-bottom: 15px; /* "Change Photo" button එකට ඉඩ තැබීම */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* කුඩා සෙවනැල්ලක් */
+}
+
+/* "Change Photo" button එක සඳහා style එක */
+.upload-btn {
+    background-color: #f0f2f5;
+    color: #34495e;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px; /* Icon එක සහ text එක අතර ඉඩක් */
+    transition: background-color 0.2s ease;
+    border: none;
+}
+
+.upload-btn:hover {
+    background-color: #e3e6f0;
+}
