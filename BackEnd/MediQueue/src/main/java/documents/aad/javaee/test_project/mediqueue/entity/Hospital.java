@@ -79,6 +79,9 @@ public class Hospital {
     @Column(nullable = false)
     private String name;
 
+    @Column(name = "clinic_count")
+    private Integer clinicCount;
+
     @Column(name = "city")
     private String location;
     private String address;

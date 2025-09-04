@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/admin")
@@ -21,7 +22,27 @@ public class AdminController {
     // GET /api/v1/admin/hospitals
     @GetMapping("/hospitals")
     public ResponseEntity<List<HospitalDto>> getAllHospitals() {
-        return ResponseEntity.ok(hospitalService.getAllHospitals());
+        List<Hospital> hospitalList = hospitalService.getAllHospitals();
+
+        // 2. Java Stream API එක භාවිතා කර, එකින් එක Hospital entity, HospitalDto බවට පත් කිරීම
+        List<HospitalDto> hospitalDtoList = hospitalList.stream()
+                .map(this::convertToDto) // සෑම hospital එකක් සඳහාම convertToDto method එක call කරයි
+                .collect(Collectors.toList());
+
+        // 3. DTO ලැයිස්තුව front-end එකට යැවීම
+        return ResponseEntity.ok(hospitalDtoList);
+    }
+
+    // === මෙම convertToDto method එක Controller එකටත් එකතු කරන්න ===
+// (Service එකේ ඇති method එකමයි, නමුත් controller එක තුළත් තිබීම අවශ්‍යයි)
+    private HospitalDto convertToDto(Hospital hospital) {
+        HospitalDto dto = new HospitalDto();
+        dto.setId(hospital.getId().intValue());
+        dto.setName(hospital.getName());
+        dto.setLocation(hospital.getLocation());
+        dto.setStatus(hospital.getStatus());
+        dto.setClinicCount(hospital.getClinicCount());
+        return dto;
     }
 
     @GetMapping("/hospitals/{id}")

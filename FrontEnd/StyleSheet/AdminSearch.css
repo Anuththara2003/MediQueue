@@ -44,3 +44,13 @@
     font-size: 0.9rem;
     color: #343a40; /* Dark text */
 }
+/* AdminSearch.css ගොනුවේ result-item එකට අදාළව මෙම style එකතු කරන්න */
+.result-item span strong {
+    color: #34495e; /* Main text color */
+    font-weight: 500;
+}
+.result-item span small {
+    color: #7f8c8d; /* Lighter text color */
+    font-size: 0.8rem;
+    display: block; /* To ensure it goes to the next line */
+}

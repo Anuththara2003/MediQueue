@@ -5,14 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-       <link rel="icon" href="../HTML/Images/icon" type="image/png"> 
+    <link rel="icon" href="../HTML/Images/icon.png" type="image/png"> <!-- ඔබගේ icon path එක නිවැරදිව යොදන්න -->
 
     <!-- CSS Links -->
     <link rel="stylesheet" href="../StyleSheet/AdminDashBoard.css">
     <link rel="stylesheet" href="../StyleSheet/AdminSection.css">
     <link rel="stylesheet" href="../StyleSheet/AdminModel.css">
-    <!-- === අලුතින් එකතු කළ Search Bar CSS === -->
-    <link rel="stylesheet" href="../StyleSheet/AdminSerch.css">
+    <!-- නිවැරදි කරන ලද පේළිය -->
+<link rel="stylesheet" href="../StyleSheet/AdminSearch.css">
 
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -125,17 +125,14 @@
 
             <!-- ========= 2. Hospitals & Clinics Section ========= -->
             <div class="dashboard-section" id="hospitals">
-                <!-- === යාවත්කාලීන කළ Search Bar කොටස === -->
                 <div class="section-header">
                     <div class="search-container">
-                        <input type="text" placeholder="Search Hospitals..." class="search-bar"
+                        <input type="text" placeholder="Search Hospitals in Table..." class="search-bar"
                             id="hospitalSearchInput">
-                        <div id="hospitalSearchResults" class="search-results"></div>
                     </div>
                     <button class="btn btn-primary" onclick="openHospitalModal('add')"><i class="fas fa-plus"></i> Add
                         New Hospital</button>
                 </div>
-                <!-- ===================================== -->
                 <div class="content-card">
                     <div class="table-container">
                         <table class="data-table">
@@ -148,18 +145,7 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Colombo General Hospital</td>
-                                    <td>Colombo</td>
-                                    <td>8</td>
-                                    <td><span class="status-badge status-active">Active</span></td>
-                                    <td class="action-buttons"><button class="btn-icon btn-warning"
-                                            onclick="openHospitalModal('edit', 1)"><i
-                                                class="fas fa-pen"></i></button><button class="btn-icon btn-danger"
-                                            onclick="deleteHospital(1)"><i class="fas fa-trash"></i></button></td>
-                                </tr>
-                            </tbody>
+                            <tbody><!-- Data will be loaded by JS --></tbody>
                         </table>
                     </div>
                 </div>
@@ -171,8 +157,8 @@
                     <div class="date-range-picker"><label for="dateRangeStart"><i class="fas fa-calendar-alt"></i> Date
                             Range:</label><input type="date" id="dateRangeStart"
                             class="date-input"><span>to</span><input type="date" id="dateRangeEnd"
-                            class="date-input"><button class="btn btn-secondary">Apply</button></div><button
-                        class="btn btn-primary"><i class="fas fa-download"></i> Export Report (PDF)</button>
+                            class="date-input"><button class="btn btn-secondary">Apply</button></div>
+                    <button class="btn btn-primary"><i class="fas fa-download"></i> Export Report (PDF)</button>
                 </div>
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -345,26 +331,58 @@
                         class="fas fa-save"></i> Save Changes</button></div>
         </div>
     </div>
+
+    <!-- === යාවත්කාලීන කරන ලද Hospital Modal === -->
     <div id="hospitalModal" class="modal-backdrop">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modalTitle">Add New Hospital</h2><span class="modal-close-btn">&times;</span>
+                <h2 id="modalTitle">Add New Hospital</h2>
+                <span class="modal-close-btn">&times;</span>
             </div>
             <div class="modal-body">
-                <form id="hospitalForm">
-                    <div class="form-group"><label for="hospitalName">Hospital Name</label><input type="text"
-                            id="hospitalName" required></div>
-                    <div class="form-group"><label for="hospitalLocation">Location</label><input type="text"
-                            id="hospitalLocation" required></div>
-                    <div class="form-group"><label for="hospitalStatus">Status</label><select id="hospitalStatus"
-                            required>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                        </select></div>
-                </form>
+                <!-- 1. Search Step -->
+               <!-- === යාවත්කාලීන කරන ලද Search Step === -->
+<div id="hospitalSearchStep">
+    <p class="modal-instruction">Start by searching for a hospital to add.</p>
+    <div class="modal-search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search for hospitals in Sri Lanka..." class="search-bar" id="modalHospitalSearchInput">
+    </div>
+    <div id="modalHospitalSearchResults" class="search-results"></div>
+</div>
+
+                <!-- 2. Details Step (මුලින්ම සැඟවී ඇත) -->
+                <div id="hospitalDetailsStep" style="display: none;">
+                    <form id="hospitalForm">
+                        <div class="form-group">
+                            <label for="hospitalName">Hospital Name</label>
+                            <input type="text" id="hospitalName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="hospitalLocation">Location</label>
+                            <input type="text" id="hospitalLocation" required>
+                        </div>
+
+                        <!-- === clinicCount field එක මෙතැනට එකතු කර ඇත === -->
+                        <div class="form-group">
+                            <label for="hospitalClinics">Number of Clinics</label>
+                            <input type="number" id="hospitalClinics" required value="0" min="0">
+                        </div>
+                        <!-- ============================================= -->
+
+                        <div class="form-group">
+                            <label for="hospitalStatus">Status</label>
+                            <select id="hospitalStatus" required>
+                                <option value="active" selected>Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="modal-footer"><button type="submit" form="hospitalForm" class="btn btn-primary">Save
-                    Hospital</button></div>
+            <div class="modal-footer">
+    <button type="submit" form="hospitalForm" class="btn btn-primary" disabled>Save Hospital</button>
+</div>
         </div>
     </div>
 

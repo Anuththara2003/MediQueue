@@ -8,7 +8,7 @@ import java.util.List;
 public interface HospitalService {
 
     // සියලුම රෝහල් ලබාගැනීමට
-    List<HospitalDto> getAllHospitals();
+    List<Hospital> getAllHospitals();
 
     // අලුත් රෝහලක් එකතු කිරීමට
     HospitalDto addHospital(HospitalDto hospitalDto);

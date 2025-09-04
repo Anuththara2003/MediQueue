@@ -12,5 +12,5 @@ public class HospitalDto {
     private String name;
     private String location;
     private String status;
-    private int clinicCount; // අලුතින් එකතු කළ field එක
+    private Integer clinicCount;
 }

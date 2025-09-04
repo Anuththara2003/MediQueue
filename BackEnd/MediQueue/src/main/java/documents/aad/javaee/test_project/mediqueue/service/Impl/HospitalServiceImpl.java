@@ -8,7 +8,6 @@ import documents.aad.javaee.test_project.mediqueue.service.HospitalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class HospitalServiceImpl implements HospitalService {
@@ -24,21 +23,18 @@ public class HospitalServiceImpl implements HospitalService {
     }
 
     @Override
-    public List<HospitalDto> getAllHospitals() {
-        return hospitalRepository.findAll().stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+    public List<Hospital> getAllHospitals() {
+        return hospitalRepository.findAll();
     }
 
     @Override
     public HospitalDto addHospital(HospitalDto hospitalDto) {
         Hospital hospital = new Hospital();
+
         hospital.setName(hospitalDto.getName());
-
-
         setLocationFieldsFromDto(hospital, hospitalDto.getLocation());
-
         hospital.setStatus(hospitalDto.getStatus());
+        hospital.setClinicCount(hospital.getClinicCount());
 
         Hospital savedHospital = hospitalRepository.save(hospital);
         return convertToDto(savedHospital);
@@ -52,9 +48,9 @@ public class HospitalServiceImpl implements HospitalService {
         existingHospital.setName(hospitalDto.getName());
         existingHospital.setLocation(hospitalDto.getLocation());
         existingHospital.setStatus(hospitalDto.getStatus());
+        existingHospital.setClinicCount(hospitalDto.getClinicCount());
 
         Hospital updatedHospital = hospitalRepository.save(existingHospital);
-
         return convertToDto(updatedHospital);
     }
 
