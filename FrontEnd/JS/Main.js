@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         
         const closeBtn = hospitalModal.querySelector('.modal-close-btn');
-        closeBtn.addEventListener('click', () => hospitalModal.classList.remove('show'));
+        if(closeBtn) closeBtn.addEventListener('click', () => hospitalModal.classList.remove('show'));
         hospitalModal.addEventListener('click', (e) => {
             if (e.target === hospitalModal) hospitalModal.classList.remove('show');
         });
@@ -149,9 +149,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
                 });
-
                 if (!response.ok) throw new Error('Failed to delete hospital');
-                
                 alert(`Deleted hospital ${id}`); 
                 loadHospitals();
             } catch(error) {
@@ -161,17 +159,84 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
     
-    // ===================================
-    // 3. PROFILE MODAL & OTHER FUNCTIONS
-    // ===================================
+    // ==========================================================
+    // 3. PROFILE MODAL & OTHER FUNCTIONS (CORRECTED)
+    // ==========================================================
     
     const profileModal = document.getElementById('profileModal');
     if (profileModal) {
-        // ... (Profile modal logic) ...
+        const openTrigger = document.getElementById('adminProfileTrigger');
+        const closeBtn = profileModal.querySelector('.modal-close-btn');
+        const profileForm = document.getElementById('profileForm');
+        const avatarUploadInput = document.getElementById('avatarUpload');
+        const profileModalAvatar = document.getElementById('profileModalAvatar');
+
+        if(openTrigger) {
+            openTrigger.addEventListener('click', () => profileModal.classList.add('show'));
+        }
+        if(closeBtn) {
+            closeBtn.addEventListener('click', () => profileModal.classList.remove('show'));
+        }
+        profileModal.addEventListener('click', (e) => {
+            if (e.target === profileModal) profileModal.classList.remove('show');
+        });
+
+        if(avatarUploadInput) {
+            avatarUploadInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        profileModalAvatar.src = e.target.result;
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        if(profileForm) {
+            profileForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData();
+                const profileData = {
+                    firstName: document.getElementById('profileFirstName').value,
+                    lastName: document.getElementById('profileLastName').value,
+                    email: document.getElementById('profileEmail').value,
+                    newPassword: document.getElementById('profilePassword').value
+                };
+                formData.append('profileData', new Blob([JSON.stringify(profileData)], { type: "application/json" }));
+                const imageFile = avatarUploadInput.files[0];
+                if (imageFile) {
+                    formData.append('profileImage', imageFile);
+                }
+                try {
+                    const response = await fetch(`${API_BASE_URL}/profile`, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `Bearer ${JWT_TOKEN}` },
+                        body: formData
+                    });
+                    if (!response.ok) throw new Error('Failed to update profile.');
+                    const result = await response.text();
+                    alert(result);
+                    profileModal.classList.remove('show');
+                    document.getElementById('headerAdminName').textContent = `${profileData.firstName} ${profileData.lastName}`;
+                    if(imageFile) {
+                        document.getElementById('headerAdminAvatar').src = profileModalAvatar.src;
+                    }
+                } catch (error) {
+                    console.error('Error updating profile:', error);
+                    alert('Error: Could not update profile.');
+                }
+            });
+        }
     }
 
+    // Logout Function
     window.logout = () => { 
-        // ... (Logout logic) ...
+        if(confirm('Are you sure you want to logout?')) {
+            localStorage.removeItem('jwtToken');
+            window.location.href = '../HTML/login.html';
+        }
     }
     
     // =================================================================
