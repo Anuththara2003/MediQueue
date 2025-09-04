@@ -1,20 +1,17 @@
 $(document).ready(function() {
 
-    // =================================================================
-    // SECTION 1: UI INTERACTION HELPERS
-    // =================================================================
-
-    // Handles visual selection of roles
-    window.selectRole = function(selectedRole) {
-        // Remove 'active' class from all options
+    // ===============================================
+    // UI HELPER FUNCTIONS
+    // ===============================================
+    
+    // Role selection (already correct)
+    window.selectRole = function(role) {
         $('.role-option').removeClass('active');
-        // Add 'active' class to the clicked option
-        const selectedElement = $(`input[value='${selectedRole}']`).closest('.role-option');
-        selectedElement.addClass('active');
-        // Also check the radio button programmatically
-        $(`#${selectedRole}`).prop('checked', true);
+        $(`input[value='${role}']`).closest('.role-option').addClass('active');
+        $(`#${role}`).prop('checked', true);
     }
 
+    // --- Added missing function ---
     // Toggles password visibility
     window.togglePassword = function() {
         const passwordField = $('#password');
@@ -28,74 +25,63 @@ $(document).ready(function() {
         }
     }
 
-    // Placeholder and navigation functions
-    window.forgotPassword = () => alert('Forgot password functionality is not implemented yet.');
-    window.signInWithGoogle = () => alert('Google Sign-In is not implemented yet.');
-    window.signUp = () => window.location.href = 'SignUp.html'; // Assuming the signup page is SignUp.html
+    // --- Added missing placeholder functions ---
+    window.forgotPassword = () => alert('Forgot password functionality is not yet implemented.');
+    window.signInWithGoogle = () => alert('Google Sign-In is not yet implemented.');
+    window.signUp = () => window.location.href = 'SignUp.html';
 
-
-    // =================================================================
-    // SECTION 2: FORM VALIDATION & AJAX SUBMISSION
-    // =================================================================
-
+    // ===============================================
+    // LOGIN FORM SUBMISSION LOGIC (Corrected)
+    // ===============================================
     $('#loginForm').on('submit', function(e) {
-        e.preventDefault(); // Prevent default form submission
+        e.preventDefault(); 
 
         const loginErrorDiv = $('#loginError');
-        loginErrorDiv.hide(); // Hide previous errors
+        loginErrorDiv.hide();
 
         // 1. Collect form data
-        const username = $('#name').val().trim();
+        // This will now work because your HTML input has id="username"
+        const username = $('#username').val().trim(); 
         const password = $('#password').val();
-        const role = $('input[name="role"]:checked').val();
-
+        
         // 2. Basic Validation
-        if (!role) {
-            loginErrorDiv.text('❌ Please select your role.').show();
-            return;
-        }
         if (!username || !password) {
             loginErrorDiv.text('❌ Please enter both username and password.').show();
             return;
         }
 
-        // Create the data object to send to the server
+        // 3. Create data object for the backend
         const loginData = {
             username: username,
             password: password
-            // Note: The role is used for redirection, not sent to this specific backend endpoint
         };
 
         const submitBtn = $('.login-btn');
         const originalText = submitBtn.html();
         submitBtn.html('Signing In...').prop('disabled', true);
 
-        // 3. Perform AJAX request
+        // 4. Perform AJAX request
         $.ajax({
             type: "POST",
-            // !!! IMPORTANT: Replace this URL with your actual login API endpoint !!!
             url: "http://localhost:8080/auth/login",
             contentType: "application/json",
             data: JSON.stringify(loginData),
             success: function(response) {
-                // Assuming the server response contains a token, like: { "token": "ey..." }
-                // Store the token for future requests
-                localStorage.setItem('authToken', response.data.accessToken);
-               console.log(response.data.accessToken);
-               alert("Successfully Loging😉👌")
+                // Assuming response is: { statusCode: 200, message: "ok", data: { accessToken: "...", role: "..." } }
+                const responseData = response.data;
+                localStorage.setItem('jwtToken', responseData.accessToken);
+               
+                console.log("Login successful. Token stored.");
+                alert("Successfully Logged In 😉👌");
 
-                console.log(response);
-                // REDIRECT based on the selected role
-                if (response.data.role === 'ADMIN') {
+                // Redirect based on the role received from the backend
+                if (responseData.role === 'ADMIN') {
                     window.location.href = '../HTML/AdminDashBoard.html'; 
-                    
-                } else {
-                    // Default to patient dashboard
+                } else { // Assuming any other role is a PATIENT for now
                     window.location.href = '../HTML/PatientDashBoard.html'; 
                 }
             },
-            error: function(xhr, status, error) {
-                // If login fails (e.g., 401 Unauthorized, 403 Forbidden)
+            error: function(xhr) {
                 let errorMessage = 'Invalid username or password.';
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     errorMessage = xhr.responseJSON.message;
@@ -103,7 +89,6 @@ $(document).ready(function() {
                 loginErrorDiv.text('❌ ' + errorMessage).show();
             },
             complete: function() {
-                // This runs after success or error
                 submitBtn.html(originalText).prop('disabled', false);
             }
         });

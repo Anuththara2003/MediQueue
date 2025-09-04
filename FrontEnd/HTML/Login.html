@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Medique - Healthcare Login</title>
-   <link rel="stylesheet" href="/StyleSheet/login.css">
+   <link rel="stylesheet" href="../StyleSheet/login.css"> <!-- Path එක නිවැරදි දැයි බලන්න -->
 
 </head>
 <body>
@@ -17,7 +17,7 @@
 
             <div class="form-container">
                 <form id="loginForm">
-                    <!-- Role Selection Section -->
+                    <!-- Role Selection Section (No changes needed here) -->
                     <div class="role-section">
                         <label>👤 Select Your Role</label>
                         <div class="role-options">
@@ -51,8 +51,9 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="name">📧 User Name</label>
-                        <input type="name" id="name" name="name" placeholder="Enter yourUser Name" required>
+                        <label for="username">📧 User Name</label>
+                        <!-- === වෙනස් කළ තැන 1: for="name" -> for="username" සහ id="username" ලෙස වෙනස් කළා === -->
+                        <input type="text" id="username" name="username" placeholder="Enter your User Name" required>
                     </div>
 
                     <div class="form-group">
@@ -63,6 +64,9 @@
                         </div>
                     </div>
 
+                    <!-- === වෙනස් කළ තැන 2: Error පණිවිඩය පෙන්වීමට div එකක් එකතු කිරීම === -->
+                    <div id="loginError" style="color: red; margin-bottom: 15px; text-align: center; display: none;"></div>
+                    
                     <div class="remember-forgot">
                         <div class="remember-me">
                             <input type="checkbox" id="remember" name="remember">
@@ -152,8 +156,7 @@
     </div>
 
      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="../JS/Login.js"></script>
-
+    <script src="../JS/login.js"></script> <!-- login.js ලෙස නම වෙනස් කළා -->
     
 </body>
 </html>
