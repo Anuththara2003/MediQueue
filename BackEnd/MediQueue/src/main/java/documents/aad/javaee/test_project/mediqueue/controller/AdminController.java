@@ -1,6 +1,7 @@
 package documents.aad.javaee.test_project.mediqueue.controller;
 
 import documents.aad.javaee.test_project.mediqueue.dto.AdminProfileDto;
+import documents.aad.javaee.test_project.mediqueue.dto.AdminProfileViewDto;
 import documents.aad.javaee.test_project.mediqueue.dto.HospitalDto;
 import documents.aad.javaee.test_project.mediqueue.entity.Hospital;
 import documents.aad.javaee.test_project.mediqueue.service.AdminService;
@@ -32,14 +33,12 @@ public class AdminController {
     @GetMapping("/hospitals")
     public ResponseEntity<List<HospitalDto>> getAllHospitals() {
         List<Hospital> hospitalList = hospitalService.getAllHospitals();
-
-
         List<HospitalDto> hospitalDtoList = hospitalList.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
+
         return ResponseEntity.ok(hospitalDtoList);
     }
-
 
     private HospitalDto convertToDto(Hospital hospital) {
         HospitalDto dto = new HospitalDto();
@@ -79,17 +78,15 @@ public class AdminController {
 
 
 
-
     @PutMapping("/profile")
     public ResponseEntity<String> updateProfile(
             @AuthenticationPrincipal UserDetails userDetails,
-            @ModelAttribute AdminProfileDto profileDto, // <-- @RequestPart වෙනුවට @ModelAttribute
-            @RequestParam(value = "profileImage", required = false) MultipartFile profileImage // <-- @RequestPart වෙනුවට @RequestParam
+            @RequestPart("profileDto") AdminProfileDto profileDto,
+            @RequestPart(value = "profileImage", required = false) MultipartFile profileImage
     ) {
-        String username = userDetails.getUsername(); // AdminService එකට username එක අවශ්‍ය නිසා
+        String username = userDetails.getUsername();
 
         try {
-            // අපි Service එකට username එක යවනවා (Service එකේ logic එකට අනුව)
             adminService.updateProfile(username, profileDto, profileImage);
             return ResponseEntity.ok("Profile updated successfully!");
         } catch (IOException e) {
@@ -97,5 +94,12 @@ public class AdminController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error updating profile: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<AdminProfileViewDto> getProfileDetails(@AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        AdminProfileViewDto adminProfile = adminService.getAdminProfile(username);
+        return ResponseEntity.ok(adminProfile);
     }
 }

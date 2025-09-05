@@ -37,6 +37,8 @@ public class AdminServiceImpl implements AdminService {
     public void updateProfile(String username, AdminProfileDto profileDto, MultipartFile profileImage) throws IOException, java.io.IOException {
         User adminUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("Admin user not found with username: " + username));
+
+        // Profile image එකක් එවා ඇත්නම් එය process කිරීම
         if (profileImage != null && !profileImage.isEmpty()) {
             if (!List.of("image/jpeg", "image/png", "image/gif").contains(profileImage.getContentType())) {
                 throw new IOException("Invalid image file type: " + profileImage.getContentType());
@@ -58,18 +60,23 @@ public class AdminServiceImpl implements AdminService {
             adminUser.setAvatarUrl(avatarUrl);
         }
 
+        // === මෙන්න වැදගත්ම වෙනස්කම ===
+        // First Name එකක් එවා ඇත්නම් පමණක් එය update කිරීම
         if (profileDto.getFirstName() != null && !profileDto.getFirstName().trim().isEmpty()) {
             adminUser.setFirstName(profileDto.getFirstName());
         }
 
+        // Last Name එකක් එවා ඇත්නම් පමණක් එය update කිරීම
         if (profileDto.getLastName() != null && !profileDto.getLastName().trim().isEmpty()) {
             adminUser.setLastName(profileDto.getLastName());
         }
 
+        // අලුත් password එකක් එවා ඇත්නම් පමණක් එය update කිරීම
         if (profileDto.getNewPassword() != null && !profileDto.getNewPassword().trim().isEmpty()) {
             adminUser.setPassword(passwordEncoder.encode(profileDto.getNewPassword()));
         }
 
+        // වෙනස්කම් සියල්ල Database එකේ save කිරීම
         userRepository.save(adminUser);
     }
 

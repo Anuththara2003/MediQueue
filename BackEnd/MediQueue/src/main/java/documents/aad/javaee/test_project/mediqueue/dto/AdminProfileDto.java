@@ -6,6 +6,5 @@ import lombok.Data;
 public class AdminProfileDto {
     private String firstName;
     private String lastName;
-    private String email;
     private String newPassword;
 }

@@ -5,7 +5,8 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     // --- CONFIGURATION ---
-    const API_BASE_URL = 'http://localhost:8080/api/v1/admin';
+    const API_BASE_URL_ADMIN = 'http://localhost:8080/api/v1/admin'; // ಪ್ರೊಫೈಲ್‌ಗಾಗಿ ಬೇಸ್ URL
+    const API_BASE_URL_MAIN = 'http://localhost:8080/api/v1'; // ಆಸ್ಪತ್ರೆಗಳಿಗಾಗಿ ಬೇಸ್ URL
     const JWT_TOKEN = localStorage.getItem('jwtToken');
 
     // --- SECURITY CHECK ---
@@ -15,16 +16,49 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
+    // === ಹೊಸ ಫಂಕ್ಷನ್: ಹೆಡರ್ ವಿವರಗಳನ್ನು ಲೋಡ್ ಮಾಡಲು ===
+    async function loadAdminHeaderDetails() {
+        try {
+            const response = await fetch(`${API_BASE_URL_ADMIN}/profile`, {
+                headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
+            });
+
+            if (!response.ok) {
+                console.error('Failed to fetch admin details for header.');
+                return;
+            }
+
+            const profileData = await response.json();
+
+            // ಹೆಡರ್ ಹೆಸರನ್ನು ನವೀಕರಿಸುವುದು
+            if (profileData.firstName && profileData.lastName) {
+                document.getElementById('headerAdminName').textContent = `${profileData.firstName} ${profileData.lastName}`;
+            }
+
+            // ಹೆಡರ್ ಅವತಾರವನ್ನು ನವೀಕರಿಸುವುದು
+            const headerAdminAvatar = document.getElementById('headerAdminAvatar');
+            if (profileData.avatarUrl) {
+                headerAdminAvatar.src = `http://localhost:8080${profileData.avatarUrl}`;
+            } else {
+                headerAdminAvatar.src = 'assets/img/default_avatar.jpg'; // ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಅವತಾರ ಮಾರ್ಗ
+            }
+
+        } catch (error) {
+            console.error('Error loading admin header details:', error);
+        }
+    }
+    // ======================================================
+
     // --- GLOBAL ELEMENTS ---
     const pageTitle = document.getElementById('pageTitle');
     const breadcrumb = document.getElementById('breadcrumb');
-    
+
     // ===================================
     // 1. HEADER & NAVIGATION
     // ===================================
     function updateHeader(sectionId) {
         let title = '', crumb = 'Admin / ';
-        switch(sectionId) {
+        switch (sectionId) {
             case 'overview': title = 'Dashboard Overview'; crumb += 'Dashboard'; break;
             case 'hospitals': title = 'Hospitals & Clinics'; crumb += 'Hospitals'; break;
             case 'reports': title = 'Reports & Analytics'; crumb += 'Reports'; break;
@@ -35,20 +69,20 @@ document.addEventListener('DOMContentLoaded', function () {
         breadcrumb.textContent = crumb;
     }
 
-    window.showSection = function(sectionId) {
+    window.showSection = function (sectionId) {
         document.querySelectorAll('.dashboard-section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        
+
         const targetSection = document.getElementById(sectionId);
         if (targetSection) targetSection.classList.add('active');
-        
+
         const targetNav = document.querySelector(`.nav-item[onclick="showSection('${sectionId}')"]`);
         if (targetNav) targetNav.classList.add('active');
-        
+
         if (sectionId === 'hospitals') {
             loadHospitals();
         }
-        
+
         updateHeader(sectionId);
     }
 
@@ -61,16 +95,16 @@ document.addEventListener('DOMContentLoaded', function () {
     async function loadHospitals() {
         if (!hospitalTableBody) return;
         try {
-            const response = await fetch(`${API_BASE_URL}/hospitals`, {
+            const response = await fetch(`${API_BASE_URL_MAIN}/hospitals`, {
                 headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
             });
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            
+
             const hospitals = await response.json();
             hospitalTableBody.innerHTML = '';
 
             if (hospitals.length === 0) {
-                 hospitalTableBody.innerHTML = `<tr><td colspan="5">No hospitals found. Add a new one to get started.</td></tr>`;
+                hospitalTableBody.innerHTML = `<tr><td colspan="5">No hospitals found. Add a new one to get started.</td></tr>`;
             } else {
                 hospitals.forEach(h => {
                     const row = `
@@ -96,11 +130,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (hospitalModal) {
         const hospitalForm = document.getElementById('hospitalForm');
-        
+
         hospitalForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const mode = hospitalForm.dataset.mode;
-            
+
             const hospitalData = {
                 name: document.getElementById('hospitalName').value,
                 location: document.getElementById('hospitalLocation').value,
@@ -108,9 +142,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 clinicCount: document.getElementById('hospitalClinics').value
             };
 
-            const url = mode === 'edit' 
-                ? `${API_BASE_URL}/hospitals/${hospitalForm.dataset.id}` 
-                : `${API_BASE_URL}/hospitals`;
+            const url = mode === 'edit'
+                ? `${API_BASE_URL_MAIN}/hospitals/${hospitalForm.dataset.id}`
+                : `${API_BASE_URL_MAIN}/hospitals`;
             const method = mode === 'edit' ? 'PUT' : 'POST';
 
             try {
@@ -128,41 +162,40 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert('Hospital saved successfully!');
                 hospitalModal.classList.remove('show');
                 loadHospitals();
-                
+
             } catch (error) {
                 console.error('Error saving hospital:', error);
                 alert(`Error saving hospital: ${error.message}`);
             }
         });
-        
+
         const closeBtn = hospitalModal.querySelector('.modal-close-btn');
-        if(closeBtn) closeBtn.addEventListener('click', () => hospitalModal.classList.remove('show'));
+        if (closeBtn) closeBtn.addEventListener('click', () => hospitalModal.classList.remove('show'));
         hospitalModal.addEventListener('click', (e) => {
             if (e.target === hospitalModal) hospitalModal.classList.remove('show');
         });
     }
 
-    window.deleteHospital = async (id) => { 
-        if(confirm(`Are you sure you want to delete hospital ${id}?`)) {
+    window.deleteHospital = async (id) => {
+        if (confirm(`Are you sure you want to delete hospital ${id}?`)) {
             try {
-                const response = await fetch(`${API_BASE_URL}/hospitals/${id}`, {
+                const response = await fetch(`${API_BASE_URL_MAIN}/hospitals/${id}`, {
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
                 });
                 if (!response.ok) throw new Error('Failed to delete hospital');
-                alert(`Deleted hospital ${id}`); 
+                alert(`Deleted hospital ${id}`);
                 loadHospitals();
-            } catch(error) {
+            } catch (error) {
                 console.error('Error deleting hospital:', error);
                 alert('Error deleting hospital.');
             }
         }
     }
-    
+
     // ==========================================================
-    // 3. PROFILE MODAL & OTHER FUNCTIONS (CORRECTED)
+    // 3. PROFILE MODAL & OTHER FUNCTIONS (CORRECTED & ENHANCED)
     // ==========================================================
-    
     const profileModal = document.getElementById('profileModal');
     if (profileModal) {
         const openTrigger = document.getElementById('adminProfileTrigger');
@@ -171,109 +204,113 @@ document.addEventListener('DOMContentLoaded', function () {
         const avatarUploadInput = document.getElementById('avatarUpload');
         const profileModalAvatar = document.getElementById('profileModalAvatar');
 
-        if(openTrigger) {
-            openTrigger.addEventListener('click', () => profileModal.classList.add('show'));
+        async function loadAndShowAdminProfile() {
+            try {
+                const response = await fetch(`${API_BASE_URL_ADMIN}/profile`, {
+                    headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
+                });
+                if (!response.ok) throw new Error('Failed to fetch profile data.');
+                const profileData = await response.json();
+                document.getElementById('profileFirstName').value = profileData.firstName || '';
+                document.getElementById('profileLastName').value = profileData.lastName || '';
+                document.getElementById('profileEmail').value = profileData.email || '';
+                const defaultAvatar = 'assets/img/default_avatar.jpg';
+                if (profileData.avatarUrl) {
+                    profileModalAvatar.src = `http://localhost:8080${profileData.avatarUrl}`;
+                } else {
+                    profileModalAvatar.src = defaultAvatar;
+                }
+                document.getElementById('profilePassword').value = '';
+                profileModal.classList.add('show');
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                alert('Could not load profile data.');
+            }
         }
-        if(closeBtn) {
-            closeBtn.addEventListener('click', () => profileModal.classList.remove('show'));
+
+        if (openTrigger) {
+            openTrigger.addEventListener('click', loadAndShowAdminProfile);
         }
+
+        if (closeBtn) closeBtn.addEventListener('click', () => profileModal.classList.remove('show'));
         profileModal.addEventListener('click', (e) => {
             if (e.target === profileModal) profileModal.classList.remove('show');
         });
 
-        if(avatarUploadInput) {
-            avatarUploadInput.addEventListener('change', function(event) {
+        if (avatarUploadInput) {
+            avatarUploadInput.addEventListener('change', function (event) {
                 const file = event.target.files[0];
                 if (file) {
                     const reader = new FileReader();
-                    reader.onload = function(e) {
+                    reader.onload = function (e) {
                         profileModalAvatar.src = e.target.result;
                     }
                     reader.readAsDataURL(file);
                 }
             });
         }
-        // Main.js file inside the DOMContentLoaded listener
 
-              // Main.js file inside the DOMContentLoaded listener
-
-                // Main.js file inside the DOMContentLoaded listener
-
-        if(profileForm) {
+        if (profileForm) {
             profileForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-
-                // 1. JWT Token එක localStorage එකෙන් ලබා ගැනීම
-                const JWT_TOKEN = localStorage.getItem('jwtToken');
-                if (!JWT_TOKEN) {
-                    alert('Authentication token not found. Please log in again.');
-                    return;
-                }
-
                 const formData = new FormData();
-
-                // 2. DTO එකේ fields ටික FormData එකට එකතු කිරීම
-                formData.append('firstName', document.getElementById('profileFirstName').value);
-                formData.append('lastName', document.getElementById('profileLastName').value);
-                formData.append('email', document.getElementById('profileEmail').value);
-                formData.append('newPassword', document.getElementById('profilePassword').value);
-
-                // 3. Image file එක FormData එකට එකතු කිරීම (තිබුනොත්)
-                const avatarUploadInput = document.getElementById('avatarUpload');
+                const profileData = {
+                    firstName: document.getElementById('profileFirstName').value,
+                    lastName: document.getElementById('profileLastName').value,
+                    newPassword: document.getElementById('profilePassword').value
+                };
+                formData.append('profileDto', new Blob([JSON.stringify(profileData)], { type: "application/json" }));
                 const imageFile = avatarUploadInput.files[0];
                 if (imageFile) {
                     formData.append('profileImage', imageFile);
                 }
-
                 try {
-                    // 4. fetch call එක, නිවැරදි Headers සමග යැවීම
-                    const response = await fetch(`${API_BASE_URL}/profile`, {
+                    const response = await fetch(`${API_BASE_URL_ADMIN}/profile`, {
                         method: 'PUT',
-                        headers: {
-                            // Content-Type එක මෙතන දාන්න එපා. FormData යවනකොට browser එක ඒක දාගන්නවා.
-                            // === මෙන්න වැදගත්ම පේළිය ===
-                            'Authorization': `Bearer ${JWT_TOKEN}` 
-                        },
+                        headers: { 'Authorization': `Bearer ${JWT_TOKEN}` },
                         body: formData
                     });
-
-                    // 5. Backend එකෙන් error එකක් ආවොත්, ඒක handle කිරීම
                     if (!response.ok) {
                         const errorText = await response.text();
-                        // Status: 403, Message: ... විදිහට console එකේ error එක පෙන්වයි
                         throw new Error(`Failed to update profile. Status: ${response.status}, Message: ${errorText}`);
                     }
-                    
                     const result = await response.text();
-                    alert(result); // "Profile updated successfully!"
-                    
-                    // Modal එක close කරලා, UI එක update කිරීම
-                    const profileModal = document.getElementById('profileModal');
-                    if(profileModal) profileModal.classList.remove('show');
-                    
-                    const firstName = document.getElementById('profileFirstName').value;
-                    const lastName = document.getElementById('profileLastName').value;
-                    document.getElementById('headerAdminName').textContent = `${firstName} ${lastName}`;
-                    if(imageFile) {
-                         const profileModalAvatar = document.getElementById('profileModalAvatar');
-                         document.getElementById('headerAdminAvatar').src = profileModalAvatar.src;
+                    alert(result);
+                    profileModal.classList.remove('show');
+                    document.getElementById('headerAdminName').textContent = `${profileData.firstName} ${profileData.lastName}`;
+                    const headerAdminAvatar = document.getElementById('headerAdminAvatar');
+                    if (imageFile) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            headerAdminAvatar.src = e.target.result;
+                        }
+                        reader.readAsDataURL(imageFile);
+                    } else {
+                        headerAdminAvatar.src = profileModalAvatar.src;
                     }
-
                 } catch (error) {
-                    // මෙතන තමයි ඔයා කලින් දැක්ක error එක console එකේ print වෙන්නේ
                     console.error('Error updating profile:', error);
                     alert('Error: Could not update profile. Check console for details.');
                 }
             });
         }
-    
+    }
+
+    // ===================================
+    // 4. LOGOUT FUNCTION
+    // ===================================
+    window.logout = () => {
+        if (confirm('Are you sure you want to logout?')) {
+            localStorage.removeItem('jwtToken');
+            window.location.href = '../HTML/login.html';
+        }
+    }
+
     // =================================================================
     // LOCATIONIQ SEARCH & UPDATED HOSPITAL MODAL LOGIC
     // =================================================================
-
     const LOCATIONIQ_API_KEY = 'pk.620a0f57de48be49621910e59f1a0ec9';
     let searchTimeout;
-
     const pageSearchInput = document.getElementById('hospitalSearchInput');
     const modalSearchInput = document.getElementById('modalHospitalSearchInput');
     const modalSearchResultsContainer = document.getElementById('modalHospitalSearchResults');
@@ -282,7 +319,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const hospitalNameInput = document.getElementById('hospitalName');
     const hospitalLocationInput = document.getElementById('hospitalLocation');
     const saveHospitalBtn = document.querySelector('#hospitalModal .btn-primary');
-
     async function fetchHospitalSuggestions(query) {
         const searchQuery = `hospital ${query}`;
         const url = `https://api.locationiq.com/v1/autocomplete?key=${LOCATIONIQ_API_KEY}&q=${encodeURIComponent(searchQuery)}&limit=7&countrycodes=LK`;
@@ -307,7 +343,6 @@ document.addEventListener('DOMContentLoaded', function () {
             modalSearchResultsContainer.innerHTML = '<div class="result-item"><span>Error searching.</span></div>';
         }
     }
-
     if (modalSearchInput) {
         modalSearchInput.addEventListener('keyup', () => {
             clearTimeout(searchTimeout);
@@ -319,7 +354,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-
     if (modalSearchResultsContainer) {
         modalSearchResultsContainer.addEventListener('click', (e) => {
             const resultItem = e.target.closest('.result-item');
@@ -331,12 +365,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 hospitalSearchStep.style.display = 'none';
                 hospitalDetailsStep.style.display = 'block';
                 modalSearchResultsContainer.innerHTML = '';
-                if(saveHospitalBtn) saveHospitalBtn.disabled = false;
+                if (saveHospitalBtn) saveHospitalBtn.disabled = false;
             }
         });
     }
-
-    window.openHospitalModal = async function(mode, hospitalId = null) {
+    window.openHospitalModal = async function (mode, hospitalId = null) {
         const modalTitle = document.getElementById('modalTitle');
         const hospitalForm = document.getElementById('hospitalForm');
         hospitalForm.reset();
@@ -349,14 +382,14 @@ document.addEventListener('DOMContentLoaded', function () {
             hospitalNameInput.readOnly = false;
             hospitalLocationInput.readOnly = false;
             try {
-                const response = await fetch(`${API_BASE_URL}/hospitals/${hospitalId}`, { headers: { 'Authorization': `Bearer ${JWT_TOKEN}` } });
+                const response = await fetch(`${API_BASE_URL_MAIN}/hospitals/${hospitalId}`, { headers: { 'Authorization': `Bearer ${JWT_TOKEN}` } });
                 if (!response.ok) throw new Error('Failed to fetch hospital details.');
                 const hospital = await response.json();
                 hospitalNameInput.value = hospital.name;
                 hospitalLocationInput.value = hospital.location;
                 document.getElementById('hospitalStatus').value = hospital.status.toLowerCase();
                 document.getElementById('hospitalClinics').value = hospital.clinicCount;
-                if(saveHospitalBtn) saveHospitalBtn.disabled = false;
+                if (saveHospitalBtn) saveHospitalBtn.disabled = false;
             } catch (error) {
                 console.error('Error fetching hospital for edit:', error);
                 alert('Could not load hospital data.');
@@ -367,11 +400,10 @@ document.addEventListener('DOMContentLoaded', function () {
             hospitalDetailsStep.style.display = 'none';
             hospitalSearchStep.style.display = 'block';
             if (modalSearchInput) modalSearchInput.value = '';
-            if(saveHospitalBtn) saveHospitalBtn.disabled = true;
+            if (saveHospitalBtn) saveHospitalBtn.disabled = true;
         }
         hospitalModal.classList.add('show');
     }
-
     if (pageSearchInput && hospitalTableBody) {
         pageSearchInput.addEventListener('keyup', () => {
             const filter = pageSearchInput.value.toUpperCase();
@@ -389,8 +421,10 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-    
-    // Initial load for the default view
-    showSection('overview');
-}
+
+    // =================================================================
+    // INITIAL PAGE LOAD ACTIONS
+    // =================================================================
+    loadAdminHeaderDetails(); // ಪುಟ ಲೋಡ್ ಆದ ತಕ್ಷಣ ಹೆಡರ್ ವಿವರಗಳನ್ನು ಲೋಡ್ ಮಾಡಿ
+    showSection('overview'); // ಡೀಫಾಲ್ಟ್ ವಿಭಾಗವನ್ನು ತೋರಿಸಿ
 });
