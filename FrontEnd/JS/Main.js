@@ -5,8 +5,8 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     // --- CONFIGURATION ---
-    const API_BASE_URL_ADMIN = 'http://localhost:8080/api/v1/admin'; // ಪ್ರೊಫೈಲ್‌ಗಾಗಿ ಬೇಸ್ URL
-    const API_BASE_URL_MAIN = 'http://localhost:8080/api/v1'; // ಆಸ್ಪತ್ರೆಗಳಿಗಾಗಿ ಬೇಸ್ URL
+    // === නිවැරදි කිරීම: අපි දැන් මේ සම්පූර්ණ JS file එකේම වැඩ වලට මේ එකම URL එක පාවිච්චි කරනවා ===
+    const API_BASE_URL = 'http://localhost:8080/api/v1/admin';
     const JWT_TOKEN = localStorage.getItem('jwtToken');
 
     // --- SECURITY CHECK ---
@@ -16,10 +16,10 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    // === ಹೊಸ ಫಂಕ್ಷನ್: ಹೆಡರ್ ವಿವರಗಳನ್ನು ಲೋಡ್ ಮಾಡಲು ===
+    // === Header එකේ data load කරන function එක ===
     async function loadAdminHeaderDetails() {
         try {
-            const response = await fetch(`${API_BASE_URL_ADMIN}/profile`, {
+            const response = await fetch(`${API_BASE_URL}/profile`, { 
                 headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
             });
 
@@ -30,24 +30,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const profileData = await response.json();
 
-            // ಹೆಡರ್ ಹೆಸರನ್ನು ನವೀಕರಿಸುವುದು
             if (profileData.firstName && profileData.lastName) {
                 document.getElementById('headerAdminName').textContent = `${profileData.firstName} ${profileData.lastName}`;
             }
 
-            // ಹೆಡರ್ ಅವತಾರವನ್ನು ನವೀಕರಿಸುವುದು
             const headerAdminAvatar = document.getElementById('headerAdminAvatar');
             if (profileData.avatarUrl) {
                 headerAdminAvatar.src = `http://localhost:8080${profileData.avatarUrl}`;
             } else {
-                headerAdminAvatar.src = 'assets/img/default_avatar.jpg'; // ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಅವತಾರ ಮಾರ್ಗ
+                headerAdminAvatar.src = 'assets/img/default_avatar.jpg'; 
             }
 
         } catch (error) {
             console.error('Error loading admin header details:', error);
         }
     }
-    // ======================================================
 
     // --- GLOBAL ELEMENTS ---
     const pageTitle = document.getElementById('pageTitle');
@@ -95,7 +92,8 @@ document.addEventListener('DOMContentLoaded', function () {
     async function loadHospitals() {
         if (!hospitalTableBody) return;
         try {
-            const response = await fetch(`${API_BASE_URL_MAIN}/hospitals`, {
+            // === නිවැරදි කිරීම: URL එක API_BASE_URL ලෙස වෙනස් කරන ලදී ===
+            const response = await fetch(`${API_BASE_URL}/hospitals`, { 
                 headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
             });
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -112,10 +110,10 @@ document.addEventListener('DOMContentLoaded', function () {
                             <td>${h.name || 'N/A'}</td>
                             <td>${h.location || 'N/A'}</td>
                             <td>${h.clinicCount || 0}</td>
-                            <td><span class="status-badge status-${h.status.toLowerCase() || 'inactive'}">${h.status || 'N/A'}</span></td>
+                            <td><span class="status-badge status-${h.status ? h.status.toLowerCase() : 'inactive'}">${h.status || 'N/A'}</span></td>
                             <td class="action-buttons">
-                                <button class="btn-icon btn-warning" onclick="openHospitalModal('edit', ${h.id})"><i class="fas fa-pen"></i></button>
-                                <button class="btn-icon btn-danger" onclick="deleteHospital(${h.id})"><i class="fas fa-trash"></i></button>
+                                <button class="btn-icon btn-warning" onclick="openHospitalModal('edit', '${h.id}')"><i class="fas fa-pen"></i></button>
+                                <button class="btn-icon btn-danger" onclick="deleteHospital('${h.id}')"><i class="fas fa-trash"></i></button>
                             </td>
                         </tr>
                     `;
@@ -142,9 +140,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 clinicCount: document.getElementById('hospitalClinics').value
             };
 
+            // === නිවැරදි කිරීම: URL එක API_BASE_URL ලෙස වෙනස් කරන ලදී ===
             const url = mode === 'edit'
-                ? `${API_BASE_URL_MAIN}/hospitals/${hospitalForm.dataset.id}`
-                : `${API_BASE_URL_MAIN}/hospitals`;
+                ? `${API_BASE_URL}/hospitals/${hospitalForm.dataset.id}`
+                : `${API_BASE_URL}/hospitals`;
             const method = mode === 'edit' ? 'PUT' : 'POST';
 
             try {
@@ -179,7 +178,8 @@ document.addEventListener('DOMContentLoaded', function () {
     window.deleteHospital = async (id) => {
         if (confirm(`Are you sure you want to delete hospital ${id}?`)) {
             try {
-                const response = await fetch(`${API_BASE_URL_MAIN}/hospitals/${id}`, {
+                // === නිවැරදි කිරීම: URL එක API_BASE_URL ලෙස වෙනස් කරන ලදී ===
+                const response = await fetch(`${API_BASE_URL}/hospitals/${id}`, {
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
                 });
@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ==========================================================
-    // 3. PROFILE MODAL & OTHER FUNCTIONS (CORRECTED & ENHANCED)
+    // 3. PROFILE MODAL & OTHER FUNCTIONS (වෙනසක් නැත)
     // ==========================================================
     const profileModal = document.getElementById('profileModal');
     if (profileModal) {
@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         async function loadAndShowAdminProfile() {
             try {
-                const response = await fetch(`${API_BASE_URL_ADMIN}/profile`, {
+                const response = await fetch(`${API_BASE_URL}/profile`, {
                     headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
                 });
                 if (!response.ok) throw new Error('Failed to fetch profile data.');
@@ -233,8 +233,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (closeBtn) closeBtn.addEventListener('click', () => profileModal.classList.remove('show'));
-        profileModal.addEventListener('click', (e) => {
-            if (e.target === profileModal) profileModal.classList.remove('show');
+        hospitalModal.addEventListener('click', (e) => {
+            if (e.target === hospitalModal) profileModal.classList.remove('show');
         });
 
         if (avatarUploadInput) {
@@ -265,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     formData.append('profileImage', imageFile);
                 }
                 try {
-                    const response = await fetch(`${API_BASE_URL_ADMIN}/profile`, {
+                    const response = await fetch(`${API_BASE_URL}/profile`, {
                         method: 'PUT',
                         headers: { 'Authorization': `Bearer ${JWT_TOKEN}` },
                         body: formData
@@ -382,7 +382,8 @@ document.addEventListener('DOMContentLoaded', function () {
             hospitalNameInput.readOnly = false;
             hospitalLocationInput.readOnly = false;
             try {
-                const response = await fetch(`${API_BASE_URL_MAIN}/hospitals/${hospitalId}`, { headers: { 'Authorization': `Bearer ${JWT_TOKEN}` } });
+                // === නිවැරදි කිරීම: URL එක API_BASE_URL ලෙස වෙනස් කරන ලදී ===
+                const response = await fetch(`${API_BASE_URL}/hospitals/${hospitalId}`, { headers: { 'Authorization': `Bearer ${JWT_TOKEN}` } });
                 if (!response.ok) throw new Error('Failed to fetch hospital details.');
                 const hospital = await response.json();
                 hospitalNameInput.value = hospital.name;
@@ -425,6 +426,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // =================================================================
     // INITIAL PAGE LOAD ACTIONS
     // =================================================================
-    loadAdminHeaderDetails(); // ಪುಟ ಲೋಡ್ ಆದ ತಕ್ಷಣ ಹೆಡರ್ ವಿವರಗಳನ್ನು ಲೋಡ್ ಮಾಡಿ
-    showSection('overview'); // ಡೀಫಾಲ್ಟ್ ವಿಭಾಗವನ್ನು ತೋರಿಸಿ
+    loadAdminHeaderDetails();
+    showSection('overview');
 });

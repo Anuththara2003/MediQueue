@@ -2,16 +2,14 @@
 // PATIENT DASHBOARD - PAGE SPECIFIC SCRIPT (UPDATED)
 // =================================================================
 
-// === අලුතින් එකතු කළ API CONFIGURATION ===
 const API_BASE_URL = 'http://localhost:8080/api/v1/patient';
 const JWT_TOKEN = localStorage.getItem('jwtToken');
 
 if (!JWT_TOKEN) {
     alert('Authentication token not found. Please log in.');
-    window.location.href = 'login.html'; // Redirect to login page
+    window.location.href = 'login.html'; 
 }
 
-// LocationIQ API සඳහා වූ කොටස (වෙනසක් නැත)
 const LOCATIONIQ_API_KEY = 'pk.620a0f57de48be49621910e59f1a0ec9'; 
 let searchTimeout;
 
