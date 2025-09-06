@@ -1,0 +1,135 @@
+.profile-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, .6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity .3s ease
+}
+
+.profile-modal.show {
+    opacity: 1
+}
+
+.profile-modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 25px 35px;
+    border: 1px solid #888;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, .3);
+    transform: translateY(-50px);
+    transition: transform .3s ease-out
+}
+
+.profile-modal.show .profile-modal-content {
+    transform: translateY(0)
+}
+
+.profile-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e5e5e5;
+    margin-bottom: 20px
+}
+
+.profile-modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333
+}
+
+.profile-modal-header h2 i {
+    margin-right: 10px;
+    color: #007bff
+}
+
+.profile-close-btn {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: 700;
+    cursor: pointer
+}
+
+.profile-close-btn:hover,
+.profile-close-btn:focus {
+    color: #000;
+    text-decoration: none
+}
+
+.profile-modal-body {
+    padding: 2px 0
+}
+
+.profile-picture-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 25px
+}
+
+#profileModalAvatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+    border: 3px solid #ddd
+}
+
+.upload-btn {
+    background-color: #e9ecef;
+    color: #495057;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: .9rem;
+    transition: background-color .2s
+}
+
+.upload-btn:hover {
+    background-color: #dee2e6
+}
+
+.form-group {
+    margin-bottom: 20px
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #555
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    box-sizing: border-box
+}
+
+.form-group input:disabled {
+    background-color: #f2f2f2;
+    cursor: not-allowed
+}
+
+.profile-modal-footer {
+    padding-top: 20px;
+    text-align: right
+}

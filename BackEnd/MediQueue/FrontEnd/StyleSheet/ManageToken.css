@@ -1,0 +1,137 @@
+:root {
+    --primary-color: #007BFF;
+    --danger-color: #dc3545;
+    --danger-hover: #c82333;
+    --border-color: #e3e6f0;
+    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Modal Overlay and Content (පෙර modal එකේ style වලට සමානයි) */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000; opacity: 0; visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.modal-overlay.show { opacity: 1; visibility: visible; }
+
+.modal-content {
+    background-color: #fff; border-radius: 15px; width: 90%;
+    max-width: 650px; /* Modal එක මඳක් විශාල කර ඇත */
+    box-shadow: var(--shadow-lg); transform: scale(0.95);
+    transition: transform 0.3s ease;
+}
+.modal-overlay.show .modal-content { transform: scale(1); }
+
+.modal-header {
+    padding: 20px 25px; border-bottom: 1px solid var(--border-color);
+    display: flex; justify-content: space-between; align-items: center;
+}
+.modal-header h2 { font-size: 1.4rem; font-weight: 600; margin: 0; }
+.modal-close { background: none; border: none; font-size: 2rem; cursor: pointer; color: #aaa; }
+.modal-body { padding: 30px; }
+
+/* Manage Token Specific Styles */
+.token-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    gap: 30px;
+    align-items: center;
+}
+
+.token-details h4 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0;
+}
+.token-details p {
+    color: #6c757d;
+    margin-bottom: 20px;
+}
+
+.token-number-display {
+    background-color: #f4f7fc;
+    border: 2px dashed var(--primary-color);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+}
+.token-number-display span {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--primary-color);
+}
+.token-number-display h1 {
+    font-size: 4.5rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1;
+    color: #343a40;
+}
+
+.status-display {
+    margin-top: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+.status-dot {
+    width: 12px;
+    height: 12px;
+    background-color: #28a745;
+    border-radius: 50%;
+    margin-right: 8px;
+    animation: pulse-green 2s infinite;
+}
+
+@keyframes pulse-green {
+    0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+}
+
+.qr-code-section {
+    text-align: center;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+}
+.qr-code-section img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+.qr-code-section p {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-top: 15px;
+    line-height: 1.4;
+}
+
+.modal-actions {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
+.btn-danger { background-color: var(--danger-color); color: #fff; }
+.btn-danger:hover { background-color: var(--danger-hover); }
+
+/* Responsive */
+@media (max-width: 600px) {
+    .token-info-grid {
+        grid-template-columns: 1fr;
+    }
+    .qr-code-section {
+        margin-top: 20px;
+    }
+    .modal-actions {
+        flex-direction: column;
+    }
+    .modal-actions .btn {
+        width: 100%;
+    }
+}

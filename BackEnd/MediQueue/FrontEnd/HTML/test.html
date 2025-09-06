@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+    <!-- jQuery එකතු කරගැනීම -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+    <h1>Testing MyMemory API...</h1>
+    <p>Check the browser console (F12) for results.</p>
+
+    <script>
+        // පරිවර්තනය කළ යුතු text එක
+        const textToTranslate = "Patient Dashboard";
+        // ඉලක්ක භාෂාව
+        const targetLanguage = "si"; // 'si' for Sinhala
+
+        // API URL එක සකස් කරගැනීම
+        const apiUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(textToTranslate)}&langpair=en|${targetLanguage}`;
+
+        console.log("Sending request to MyMemory API...");
+
+        // AJAX call එක යැවීම
+        $.ajax({
+            method: 'GET',
+            url: apiUrl,
+            success: function(response) {
+                // සාර්ථක වූ විට, ප්‍රතිචාරය console එකේ පෙන්වීම
+                if (response.responseStatus === 200) {
+                    console.log("✅ SUCCESS! Translation found:");
+                    console.log("Original:", textToTranslate);
+                    console.log("Translated:", response.responseData.translatedText);
+                } else {
+                    console.error("API returned an error:", response.responseDetails);
+                }
+            },
+            error: function(err) {
+                // අසාර්ථක වූ විට, දෝෂය console එකේ පෙන්වීම
+                console.error("❌ FAILED! There was a network error:", err);
+            }
+        });
+    </script>
+
+</body>
+</html>

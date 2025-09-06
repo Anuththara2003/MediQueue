@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register New Token</title>
+    <link rel="stylesheet" href="/StyleSheet/RegisterToken.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- භාෂා මාරු කරන buttons -->
+        <div class="language-selector" style="position: absolute; top: 20px; right: 20px;">
+            <button class="language-btn" data-lang="en">English</button>
+            <button class="language-btn" data-lang="si">සිංහල</button>
+            <button class="language-btn" data-lang="ta">தமிழ்</button>
+        </div>
+        <h1 data-translate-key="register.page.title">Patient Dashboard</h1>
+        <p data-translate-key="register.page.subtitle">Easily register your token.</p>
+        <button id="openModalBtn" class="btn-primary" data-translate-key="register.page.mainbutton">Register New Token</button>
+    </div>
+    <!-- The Modal -->
+    <div id="registrationModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2 data-translate-key="register.modal.title">Register New Token</h2>
+            <!-- Progress Bar -->
+            <div class="progress-bar">
+                <div class="progress-step active" data-step="1" data-translate-key="register.step1.name">Identification</div>
+                <div class="progress-step" data-step="2" data-translate-key="register.step2.name">Patient Details</div>
+                <div class="progress-step" data-step="3" data-translate-key="register.step3.name">Appointment</div>
+                <div class="progress-step" data-step="4" data-translate-key="register.step4.name">Confirmation</div>
+            </div>
+            <!-- Form Steps -->
+            <form id="tokenForm">
+                <!-- Step 1: Patient Identification -->
+                <div class="form-step active" id="step1">
+                    <h3 data-translate-key="register.step1.title">Step 1: Patient Identification</h3>
+                    <label for="mobileNumber" data-translate-key="register.step1.label.mobile">Mobile Number:</label>
+                    <input type="tel" id="mobileNumber" name="mobileNumber" placeholder="e.g., 0771234567" required>
+                    <p class="small-text" data-translate-key="register.step1.helptext">Enter your number and press 'Check'. If you are already registered, your details will be auto-filled.</p>
+                </div>
+                <!-- Step 2: Patient Details -->
+                <div class="form-step" id="step2">
+                    <h3 data-translate-key="register.step2.title">Step 2: New Patient Details</h3>
+                    <label for="patientName" data-translate-key="register.step2.label.name">Full Name:</label>
+                    <input type="text" id="patientName" name="patientName" required>
+                    <label for="dob" data-translate-key="register.step2.label.dob">Date of Birth:</label>
+                    <input type="date" id="dob" name="dob" required>
+                    <label for="gender" data-translate-key="register.step2.label.gender">Gender:</label>
+                    <select id="gender" name="gender" required>
+                        <option value="" data-translate-key="register.option.select">Select...</option>
+                        <option value="Male" data-translate-key="register.option.male">Male</option>
+                        <option value="Female" data-translate-key="register.option.female">Female</option>
+                        <option value="Other" data-translate-key="register.option.other">Other</option>
+                    </select>
+                </div>
+                <!-- Step 3: Appointment Details -->
+                <div class="form-step" id="step3">
+                    <h3 data-translate-key="register.step3.title">Step 3: Appointment Details</h3>
+                    <label for="doctor" data-translate-key="register.step3.label.doctor">Select Doctor:</label>
+                    <select id="doctor" name="doctor" required>
+                        <option value="" data-translate-key="register.option.select">Select...</option>
+                        <option value="Dr. A. Perera">Dr. A. Perera - Cardiologist</option>
+                        <option value="Dr. B. Silva">Dr. B. Silva - Dermatologist</option>
+                    </select>
+                    <label for="appointmentDate" data-translate-key="register.step3.label.date">Date:</label>
+                    <input type="date" id="appointmentDate" name="appointmentDate" required>
+                    <label for="reason" data-translate-key="register.step3.label.reason">Reason for Visit (Briefly):</label>
+                    <textarea id="reason" name="reason" rows="3"></textarea>
+                </div>
+                <!-- Step 4: Confirmation -->
+                <div class="form-step" id="step4">
+                    <h3 data-translate-key="register.step4.title">Step 4: Confirm Your Details</h3>
+                    <div class="confirmation-summary">
+                        <p><strong data-translate-key="register.step4.label.name">Patient Name:</strong> <span id="confirmName"></span></p>
+                        <p><strong data-translate-key="register.step4.label.mobile">Mobile Number:</strong> <span id="confirmMobile"></span></p>
+                        <p><strong data-translate-key="register.step4.label.doctor">Doctor:</strong> <span id="confirmDoctor"></span></p>
+                        <p><strong data-translate-key="register.step4.label.date">Date:</strong> <span id="confirmDate"></span></p>
+                        <p><strong data-translate-key="register.step4.label.fee">Fee:</strong> <span id="confirmFee">LKR 2500.00</span></p>
+                    </div>
+                    <p data-translate-key="register.step4.helptext">Please review the information above and press 'Confirm & Register'.</p>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-secondary" id="prevBtn" style="display: none;" data-translate-key="register.button.previous">Previous</button>
+                    <button type="button" class="btn-primary" id="nextBtn" data-translate-key="register.button.next">Next</button>
+                    <button type="submit" class="btn-primary" id="submitBtn" style="display: none;" data-translate-key="register.button.submit">Confirm & Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- SCRIPT TAGS (AT THE END OF BODY) -->
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   <script src="../JS/translation.js" defer></script>
+   <script src="../JS/RegisterToken.js" defer></script>
+</body>
+</html>

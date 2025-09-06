@@ -1,0 +1,404 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+:root {
+    --primary-color: #007BFF;
+    --primary-hover: #0056b3;
+    --sidebar-bg: #ffffff;
+    --main-bg: #f4f7fc;
+    --card-bg: #ffffff;
+    --text-dark: #343a40;
+    --text-light: #6c757d;
+    --border-color: #e3e6f0;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--main-bg);
+    color: var(--text-dark);
+}
+
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ======================= Sidebar Styles ======================= */
+.sidebar {
+    width: 260px;
+    background-color: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    padding: 20px 15px;
+    transition: width 0.3s;
+}
+
+.sidebar-header {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+.profile-section {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.profile-image-container {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 15px;
+}
+
+#profilePic {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--primary-color);
+}
+
+.upload-icon {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background-color: var(--primary-color);
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.upload-icon:hover {
+    background-color: var(--primary-hover);
+}
+
+.profile-section h4 {
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.profile-section p {
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+.sidebar-nav ul {
+    list-style: none;
+}
+
+.sidebar-nav li a {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: var(--text-light);
+    border-radius: 8px;
+    margin-bottom: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.sidebar-nav li a:hover,
+.sidebar-nav li.active a {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.sidebar-nav li a i {
+    margin-right: 15px;
+    width: 20px;
+    text-align: center;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+}
+
+.logout-btn {
+    display: block;
+    text-align: center;
+    padding: 10px;
+    background-color: #ffeef0;
+    color: #e53935;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* ======================= Main Content Styles ======================= */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.top-bar {
+    background-color: var(--card-bg);
+    padding: 15px 30px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.top-bar h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.language-btn {
+    background: none;
+    border: 1px solid var(--border-color);
+    padding: 5px 10px;
+    margin-left: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.content-area {
+    padding: 30px;
+    overflow-y: auto;
+}
+
+/* Inherited Card Styles - (ඔබගේ පැරණි CSS එකේ තිබූ ඒවා මෙහිදී ද යොදාගනී) */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 25px;
+    margin-bottom: 25px;
+}
+
+.card {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: var(--shadow);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.card-icon {
+    font-size: 1.5rem;
+    margin-right: 15px;
+}
+
+.card-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.hospital-selector,
+#hospitalSearchInput {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+/* बाकी CSS स्टाइल्स (ඔබගේ අනෙකුත් CSS styles එලෙසම පවතිනු ඇත...) */
+.token-display {
+    text-align: center;
+    padding: 20px 0
+}
+
+.current-token {
+    font-size: 4rem;
+    font-weight: 700;
+    color: var(--primary-color)
+}
+
+.token-label {
+    color: var(--text-light);
+    font-size: 1rem
+}
+
+.pulse {
+    animation: pulse-animation 2s infinite
+}
+
+@keyframes pulse-animation {
+    0% {
+        transform: scale(1)
+    }
+
+    50% {
+        transform: scale(1.05)
+    }
+
+    100% {
+        transform: scale(1)
+    }
+}
+
+.status-grid {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 25px
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    text-align: left
+}
+
+.status-icon {
+    font-size: 2rem
+}
+
+.status-text {
+    color: var(--text-light);
+    margin-bottom: 5px
+}
+
+#waitTime,
+#queueCount {
+    font-weight: 700;
+    font-size: 1.2rem
+}
+
+.your-token {
+    background-color: var(--main-bg);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center
+}
+
+.your-token-number {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #28a745
+}
+
+.queue-info {
+    color: var(--text-light)
+}
+
+.sms-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px
+}
+
+.toggle-switch {
+    width: 50px;
+    height: 28px;
+    background-color: #ccc;
+    border-radius: 14px;
+    cursor: pointer;
+    position: relative
+}
+
+.toggle-switch.active {
+    background-color: #28a745
+}
+
+.toggle-slider {
+    width: 24px;
+    height: 24px;
+    background-color: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: transform .3s
+}
+
+.toggle-switch.active .toggle-slider {
+    transform: translateX(22px)
+}
+
+.health-tip {
+    background-color: #e6f2ff;
+    border-left: 5px solid var(--primary-color);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 25px
+}
+
+.health-tip h3 {
+    margin-top: 0;
+    color: var(--primary-color)
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px
+}
+
+.btn {
+    text-decoration: none;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color .3s, transform .2s
+}
+
+.btn:hover {
+    transform: translateY(-2px)
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: #fff
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover)
+}
+
+.btn-secondary {
+    background-color: var(--text-light);
+    color: #fff
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268
+}
+
+.notification {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--text-dark);
+    color: #fff;
+    padding: 15px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .2);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .5s, visibility .5s
+}
+
+.notification.show {
+    opacity: 1;
+    visibility: visible
+}
