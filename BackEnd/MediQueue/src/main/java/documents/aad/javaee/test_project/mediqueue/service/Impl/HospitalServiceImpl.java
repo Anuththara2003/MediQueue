@@ -5,21 +5,36 @@ import documents.aad.javaee.test_project.mediqueue.dto.HospitalDto;
 import documents.aad.javaee.test_project.mediqueue.entity.Hospital;
 import documents.aad.javaee.test_project.mediqueue.repostry.HospitalRepository;
 import documents.aad.javaee.test_project.mediqueue.service.HospitalService;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class HospitalServiceImpl implements HospitalService {
 
     @Autowired
     private HospitalRepository hospitalRepository;
+
+    @Autowired
+    private final ModelMapper modelMapper;
 
 
     @Override
     public Hospital getHospitalById(Long id) {
         return hospitalRepository.findById(Math.toIntExact(id))
                 .orElseThrow(() -> new ResourceNotFoundException("Hospital not found with id: " + id));
+    }
+
+    @Override
+    public List<HospitalDto> searchHospitals(String query) {
+        List<Hospital> hospitals = hospitalRepository.findByNameContainingIgnoreCase(query);
+        return hospitals.stream()
+                .map(hospital -> modelMapper.map(hospital, HospitalDto.class))
+                .collect(Collectors.toList());
     }
 
     @Override

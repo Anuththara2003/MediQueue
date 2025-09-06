@@ -13,6 +13,7 @@ public interface HospitalService {
     HospitalDto updateHospital(Integer id, HospitalDto hospitalDto);
     void deleteHospital(Integer id);
     Hospital getHospitalById(Long id);
+    List<HospitalDto> searchHospitals(String query);
 
 
 }
