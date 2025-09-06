@@ -2,7 +2,9 @@
 // PATIENT DASHBOARD - PAGE SPECIFIC SCRIPT (UPDATED)
 // =================================================================
 
-const API_BASE_URL = 'http://localhost:8080/api/v1/patient';
+// === API CONFIGURATION ===
+const API_BASE_URL_PATIENT = 'http://localhost:8080/api/v1/patient';
+const API_BASE_URL_HOSPITALS = 'http://localhost:8080/api/v1/hospitals'; 
 const JWT_TOKEN = localStorage.getItem('jwtToken');
 
 if (!JWT_TOKEN) {
@@ -10,34 +12,43 @@ if (!JWT_TOKEN) {
     window.location.href = 'login.html'; 
 }
 
-const LOCATIONIQ_API_KEY = 'pk.620a0f57de48be49621910e59f1a0ec9'; 
-let searchTimeout;
+// Global variables
+let smsEnabled = true;
+let currentToken = 45;
+let yourToken = 52;
 
+// === HOSPITAL SEARCH FUNCTION එක, ලස්සන emoji එකක් සමග ===
 function searchPrivateHospitals(query) {
-    const searchQuery = `private hospital ${query}`;
-    const url = `https://api.locationiq.com/v1/autocomplete.php?key=${LOCATIONIQ_API_KEY}&q=${encodeURIComponent(searchQuery)}&limit=5&countrycodes=LK`;
+    const url = `${API_BASE_URL_HOSPITALS}/search?query=${encodeURIComponent(query)}`;
 
     $.ajax({
         url: url,
         method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${JWT_TOKEN}`
+        },
         success: function(data) {
             const resultsContainer = $('#hospitalSearchResults');
             resultsContainer.empty();
             if (data && data.length > 0) {
-                data.forEach(place => {
+                data.forEach(hospital => {
+                    // === මෙන්න ලස්සන emoji එක සහිත කොටස ===
                     resultsContainer.append(`
-                        <div class="result-item" data-name="${place.display_name}">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>${place.display_name}</span>
+                        <div class="result-item" data-id="${hospital.id}" data-name="${hospital.name}">
+                            <span style="font-size: 1.5em; margin-right: 10px;">🏥</span>
+                            <div>
+                                <strong>${hospital.name}</strong><br>
+                                <small>${hospital.location}</small>
+                            </div>
                         </div>
                     `);
                 });
             } else {
-                resultsContainer.append('<div class="result-item">No results found.</div>');
+                resultsContainer.append('<div class="result-item">No hospitals found.</div>');
             }
         },
         error: function(err) {
-            console.error("Error fetching data from LocationIQ:", err);
+            console.error("Error fetching hospitals from our API:", err);
             const resultsContainer = $('#hospitalSearchResults');
             resultsContainer.empty();
             resultsContainer.append('<div class="result-item">Error searching. Please try again.</div>');
@@ -45,12 +56,7 @@ function searchPrivateHospitals(query) {
     });
 }
 
-// Global variables (වෙනසක් නැත)
-let smsEnabled = true;
-let currentToken = 45;
-let yourToken = 52;
-
-// භාෂාව අනුව වෙනස් වන text update කිරීම (වෙනසක් නැත)
+// භාෂාව අනුව වෙනස් වන text update කිරීම
 function updateDynamicTexts() {
     const langCode = localStorage.getItem('preferredLanguage') || 'en';
     const remaining = Math.max(0, yourToken - currentToken);
@@ -73,9 +79,9 @@ function updateDynamicTexts() {
     $('#queueCount').text(queueCountText);
 }
 
-// අනෙකුත් functions (වෙනසක් නැත)
-function updateHospitalInfo() {
-    console.log("Hospital selected. Updating token info...");
+// අනෙකුත් functions
+function updateHospitalInfo(hospitalId) {
+    console.log(`Hospital with ID: ${hospitalId} selected. Updating token info...`);
     currentToken = Math.floor(Math.random() * 20) + 30;
     yourToken = currentToken + Math.floor(Math.random() * 10) + 5;
     $('#currentToken').text(currentToken);
@@ -93,11 +99,10 @@ function toggleSMS() {
     showNotification(message);
 }
 
-// Notification function එක success සහ error messages දෙකටම ගැලපෙන ලෙස update කිරීම
 function showNotification(message, type = 'success') {
     const notification = $('#notification');
     $('#notificationText').text(message);
-    notification.removeClass('success error').addClass(type); // Remove old classes, add new
+    notification.removeClass('success error').addClass(type);
     notification.addClass('show');
     setTimeout(() => {
         notification.removeClass('show');
@@ -107,22 +112,17 @@ function showNotification(message, type = 'success') {
 
 $(document).ready(function() {
 
-    // === අලුතින් එකතු කළ PAGE LOAD ACTION ===
     loadPatientHeaderAndSidebar();
 
-    // ==========================================================
-    // === PROFILE & HEADER/SIDEBAR LOADING LOGIC (අලුතින්) ===
-    // ==========================================================
     async function loadPatientHeaderAndSidebar() {
         try {
-            const response = await fetch(`${API_BASE_URL}/profile`, {
+            const response = await fetch(`${API_BASE_URL_PATIENT}/profile`, {
                 headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
             });
             if (!response.ok) throw new Error('Failed to fetch patient data.');
             
             const data = await response.json();
             
-            // Sidebar එකේ නම සහ පින්තූරය update කිරීම
             $('.profile-section h4').text(data.fullName || 'Patient Name');
             const defaultAvatar = 'https://i.pravatar.cc/150?u=default';
             const avatarUrl = data.avatarUrl ? `http://localhost:8080${data.avatarUrl}` : defaultAvatar;
@@ -133,7 +133,6 @@ $(document).ready(function() {
         }
     }
 
-    // --- පවතින DASHBOARD ක්‍රියාකාරීත්වය (වෙනසක් නැත) ---
     $('#currentToken').text(currentToken);
     $('#yourTokenNumber').text(yourToken);
     updateDynamicTexts();
@@ -144,25 +143,31 @@ $(document).ready(function() {
             updateDynamicTexts();
         }
     }, 30000);
+    
+    let searchTimeout;
+    
     $('#hospitalSearchInput').on('keyup', function() {
         clearTimeout(searchTimeout); 
         const query = $(this).val();
         if (query.length > 2) {
             searchTimeout = setTimeout(() => {
                 searchPrivateHospitals(query);
-            }, 500);
+            }, 300);
         } else {
             $('#hospitalSearchResults').empty();
         }
     });
+
     $(document).on('click', '.result-item', function() {
         const hospitalName = $(this).data('name');
-        if(hospitalName) {
+        const hospitalId = $(this).data('id');
+        if(hospitalName && hospitalId) {
             $('#hospitalSearchInput').val(hospitalName); 
             $('#hospitalSearchResults').empty(); 
-            updateHospitalInfo(); 
+            updateHospitalInfo(hospitalId); 
         }
     });
+
     $(document).on('click', function(event) {
         if (!$(event.target).closest('.search-results-container').length) {
             $('#hospitalSearchResults').empty();
@@ -183,7 +188,6 @@ $(document).ready(function() {
         }
     });
     
-    // Logout Button ක්‍රියාකාරීත්වය (වෙනසක් නැත)
     $('.logout-btn').on('click', function(e) {
         e.preventDefault();
         localStorage.removeItem('jwtToken');
@@ -191,13 +195,12 @@ $(document).ready(function() {
         setTimeout(() => window.location.href = 'login.html', 1500);
     });
 
-    // --- PROFILE MODAL SCRIPT (සම්පූර්ණයෙන්ම අලුත් කරන ලදී) ---
     const profileModal = $('#profileModal');
     
     $('#profile-modal-trigger').on('click', async function(e) {
         e.preventDefault();
         try {
-            const response = await fetch(`${API_BASE_URL}/profile`, {
+            const response = await fetch(`${API_BASE_URL_PATIENT}/profile`, {
                 headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
             });
             if (!response.ok) throw new Error('Failed to fetch profile data.');
@@ -251,7 +254,7 @@ $(document).ready(function() {
         }
 
         try {
-            const response = await fetch(`${API_BASE_URL}/profile/info`, {
+            const response = await fetch(`${API_BASE_URL_PATIENT}/profile/info`, {
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${JWT_TOKEN}` },
                 body: formData
@@ -276,7 +279,7 @@ $(document).ready(function() {
         };
 
         try {
-            const response = await fetch(`${API_BASE_URL}/profile/password`, {
+            const response = await fetch(`${API_BASE_URL_PATIENT}/profile/password`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${JWT_TOKEN}`,
@@ -299,7 +302,6 @@ $(document).ready(function() {
 
     $('#profileModal .toggle-switch').on('click', function() { $(this).toggleClass('active'); });
 
-    // --- MANAGE TOKEN MODAL SCRIPT (වෙනසක් නැත) ---
     const manageTokenModal = $('#manageTokenModal');
     $('#manage-token-btn').on('click', function() { manageTokenModal.addClass('show'); });
     $('#manageTokenModal .modal-close').on('click', function() { manageTokenModal.removeClass('show'); });
