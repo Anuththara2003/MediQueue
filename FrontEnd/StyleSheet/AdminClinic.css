@@ -1,0 +1,61 @@
+/* Hospitals & Clinics Section Enhancements */
+.action-buttons-group {
+    display: flex;
+    gap: 10px;
+}
+
+/* Clinic Modal Specific Styles */
+#clinicModal .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+
+#clinicModal .form-group input[type="text"],
+#clinicModal .form-group input[type="time"],
+#clinicModal .form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    box-sizing: border-box; /* Ensures padding doesn't affect total width */
+}
+
+/* View Clinics Modal Specific Styles */
+#viewClinicsModal .section-header {
+    display: flex;
+    justify-content: flex-end; /* Align button to the right */
+    margin-bottom: 15px;
+}
+
+#viewClinicsModal .data-table th,
+#viewClinicsModal .data-table td {
+    padding: 10px 15px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+#viewClinicsModal .data-table thead {
+    background-color: #f0f2f5;
+    color: #555;
+}
+
+#viewClinicsModal .data-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#viewClinicsModal .data-table tbody tr:hover {
+    background-color: #eef;
+}
+
+#viewClinicsModal .data-table .action-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+#viewClinicsModal .data-table .btn-icon {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+}
