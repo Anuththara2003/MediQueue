@@ -314,3 +314,6 @@ $(document).ready(function() {
     });
     $('#get-help-btn').on('click', function() { showNotification("Contacting support..."); });
 });
+
+
+//done js
