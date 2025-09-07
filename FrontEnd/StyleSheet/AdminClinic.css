@@ -59,3 +59,22 @@
     padding: 6px 10px;
     font-size: 0.85rem;
 }
+
+/* Clinic Modal Specific Styles */
+#clinicForm .form-row {
+    display: flex;
+    gap: 1rem;
+}
+
+#clinicForm .form-row .form-group {
+    flex: 1;
+}
+
+#clinicForm input[type="time"] {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 100%;
+}

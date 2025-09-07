@@ -2,6 +2,7 @@
 // MEDIQUEUE ADMIN DASHBOARD - FINAL & COMPLETE JS FILE
 // =======================================================
 
+
 document.addEventListener('DOMContentLoaded', function () {
 
     // --- CONFIGURATION ---
@@ -46,6 +47,55 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    window.loadClinics = async function() {
+    try {
+        const response = await fetch("http://localhost:8080/api/v1/admin/clinics", {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${JWT_TOKEN}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to load clinics.");
+        }
+
+        const result = await response.json();
+        const clinics = result.data || result; // result.data use කරනවා නම් API response wrapper එකෙන්
+
+        const clinicTableBody = document.getElementById('clinicTableBody');
+        if (!clinicTableBody) {
+            console.error("Table body with id 'clinicTableBody' not found!");
+            return;
+        }
+
+        clinicTableBody.innerHTML = '';
+
+        clinics.forEach((clinic) => {
+            const row = `
+                <tr>
+                 <td>${clinic.id}</td>
+                    <td>${clinic.name}</td>
+                    <td>${clinic.hospitalName}</td>
+                    <td>${clinic.startTime}</td>
+                    <td>${clinic.endTime}</td>
+                   
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="editClinic(${clinic.id})">Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteClinic(${clinic.id})">Delete</button>
+                    </td>
+                </tr>
+            `;
+            clinicTableBody.innerHTML += row;
+        });
+
+    } catch (error) {
+        console.error("Error loading clinics:", error);
+        alert("Could not load clinics.");
+    }
+};
+
+
     // --- GLOBAL ELEMENTS ---
     const pageTitle = document.getElementById('pageTitle');
     const breadcrumb = document.getElementById('breadcrumb');
@@ -67,21 +117,25 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     window.showSection = function (sectionId) {
-        document.querySelectorAll('.dashboard-section').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.querySelectorAll('.dashboard-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
 
-        const targetSection = document.getElementById(sectionId);
-        if (targetSection) targetSection.classList.add('active');
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) targetSection.classList.add('active');
 
-        const targetNav = document.querySelector(`.nav-item[onclick="showSection('${sectionId}')"]`);
-        if (targetNav) targetNav.classList.add('active');
+    const targetNav = document.querySelector(`.nav-item[onclick="showSection('${sectionId}')"]`);
+    if (targetNav) targetNav.classList.add('active');
 
-        if (sectionId === 'hospitals') {
-            loadHospitals();
-        }
-
-        updateHeader(sectionId);
+    if (sectionId === 'hospitals') {
+        loadHospitals();
+    } 
+    else if (sectionId === 'clinics') {
+        loadClinics();   // ✅ Clinics section එකට ගියොත් table auto-load වෙයි
     }
+
+    updateHeader(sectionId);
+}
+
 
     // ===================================
     // 2. HOSPITAL MANAGEMENT (CRUD)
@@ -192,6 +246,114 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     }
+
+
+ const clinicModal = document.getElementById('clinicModal');
+    if (clinicModal) {
+        const clinicForm = document.getElementById('clinicForm');
+        const hospitalSelect = document.getElementById('clinicHospitalSelect');
+        
+        // Clinic Modal එක open කරන function එක
+        window.openClinicModal = async () => {
+            hospitalSelect.innerHTML = '<option value="">Loading Hospitals...</option>';
+            hospitalSelect.disabled = true;
+            clinicModal.classList.add('show'); // මුලින්ම modal එක පෙන්නනවා
+
+            try {
+                // Backend එකෙන් Hospital ලැයිස්තුව ලබාගැනීම
+                const response = await fetch(`${API_BASE_URL}/hospitals`, { 
+                    headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
+                });
+                if (!response.ok) throw new Error('Could not fetch hospitals.');
+
+                const hospitals = await response.json();
+                
+                hospitalSelect.innerHTML = '<option value="">Select a Hospital</option>';
+                if (hospitals.length > 0) {
+                    hospitals.forEach(hospital => {
+                        const option = document.createElement('option');
+                        option.value = hospital.id;
+                        option.textContent = hospital.name;
+                        hospitalSelect.appendChild(option);
+                    });
+                    hospitalSelect.disabled = false;
+                } else {
+                    hospitalSelect.innerHTML = '<option value="">No hospitals found. Please add a hospital first.</option>';
+                }
+                
+            } catch (error) {
+                console.error("Error loading hospitals for clinic modal:", error);
+                hospitalSelect.innerHTML = '<option value="">Error loading hospitals</option>';
+            }
+        };
+
+        // Clinic Modal එක වැසීම
+        const closeBtn = clinicModal.querySelector('.modal-close-btn');
+        if (closeBtn) closeBtn.addEventListener('click', () => clinicModal.classList.remove('show'));
+        clinicModal.addEventListener('click', (e) => {
+            if (e.target === clinicModal) clinicModal.classList.remove('show');
+        });
+
+        // Clinic Form එක Submit කිරීම (දැනට UI එක විතරයි)
+        clinicForm.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    // 1. Form එකෙන් දත්ත ලබාගෙන JSON object එකක් සෑදීම
+    const clinicData = {
+        hospitalId: document.getElementById('clinicHospitalSelect').value,
+        name: document.getElementById('clinicName').value,
+        startTime: document.getElementById('clinicStartTime').value,
+        endTime: document.getElementById('clinicEndTime').value,
+    };
+
+    // 2. Hospital එකක් තෝරා ඇත්දැයි පරීක්ෂා කිරීම
+    if (!clinicData.hospitalId) {
+        alert('Please select a hospital.');
+        return;
+    }
+
+    console.log('Sending clinic data to backend:', clinicData);
+
+    try {
+        // 3. Backend එකට POST request එකක් යැවීම
+        const response = await fetch("http://localhost:8080/api/v1/admin/clinics", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${JWT_TOKEN}`
+            },
+            body: JSON.stringify(clinicData)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || 'Failed to save clinic.');
+        }
+
+        alert(result.message || 'Clinic saved successfully!');
+
+        // Modal එක close කරන්න + Form එක reset කරන්න
+        clinicModal.classList.remove('show');
+        clinicForm.reset();
+        loadClinics();
+
+    } catch (error) {
+        console.error('Error saving clinic:', error);
+        alert(`Error: ${error.message}`);
+    }
+
+
+// Option 1: Window scope එකට attach කරන්න
+
+
+});
+
+
+
+
+
+
 
     // ==========================================================
     // 3. PROFILE MODAL & OTHER FUNCTIONS (වෙනසක් නැත)
@@ -428,4 +590,5 @@ document.addEventListener('DOMContentLoaded', function () {
     // =================================================================
     loadAdminHeaderDetails();
     showSection('overview');
+}
 });

@@ -1,4 +1,4 @@
-package documents.aad.javaee.test_project.mediqueue.config;
+package documents.aad.javaee.test_project.mediqueue.controller;
 
 import documents.aad.javaee.test_project.mediqueue.dto.HospitalDto;
 import documents.aad.javaee.test_project.mediqueue.service.HospitalService;

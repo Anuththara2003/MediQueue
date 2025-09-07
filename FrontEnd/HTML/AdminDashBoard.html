@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="../StyleSheet/AdminSection.css">
     <link rel="stylesheet" href="../StyleSheet/AdminModel.css">
     <link rel="stylesheet" href="../StyleSheet/AdminSearch.css">
+      <link rel="stylesheet" href="../StyleSheet/AdminClinic.css">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -26,10 +27,12 @@
             </div>
             <div class="nav-menu">
                 <div class="nav-item active" onclick="showSection('overview')"><i class="fas fa-chart-pie"></i><span>Dashboard Overview</span></div>
-                <div class="nav-item" onclick="showSection('hospitals')"><i class="fas fa-hospital"></i><span>Hospitals & Clinics</span></div>
+                <div class="nav-item" onclick="showSection('hospitals')"><i class="fas fa-hospital"></i><span>Hospitals </span></div>
+                <div class="nav-item" onclick="showSection('clinics')"><i class="fas fa-clinic-medical"></i><span>Manage Clinics</span></div>
                 <div class="nav-item" onclick="showSection('reports')"><i class="fas fa-file-alt"></i><span>Reports & Analytics</span></div>
                 <div class="nav-item" onclick="showSection('sms')"><i class="fas fa-comment-sms"></i><span>SMS Management</span></div>
                 <div class="nav-item" onclick="showSection('system')"><i class="fas fa-cogs"></i><span>System Health</span></div>
+        
             </div>
         </div>
 
@@ -74,7 +77,9 @@
                         <input type="text" placeholder="Search Hospitals in Table..." class="search-bar" id="hospitalSearchInput">
                     </div>
                     <button class="btn btn-primary" onclick="openHospitalModal('add')"><i class="fas fa-plus"></i> Add New Hospital</button>
+                    
                 </div>
+                           
                 <div class="content-card">
                     <div class="table-container">
                         <table class="data-table">
@@ -125,6 +130,36 @@
                     <div class="card-header"><div class="card-title"><i class="fas fa-exclamation-triangle"></i> Recent System Logs</div></div><div class="log-entry"><strong>[ERROR]</strong> SMS Gateway API timeout - 09:31 AM</div><div class="log-entry"><strong>[INFO]</strong> System backup completed successfully - 02:00 AM</div>
                 </div>
             </div>
+
+                                <!-- === අලුතින් එකතු කළ Manage Clinics Section === -->
+
+<div class="dashboard-section" id="clinics">
+    <div class="section-header">
+        <!-- Section එකේ මාතෘකාව -->
+        <h2>Manage Clinics</h2>
+        <!-- අලුත් Clinic එකක් එකතු කරන Modal එක open කරන Button එක -->
+        <button class="btn btn-primary" onclick="openClinicModal('add')"><i class="fas fa-plus"></i> Add New Clinic </button>
+    </div>
+    <div class="content-card">
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                       <th>Clinic Number</th> <th>Clinic Name</th><th>Associated Hospital</th><th>Start Time</th><th>End Time</th><th>Actions</th>
+                    </tr>
+                </thead>
+           <tbody id="clinicTableBody">
+                    <!-- JavaScript එකෙන් Clinic data ටික මෙතනට load වේවි -->
+                    <tr>
+                        <td colspan="7" style="text-align: center;">No clinics found. Add a new one to get started.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
         </div>
     </div>
 
@@ -218,6 +253,47 @@
             <div class="modal-footer">
                 <button type="submit" form="hospitalForm" class="btn btn-primary" disabled>Save Hospital</button>
             </div>
+        </div>
+    </div>
+
+        <!-- ========================================================== -->
+    <!-- === අලුතින් එකතු කළ Clinic Modal === -->
+    <!-- ========================================================== -->
+    <div id="clinicModal" class="modal-backdrop">
+        <div class="modal-content">
+            <form id="clinicForm">
+                <div class="modal-header">
+                    <h2><i class="fas fa-clinic-medical"></i> Add New Clinic</h2>
+                    <span class="modal-close-btn">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="clinicHospitalSelect">Select Hospital</label>
+                        <select id="clinicHospitalSelect" required>
+                            <option value="">Loading Hospitals...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="clinicName">Clinic Name</label>
+                        <input type="text" id="clinicName" placeholder="e.g., Cardiology" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="clinicStartTime">Start Time</label>
+                            <input type="time" id="clinicStartTime" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="clinicEndTime">End Time</label>
+                            <input type="time" id="clinicEndTime" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Clinic
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 

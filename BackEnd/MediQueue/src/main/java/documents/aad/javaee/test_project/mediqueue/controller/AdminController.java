@@ -1,12 +1,11 @@
 package documents.aad.javaee.test_project.mediqueue.controller;
 
-import documents.aad.javaee.test_project.mediqueue.dto.AdminProfileDto;
-import documents.aad.javaee.test_project.mediqueue.dto.AdminProfileViewDto;
-import documents.aad.javaee.test_project.mediqueue.dto.HospitalDto;
+import documents.aad.javaee.test_project.mediqueue.dto.*;
 import documents.aad.javaee.test_project.mediqueue.entity.Hospital;
 import documents.aad.javaee.test_project.mediqueue.service.AdminService;
 import documents.aad.javaee.test_project.mediqueue.service.HospitalService; // Interface එක import කරන්න
 import io.jsonwebtoken.io.IOException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +21,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/admin")
 //@CrossOrigin ("*")
 //@CrossOrigin(origins = "http://127.0.0.1:5500")
+@RequiredArgsConstructor
 public class AdminController {
 
     @Autowired
@@ -102,4 +102,27 @@ public class AdminController {
         AdminProfileViewDto adminProfile = adminService.getAdminProfile(username);
         return ResponseEntity.ok(adminProfile);
     }
+
+
+    @PostMapping("/clinics")
+    public ResponseEntity<ApiResponse> createClinic(@RequestBody ClinicSaveDto clinicSaveDto) {
+        try {
+            adminService.addClinic(clinicSaveDto);
+            return ResponseEntity.ok(new ApiResponse(201, "Clinic created successfully!", null));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponse(400, e.getMessage(), null));
+        }
+    }
+
+    @GetMapping("/clinics")
+    public ResponseEntity<ApiResponse> getAllClinics() {
+        try {
+            List<ClinicSaveDto> clinics = adminService.getAllClinics();
+            return ResponseEntity.ok(new ApiResponse(200, "Clinics fetched successfully!", clinics));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse(500, e.getMessage(), null));
+        }
+    }
+
 }
