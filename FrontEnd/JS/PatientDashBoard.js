@@ -158,6 +158,66 @@ $(document).ready(function() {
         }
     });
 
+
+
+
+
+// ==========================
+// Load Clinics by Selected Hospital
+// ==========================
+async function loadClinicsByHospital(hospitalId) {
+    if (!hospitalId) return;
+
+    const clinicSelect = $('#clinicSelect');
+    clinicSelect.empty(); // පෙර value remove කරන්න
+
+    try {
+        const response = await fetch(`http://localhost:8080/api/v1/clinics/by-hospital/${hospitalId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${JWT_TOKEN}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to load clinics: ${response.status}`);
+        }
+
+        const clinics = await response.json();
+
+        if (clinics.length === 0) {
+            clinicSelect.append('<option value="">No clinics available</option>');
+        } else {
+            clinicSelect.append('<option value="">Select Clinic</option>');
+            clinics.forEach(clinic => {
+                clinicSelect.append(`<option value="${clinic.id}">${clinic.name}</option>`);
+            });
+        }
+
+    } catch (error) {
+        console.error("Error loading clinics:", error);
+        clinicSelect.append('<option value="">Error loading clinics</option>');
+    }
+}
+
+// ==========================
+// Hospital Selection Change Event
+// ==========================
+$(document).on('change', '#hospitalSelect', function() {
+    const selectedHospitalId = $(this).val();
+    console.log("Selected Hospital ID:", selectedHospitalId);
+    loadClinicsByHospital(selectedHospitalId);
+});
+
+
+
+
+
+
+
+
+
     $(document).on('click', '.result-item', function() {
         const hospitalName = $(this).data('name');
         const hospitalId = $(this).data('id');
@@ -165,8 +225,15 @@ $(document).ready(function() {
             $('#hospitalSearchInput').val(hospitalName); 
             $('#hospitalSearchResults').empty(); 
             updateHospitalInfo(hospitalId); 
+             loadClinicsByHospital(hospitalId); 
         }
     });
+
+
+
+
+
+
 
     $(document).on('click', function(event) {
         if (!$(event.target).closest('.search-results-container').length) {

@@ -1,0 +1,27 @@
+package documents.aad.javaee.test_project.mediqueue.controller;
+
+import documents.aad.javaee.test_project.mediqueue.dto.ClinicDto;
+import documents.aad.javaee.test_project.mediqueue.service.ClinicService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/v1/clinics") // <-- JS එකේ තියෙන URL එකට ගැලපෙන්න ඕනේ
+@RequiredArgsConstructor
+public class ClinicController {
+
+
+    private final ClinicService clinicService; // හෝ HospitalService
+
+    @GetMapping("/by-hospital/{hospitalId}")
+    public ResponseEntity<List<ClinicDto>> getClinicsByHospital(@PathVariable Long hospitalId) {
+        List<ClinicDto> clinics = clinicService.getClinicsByHospital(hospitalId);
+        return ResponseEntity.ok(clinics);
+    }
+}
