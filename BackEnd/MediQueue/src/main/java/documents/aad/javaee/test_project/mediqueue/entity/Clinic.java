@@ -1,5 +1,6 @@
 package documents.aad.javaee.test_project.mediqueue.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -36,6 +37,7 @@ public class Clinic {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hospital_id", nullable = false)
     private Hospital hospital;
