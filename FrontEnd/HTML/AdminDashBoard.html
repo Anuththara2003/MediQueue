@@ -392,7 +392,7 @@
 </div>
 
 <!-- ========================================================== -->
-<!-- === MODAL 2: Assign Doctor to Clinic Popup === -->
+<!-- === MODAL 2: Assign Doctor to Clinic Popup (UPDATED) === -->
 <!-- ========================================================== -->
 <div id="assignClinicModal" class="modal-backdrop">
     <div class="modal-content">
@@ -402,17 +402,24 @@
                 <span class="modal-close-btn">&times;</span>
             </div>
             <div class="modal-body">
+                
+                <!-- === වෙනස මෙතනයි: Input එක Select (Dropdown) එකක් බවට පත් කර ඇත === -->
                 <div class="form-group">
-                    <label for="assignDoctorName">Doctor</label>
-                    <input type="text" id="assignDoctorName" readonly>
+                    <label for="assignDoctorSelect">Select Doctor</label>
+                    <select id="assignDoctorSelect" required>
+                        <option value="">Select a doctor...</option>
+                        <!-- jQuery මගින් Doctor ලැයිස්තුව මෙතනට load වනු ඇත -->
+                    </select>
                 </div>
+                
                 <div class="form-group">
                     <label for="assignClinicSelect">Select Clinic</label>
                     <select id="assignClinicSelect" required>
                         <option value="">Select a clinic...</option>
-                        <!-- Backend එකෙන් Clinic List එක Load වෙන්න ඕන -->
+                        <!-- jQuery මගින් Clinic ලැයිස්තුව මෙතනට load වනු ඇත -->
                     </select>
                 </div>
+
                 <div class="form-group">
                     <label for="assignDate">Date</label>
                     <input type="date" id="assignDate" required>
@@ -420,11 +427,11 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="startTime">Start Time</label>
-                        <input type="time" id="startTime">
+                        <input type="time" id="startTime" required>
                     </div>
                     <div class="form-group">
                         <label for="endTime">End Time</label>
-                        <input type="time" id="endTime">
+                        <input type="time" id="endTime" required>
                     </div>
                 </div>
             </div>
@@ -434,8 +441,8 @@
                 </button>
             </div>
         </form>
-    </div>```
-
+    </div>
+</div>
 
 
 <!-- ========================================================== -->

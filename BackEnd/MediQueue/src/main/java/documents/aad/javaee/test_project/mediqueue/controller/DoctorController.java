@@ -21,7 +21,6 @@ public class DoctorController {
     // URL: http://localhost:8080/api/v1/admin/doctors
     @PostMapping("/saved")
     public ResponseEntity<?> registerNewDoctor(@Valid @RequestBody DoctorRegisterDto doctorDto) {
-
         try {
             Doctor savedDoctor = doctorService.registerDoctor(doctorDto);
             return new ResponseEntity<>(savedDoctor, HttpStatus.CREATED);
@@ -30,10 +29,32 @@ public class DoctorController {
         }
     }
 
+
     @GetMapping ("/load")
     public ResponseEntity<List<Doctor>> getAllDoctors() {
         List<Doctor> doctors = doctorService.getAllDoctors();
         return ResponseEntity.ok(doctors);
+    }
+
+
+    @GetMapping("/get/{doctorId}")
+    public ResponseEntity<Doctor> getDoctorById(@PathVariable Integer doctorId) {
+        Doctor doctor = doctorService.getDoctorById(doctorId);
+        return ResponseEntity.ok(doctor);
+    }
+
+
+    @PutMapping("/update/{doctorId}")
+    public ResponseEntity<Doctor> updateDoctor(@PathVariable Integer doctorId, @Valid @RequestBody DoctorRegisterDto dto) {
+        Doctor updatedDoctor = doctorService.updateDoctor(doctorId, dto);
+        return ResponseEntity.ok(updatedDoctor);
+    }
+
+
+    @DeleteMapping("/delete/{doctorId}")
+    public ResponseEntity<Void> deleteDoctor(@PathVariable Integer doctorId) {
+        doctorService.deleteDoctor(doctorId);
+        return ResponseEntity.noContent().build();
     }
 
 }

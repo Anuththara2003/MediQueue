@@ -1,6 +1,7 @@
 package documents.aad.javaee.test_project.mediqueue.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -43,6 +44,7 @@ public class Clinic {
     private Hospital hospital;
 
     // Relationship to ClinicDoctorAssignment join entity
+    @JsonManagedReference("clinic-assignments")
     @OneToMany(mappedBy = "clinic", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<ClinicDoctorAssignment> doctorAssignments = new HashSet<>();
 

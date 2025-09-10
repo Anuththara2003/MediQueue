@@ -45,4 +45,34 @@ public class DoctorServiceImpl implements DoctorService {
     public List<Doctor> getAllDoctors() {
         return doctorRepository.findAll();
     }
+
+    @Override
+    public Doctor getDoctorById(Integer id) {
+        return doctorRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Doctor not found with id: " + id));
+    }
+
+    @Override
+    public Doctor updateDoctor(Integer id, DoctorRegisterDto dto) {
+        Doctor existingDoctor = getDoctorById(id);
+
+
+        existingDoctor.setFullName(dto.getFullName());
+        existingDoctor.setSlmcRegistrationNo(dto.getSlmcRegistrationNo());
+        existingDoctor.setSpecialization(dto.getSpecialization());
+        existingDoctor.setEmail(dto.getEmail());
+        existingDoctor.setContactNumber(dto.getContactNumber());
+        existingDoctor.setStatus(dto.getStatus());
+
+        return doctorRepository.save(existingDoctor);
+    }
+
+    @Override
+    public void deleteDoctor(Integer id) {
+        if (!doctorRepository.existsById(id)) {
+            throw new RuntimeException("Doctor not found with id: " + id);
+        }
+        doctorRepository.deleteById(id);
+
+    }
 }

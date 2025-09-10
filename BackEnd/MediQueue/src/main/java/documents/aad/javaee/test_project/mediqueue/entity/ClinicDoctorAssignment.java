@@ -1,5 +1,6 @@
 package documents.aad.javaee.test_project.mediqueue.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
@@ -18,10 +19,12 @@ public class ClinicDoctorAssignment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "clinic_id", nullable = false)
+    @JsonBackReference("clinic-assignments")
     private Clinic clinic;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "doctor_id", nullable = false)
+    @JsonBackReference("doctor-assignments")
     private Doctor doctor;
 
     @Column(nullable = false)

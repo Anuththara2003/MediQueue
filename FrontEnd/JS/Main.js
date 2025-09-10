@@ -193,6 +193,24 @@ $(document).ready(function () {
         breadcrumb.text(crumb);
     }
 
+
+// =======================================================
+// === GENERIC MODAL CLOSING LOGIC (Works for ALL modals) ===
+// =======================================================
+
+$(document).on('click', '.modal-close-btn', function() {
+    $(this).closest('.modal-backdrop').removeClass('show');
+});
+
+$(document).on('click', '.modal-backdrop', function(event) {
+    
+    if ($(event.target).is(this)) {
+        $(this).removeClass('show');
+    }
+});
+
+
+
     window.showSection = function (sectionId) {
         $('.dashboard-section').removeClass('active');
         $('.nav-item').removeClass('active');
@@ -204,7 +222,11 @@ $(document).ready(function () {
             loadHospitals();
         } else if (sectionId === 'clinics') {
             loadClinics();
-        }
+        
+         } else if (sectionId === 'doctors') {
+        // === මෙතන තමයි "Manage Doctors" සඳහා call එක එකතු කර ඇත්තේ ===
+        loadDoctors(); 
+    }
 
         updateHeader(sectionId);
     };
@@ -616,39 +638,161 @@ $(document).ready(function () {
             });
         });
     }
+    
 
-    // =======================================================
-    // === MANAGE DOCTORS SECTION - MODAL LOGIC ===
-    // =======================================================
+// =======================================================
+// MANAGE DOCTORS - COMPLETE, ORGANIZED & FIXED JQUERY LOGIC
+// =======================================================
 
-    // --- Modal 1: Register Doctor ---
-    const registerDoctorModal = $('#registerDoctorModal');
-    if (registerDoctorModal.length) {
-        const openRegisterBtn = $('#openRegisterModalBtn');
-        const closeRegisterBtn = registerDoctorModal.find('.modal-close-btn');
+// -------------------------------------------------------
+// SECTION 1: CORE FUNCTIONS (Loading data, Opening modals)
+// -------------------------------------------------------
 
-        openRegisterBtn.on('click', () => {
-            registerDoctorModal.addClass('show');
-        });
+/**
+ * Loads all doctors from the backend and populates the main doctors table.
+ */
+function loadDoctors() {
+    const $doctorTableBody = $('#doctorTableBody');
+    $doctorTableBody.empty().html('<tr><td colspan="5" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>');
 
-        closeRegisterBtn.on('click', () => {
-            registerDoctorModal.removeClass('show');
-        });
+    $.ajax({
+        url: `${API_BASE_URL}/doctors/load`,
+        type: 'GET',
+        headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
+    }).done(function (doctors) {
+        $doctorTableBody.empty();
+        if (doctors && doctors.length > 0) {
+            $.each(doctors, function (index, doctor) {
+                const row = `
+                    <tr>
+                        <td>${doctor.fullName}</td>
+                        <td>${doctor.slmcRegistrationNo}</td>
+                        <td>${doctor.specialization || 'N/A'}</td>
+                        <td><span class="status-badge status-${doctor.status.toLowerCase()}">${doctor.status}</span></td>
+                        <td class="action-buttons">
+                            <button class="btn-icon btn-update" data-doctor-id="${doctor.id}" title="Update Doctor"><i class="fas fa-pen"></i></button>
+                            <button class="btn-icon btn-delete" data-doctor-id="${doctor.id}" data-doctor-name="${doctor.fullName}" title="Delete Doctor"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>`;
+                $doctorTableBody.append(row);
+            });
+        } else {
+            $doctorTableBody.html('<tr><td colspan="5" style="text-align: center;">No doctors found.</td></tr>');
+        }
+    }).fail(function (jqXHR) {
+        console.error("Error loading doctors:", jqXHR.status, jqXHR.responseText);
+        $doctorTableBody.empty().html('<tr><td colspan="5" style="text-align: center; color: red;">Error loading doctors.</td></tr>');
+    });
+}
 
+/**
+ * Opens the Doctor Registration/Update modal in the correct mode.
+ */
+function openDoctorModal(mode, doctorId = null) {
+    const $modal = $('#registerDoctorModal');
+    const $form = $('#registerForm');
+    
+    $form[0].reset();
+    $form.data('mode', mode);
+    $form.data('id', doctorId || '');
 
-
-
-
+    if (mode === 'add') {
+        $('#doctorModalTitle').html('<i class="fas fa-user-plus"></i> Register New Doctor');
+        $form.find('button[type="submit"]').html('<i class="fas fa-save"></i> Save Doctor');
+        $modal.addClass('show');
+    } 
+    else if (mode === 'edit') {
+        $('#doctorModalTitle').html('<i class="fas fa-edit"></i> Update Doctor Details');
+        $form.find('button[type="submit"]').html('<i class="fas fa-sync-alt"></i> Update Changes');
         
+        $.ajax({
+            url: `${API_BASE_URL}/doctors/get/${doctorId}`,
+            type: 'GET',
+            headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
+        }).done(function(doctor) {
+            $('#fullName').val(doctor.fullName);
+            $('#slmcNo').val(doctor.slmcRegistrationNo);
+            $('#specialization').val(doctor.specialization);
+            $('#contactNumber').val(doctor.contactNumber);
+            $('#email').val(doctor.email);
+            $('#status').val(doctor.status);
+            $modal.addClass('show');
+        }).fail(function() {
+            alert('Error: Could not fetch doctor details for editing.');
+        });
+    }
+}
+
+/**
+ * Loads both doctors and clinics for the Assignment modal dropdowns.
+ */
+function loadDataForAssignmentModal() {
+    const $doctorSelect = $('#assignDoctorSelect');
+    const $clinicSelect = $('#assignClinicSelect');
+
+    $doctorSelect.prop('disabled', true).html('<option value="">Loading doctors...</option>');
+    $clinicSelect.prop('disabled', true).html('<option value="">Loading clinics...</option>');
+
+    const doctorsRequest = $.ajax({
+        url: `${API_BASE_URL}/doctors/load`,
+        type: 'GET',
+        headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
+    });
+
+    const clinicsRequest = $.ajax({
+        url: `${API_BASE_URL}/clinics`,
+        type: 'GET',
+        headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
+    });
+
+    $.when(doctorsRequest, clinicsRequest).done(function(doctorsResponse, clinicsResponse) {
+        const doctors = doctorsResponse[0];
+        $doctorSelect.empty().append('<option value="">Select a doctor</option>');
+        if (doctors && doctors.length > 0) {
+            $.each(doctors, function(i, doctor) {
+                $doctorSelect.append(`<option value="${doctor.id}">${doctor.fullName} (${doctor.specialization || 'N/A'})</option>`);
+            });
+            $doctorSelect.prop('disabled', false);
+        }
+
+        const clinics = clinicsResponse[0].data || clinicsResponse[0];
+        $clinicSelect.empty().append('<option value="">Select a clinic</option>');
+        if (clinics && clinics.length > 0) {
+            $.each(clinics, function(i, clinic) {
+                $clinicSelect.append(`<option value="${clinic.id}">${clinic.name} (${clinic.hospitalName})</option>`);
+            });
+            $clinicSelect.prop('disabled', false);
+        }
+    }).fail(function() {
+        console.error("Failed to load data for assignment modal.");
+    });
+}
 
 
-// =======================================================
-// === නිවැරදි සහ වැඩිදියුණු කළ JQUERY AJAX SUBMIT LOGIC ===
-// =======================================================
+// -------------------------------------------------------
+// SECTION 2: EVENT LISTENERS (Clicks, Submits)
+// -------------------------------------------------------
+
+// --- Listens for click on "Register New Doctor" button ---
+$('#openRegisterModalBtn').on('click', function() {
+    openDoctorModal('add');
+});
+
+// --- Listens for click on "Assign to Clinic" button ---
+$('#doctors .assign-btn').on('click', function() {
+    loadDataForAssignmentModal();
+    $('#assignForm')[0].reset();
+    $('#assignModalTitle').text('Assign Doctor to Clinic');
+    $('#assignClinicModal').addClass('show');
+});
+
+// --- Listens for Doctor Form Submission (Handles BOTH Add & Update) ---
 $('#registerForm').on('submit', function (e) {
-    e.preventDefault(); // Form එක submit වීම වැලැක්වීම
+    e.preventDefault();
+    
+    const mode = $(this).data('mode');
+    const doctorId = $(this).data('id');
 
-    // 1. Form එකෙන් දත්ත ලබාගෙන JavaScript object එකක් සෑදීම (වෙනසක් නැත)
     const doctorData = {
         slmcRegistrationNo: $('#slmcNo').val(),
         fullName: $('#fullName').val(),
@@ -658,280 +802,87 @@ $('#registerForm').on('submit', function (e) {
         status: $('#status').val()
     };
 
-    // --- Frontend Validation (වෙනසක් නැත) ---
-    if (!doctorData.slmcRegistrationNo || !doctorData.fullName) {
-        alert("Full Name and SLMC Registration Number are required.");
-        return;
+    let ajaxOptions = {
+        headers: { 'Authorization': `Bearer ${JWT_TOKEN}` },
+        contentType: 'application/json',
+        data: JSON.stringify(doctorData)
+    };
+
+    if (mode === 'add') {
+        ajaxOptions.url = `${API_BASE_URL}/doctors/saved`;
+        ajaxOptions.type = 'POST';
+    } else if (mode === 'edit') {
+        ajaxOptions.url = `${API_BASE_URL}/doctors/update/${doctorId}`;
+        ajaxOptions.type = 'PUT';
     }
 
-
-    // 2. JWT Token එක Local Storage එකෙන් ලබාගැනීම (වෙනසක් නැත)
-    const JWT_TOKEN = localStorage.getItem('jwtToken');
-    if (!JWT_TOKEN) {
-        alert('Authentication Error. Please log in again.');
-        return;
-    }
-
-    // 3. Backend එකට දත්ත යැවීම සඳහා jQuery AJAX භාවිතා කිරීම
-    $.ajax({
-        url: "http://localhost:8080/api/v1/admin/doctors/saved", // API Endpoint එක
-        type: 'POST', // HTTP Method එක
-        headers: {
-            'Authorization': `Bearer ${JWT_TOKEN}` // Security Token එක
-        },
-        contentType: 'application/json', // යවන දත්ත වර්ගය (JSON සඳහා මෙය අනිවාර්යයි)
-        data: JSON.stringify(doctorData) // JavaScript object එක JSON string එකක් බවට පත් කර යැවීම
-    })
-    .done(function (result) {
-        // 4a. Request එක සාර්ථක වූ විට (HTTP Status 2xx) මෙම කොටස ක්‍රියාත්මක වේ.
-        // `result` යනු backend එකෙන් response body එකේ එවන දත්තයි.
-        alert('Doctor registered successfully!');
+    $.ajax(ajaxOptions).done(function () {
+        alert(`Doctor ${mode === 'edit' ? 'updated' : 'registered'} successfully!`);
         $('#registerDoctorModal').removeClass('show');
-        // loadDoctors(); // අවශ්‍ය නම් Doctor table එක refresh කරන්න
-    })
-    .fail(function (jqXHR) {
-        // 4b. Request එක අසාර්ථක වූ විට (HTTP Status 4xx, 5xx හෝ network error) මෙම කොටස ක්‍රියාත්මක වේ.
-        // `jqXHR` object එකේ error එකට අදාළ සියලුම විස්තර අඩංගු වේ.
-        const errorMessage = jqXHR.responseText || "Failed to register doctor. Please check the details and try again.";
-        
-        console.error('Error during doctor registration:', jqXHR.responseText);
-        alert(`Registration failed: ${errorMessage}`);
+        loadDoctors();
+    }).fail(function (jqXHR) {
+        alert(`Error: ${jqXHR.responseText}`);
     });
 });
 
+// --- Listens for Assignment Form Submission ---
+$('#assignForm').on('submit', function(e) {
+    e.preventDefault();
 
-////////////////////////////////////////////////////////////////////////////
-
-
-
-
-// =======================================================
-// MANAGE DOCTORS - FINAL JQUERY LOGIC
-// =======================================================
-
-function loadDoctors() {
-    const $doctorTableBody = $('#doctorTableBody');
-    const JWT_TOKEN = localStorage.getItem('jwtToken');
-
-    // 1. Loading State: දත්ත එනතුරු පණිවිඩයක් පෙන්වීම
-    $doctorTableBody.empty().html('<tr><td colspan="5" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Loading doctors...</td></tr>');
+    const assignmentData = {
+        doctorId: $('#assignDoctorSelect').val(),
+        clinicId: $('#assignClinicSelect').val(),
+        assignedDate: $('#assignDate').val(),
+        startTime: $('#startTime').val(),
+        endTime: $('#endTime').val()
+    };
+    
+    if (!assignmentData.doctorId || !assignmentData.clinicId || !assignmentData.assignedDate) {
+        alert("Please select a doctor, clinic, and date.");
+        return;
+    }
 
     $.ajax({
-        url: "http://localhost:8080/api/v1/admin/doctors/load", // **නිවැරදි URL එකට මාරු කරන ලදී**
-        type: 'GET',
+        url: `${API_BASE_URL}/assignments`,
+        type: 'POST',
         headers: {
-            'Authorization': `Bearer ${JWT_TOKEN}`
-        }
-    })
-    .done(function (doctors) {
-        // 2. Success: දත්ත සාර්ථකව ලැබුණු විට
-        $doctorTableBody.empty();
-
-        if (doctors && doctors.length > 0) {
-            // 2a. Doctor ලා සිටීනම්, table එක build කිරීම
-            $.each(doctors, function (index, doctor) {
-                // Status එකට අදාළව CSS class එකක් සැකසීම
-                const statusClass = doctor.status ? doctor.status.toLowerCase() : 'active';
-                
-                // === මෙතන තමයි Actions column එක icon buttons සමඟ සකසා ඇත්තේ ===
-                const row = `
-                    <tr>
-                        <td>${doctor.fullName}</td>
-                        <td>${doctor.slmcRegistrationNo}</td>
-                        <td>${doctor.specialization || 'N/A'}</td>
-                        <td><span class="status-badge status-${statusClass}">${doctor.status}</span></td>
-                        <td class="action-buttons">
-                            <!-- Update Button -->
-                            <button class="btn-icon btn-update" data-doctor-id="${doctor.id}" title="Update Doctor">
-                                <i class="fas fa-pen"></i>
-                            </button>
-                            <!-- Delete Button -->
-                            <button class="btn-icon btn-delete" data-doctor-id="${doctor.id}" data-doctor-name="${doctor.fullName}" title="Delete Doctor">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-                $doctorTableBody.append(row);
-            });
-        } else {
-            // 2b. Doctor ලා කිසිවෙක් නැත්නම්
-            $doctorTableBody.html('<tr><td colspan="5" style="text-align: center;">No doctors found. Register a new one to get started.</td></tr>');
-        }
-    })
-    .fail(function (jqXR) {
-        // 3. Failure: AJAX call එක අසාර්ථක වූ විට
-        console.error("Failed to load doctors:", jqXHR.status, jqXHR.responseText);
-        $doctorTableBody.empty().html('<tr><td colspan="5" style="text-align: center; color: red;">Error loading doctors. Please check the console.</td></tr>');
+            'Authorization': `Bearer ${JWT_TOKEN}`,
+            'Content-Type': 'application/json'
+        },
+        data: JSON.stringify(assignmentData)
+    }).done(function() {
+        alert('Assignment created successfully!');
+        $('#assignClinicModal').removeClass('show');
+    }).fail(function(jqXHR) {
+        alert(`Error creating assignment: ${jqXHR.responseText}`);
     });
-}
+});
 
-
-    // 👉 Call doctors load here
-    loadDoctors();
-
-
-
-
+// --- Listens for clicks on Update/Delete buttons inside the table ---
+$('#doctorTableBody').on('click', 'button.btn-icon', function() {
+    const $button = $(this);
+    const doctorId = $button.data('doctorId');
+    
+    if ($button.hasClass('btn-update')) {
+        openDoctorModal('edit', doctorId);
     }
-    // --- Modal 2: Assign Doctor to Clinic (CORRECTED LOGIC) ---
-    const assignClinicModal = $('#assignClinicModal');
-    if (assignClinicModal.length) {
-        const assignModalTitle = $('#assignModalTitle');
-        const assignDoctorNameInput = $('#assignDoctorName');
-        const closeAssignBtn = assignClinicModal.find('.modal-close-btn');
-
-        $('body').on('click', '.assign-btn', function (event) {
-            const assignButton = $(this); // Use $(this) directly
-            const doctorName = assignButton.data('doctor-name');
-
-            assignModalTitle.text(`Assign ${doctorName} to a Clinic`);
-            assignDoctorNameInput.val(doctorName);
-
-            assignClinicModal.addClass('show');
-        });
-
-        closeAssignBtn.on('click', () => {
-            assignClinicModal.removeClass('show');
-        });
-
-        $('#assignForm').on('submit', function (e) {
-            e.preventDefault();
-            alert('Submitting assignment data to backend!');
-            assignClinicModal.removeClass('show');
-        });
-    }
-
-    // --- General: Close modals when clicking on the backdrop ---
-    $(window).on('click', (event) => {
-        if ($(event.target).is(registerDoctorModal)) {
-            registerDoctorModal.removeClass('show');
-        }
-        if ($(event.target).is(assignClinicModal)) {
-            assignClinicModal.removeClass('show');
-        }
-    });
-
-    // =================================================================
-    // === UPDATED & CORRECTED: MANAGE DOCTORS (ADD/EDIT/DELETE) LOGIC ===
-    // =================================================================
-
-    // --- Doctor Modal Elements ---
-    const doctorTableBody = $('#doctorTableBody');
-    const doctorModalTitle = $('#doctorModalTitle');
-    const doctorForm = $('#registerForm');
-    const doctorIdField = $('#doctorId');
-    const saveDoctorBtn = $('#saveDoctorBtn');
-
-    // --- Dummy Data (Backend එකෙන් data එනකන් test කරන්න) ---
-    const doctorsData = {
-        "1": { id: 1, fullName: 'Dr. Anura Silva', slmcNo: 'SLMC12345', specialization: 'Cardiologist', email: 'anura@mediqueue.com', contactNumber: '077111222', status: 'ACTIVE' },
-        "2": { id: 2, fullName: 'Dr. Nimali Perera', slmcNo: 'SLMC54321', specialization: 'Neurologist', email: 'nimali@mediqueue.com', contactNumber: '071333444', status: 'ON_LEAVE' }
-    };
-
-    // --- Function to open the Doctor Modal in different modes ---
-    function openDoctorModal(mode, doctorId = null) {
-        doctorForm[0].reset();
-        doctorForm.data('mode', mode);
-
-        if (mode === 'add') {
-            doctorModalTitle.html('<i class="fas fa-user-plus"></i> Register New Doctor');
-            saveDoctorBtn.html('<i class="fas fa-save"></i> <span>Save Doctor</span>');
-            doctorIdField.val('');
-        }
-        else if (mode === 'edit') {
-            doctorModalTitle.html('<i class="fas fa-edit"></i> Update Doctor Details');
-            saveDoctorBtn.html('<i class="fas fa-save"></i> <span>Update Changes</span>');
-
-            const doctor = doctorsData[doctorId];
-            if (doctor) {
-                doctorIdField.val(doctor.id);
-                $('#fullName').val(doctor.fullName);
-                $('#slmcNo').val(doctor.slmcNo);
-                $('#specialization').val(doctor.specialization);
-                $('#email').val(doctor.email);
-                $('#contactNumber').val(doctor.contactNumber);
-                $('#status').val(doctor.status);
-            }
-        }
-
-        registerDoctorModal.addClass('show');
-    }
-
-    // --- Event Listeners ---
-
-    // 1. Listen for click on the main "Register New Doctor" button
-    if (openRegisterBtn.length) {
-        openRegisterBtn.on('click', () => {
-            openDoctorModal('add'); // Open modal in 'add' mode
-        });
-    }
-
-    // 2. Use Event Delegation for clicks inside the table (UPDATE and DELETE)
-    if (doctorTableBody.length) {
-        doctorTableBody.on('click', 'button.btn-icon', function (event) {
-            const button = $(this);
-            const doctorId = button.data('doctor-id');
-
-            if (button.hasClass('btn-delete')) {
-                const doctorName = button.data('doctor-name');
-                if (confirm(`Are you sure you want to delete ${doctorName}?`)) {
-                    console.log('DELETING DOCTOR ID:', doctorId);
-                    button.closest('tr').remove();
-                }
-            }
-
-            if (button.hasClass('btn-update')) {
-                openDoctorModal('edit', doctorId);
-            }
-        });
-    }
-
-    // 3. Handle Form Submission for both ADD and UPDATE
-    if (doctorForm.length) {
-        doctorForm.on('submit', function (e) {
-            e.preventDefault();
-            const mode = doctorForm.data('mode');
-            const currentDoctorId = doctorIdField.val();
-
-            if (mode === 'add') {
-                console.log('Submitting NEW doctor data...');
-                alert('New doctor registered!');
-            } else if (mode === 'edit') {
-                console.log(`Submitting UPDATED data for ID: ${currentDoctorId}`);
-                alert('Doctor details updated!');
-            }
-
-            registerDoctorModal.removeClass('show');
-        });
-    }
-
-    // 4. Handle Modal Closing
-    if (registerDoctorModal.length) {
-        const closeRegisterBtn = registerDoctorModal.find('.modal-close-btn');
-        if (closeRegisterBtn.length) {
-            closeRegisterBtn.on('click', () => {
-                registerDoctorModal.removeClass('show');
+    
+    if ($button.hasClass('btn-delete')) {
+        const doctorName = $button.data('doctorName');
+        if (confirm(`Are you sure you want to delete ${doctorName}?`)) {
+            $.ajax({
+                url: `${API_BASE_URL}/doctors/delete/${doctorId}`,
+                type: 'DELETE',
+                headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
+            }).done(function() {
+                alert(`${doctorName} has been deleted successfully.`);
+                loadDoctors();
+            }).fail(function() {
+                alert(`Error: Could not delete ${doctorName}.`);
             });
         }
-
-        registerDoctorModal.on('click', (event) => {
-            if ($(event.target).is(registerDoctorModal)) {
-                registerDoctorModal.removeClass('show');
-            }
-        });
     }
-
-    
-
-
-    
-
-        
-
-
-
-
+});
 
 
 
@@ -939,6 +890,7 @@ function loadDoctors() {
     // INITIAL PAGE LOAD ACTIONS
     // =================================================================
     loadAdminHeaderDetails();
+    
 
     showSection('overview');
 });

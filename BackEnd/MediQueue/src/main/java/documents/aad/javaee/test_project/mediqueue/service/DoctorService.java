@@ -11,4 +11,7 @@ public interface DoctorService {
 
     Doctor registerDoctor(DoctorRegisterDto dto);
     List<Doctor> getAllDoctors();
+    Doctor getDoctorById(Integer id);
+    Doctor updateDoctor(Integer id, DoctorRegisterDto dto);
+    void deleteDoctor(Integer id);
 }

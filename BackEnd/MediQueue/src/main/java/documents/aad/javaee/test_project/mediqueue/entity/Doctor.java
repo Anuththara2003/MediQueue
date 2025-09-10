@@ -1,6 +1,7 @@
 package documents.aad.javaee.test_project.mediqueue.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -45,6 +46,7 @@ public class Doctor {
     private LocalDateTime updatedAt;
 
     // Relationship to ClinicDoctorAssignment join entity
+    @JsonManagedReference("doctor-assignments")
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<ClinicDoctorAssignment> clinicAssignments = new HashSet<>();
 
