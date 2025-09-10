@@ -31,6 +31,7 @@
                 <div class="nav-item" onclick="showSection('hospitals')"><i class="fas fa-hospital"></i><span>Hospitals </span></div>
                 <div class="nav-item" onclick="showSection('clinics')"><i class="fas fa-clinic-medical"></i><span>Manage Clinics</span></div> 
                 <div class="nav-item" onclick="showSection('doctors')"><i class="fas fa-user-edit"></i><span>Manage Doctors</span></div> 
+                <div class="nav-item" onclick="showSection('users')"><i class="fas fa-users-cog"></i><span>Manage users</span></div> 
                 <div class="nav-item" onclick="showSection('reports')"><i class="fas fa-file-alt"></i><span>Reports & Analytics</span></div>
                 <div class="nav-item" onclick="showSection('sms')"><i class="fas fa-comment-sms"></i><span>SMS Management</span></div>
                 <div class="nav-item" onclick="showSection('system')"><i class="fas fa-cogs"></i><span>System Health</span></div>
@@ -198,6 +199,35 @@
                         
                         
                     </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- AdminDashBoard.html (අනෙකුත් sections සමඟ) -->
+<!-- ========= Manage Users Section ========= -->
+<div class="dashboard-section" id="users">
+    <div class="section-header">
+        <h2>Manage Users</h2>
+    </div>
+    <div class="content-card">
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th>Contact Number</th>
+                        <th>Role</th>
+                        <th>Gender</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+                    <!-- Data will be loaded here by jQuery -->
                 </tbody>
             </table>
         </div>

@@ -224,9 +224,13 @@ $(document).on('click', '.modal-backdrop', function(event) {
             loadClinics();
         
          } else if (sectionId === 'doctors') {
-        // === මෙතන තමයි "Manage Doctors" සඳහා call එක එකතු කර ඇත්තේ ===
+        
         loadDoctors(); 
-    }
+        }
+         else if (sectionId === 'users') { // <<--- මෙම else if block එක එකතු කරන්න
+        loadUsers();
+
+        }
 
         updateHeader(sectionId);
     };
@@ -640,22 +644,67 @@ $(document).on('click', '.modal-backdrop', function(event) {
     }
     
 
+
 // =======================================================
-// MANAGE DOCTORS - COMPLETE, ORGANIZED & FIXED JQUERY LOGIC
+// MANAGE DOCTORS - FINAL & CORRECTED JQUERY LOGIC
 // =======================================================
 
-// -------------------------------------------------------
-// SECTION 1: CORE FUNCTIONS (Loading data, Opening modals)
-// -------------------------------------------------------
-
-/**
- * Loads all doctors from the backend and populates the main doctors table.
- */
+// --- Function to Load Doctors into the Table ---
 function loadDoctors() {
     const $doctorTableBody = $('#doctorTableBody');
     $doctorTableBody.empty().html('<tr><td colspan="5" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>');
 
+
+
+    // =======================================================
+// === "CREATE ASSIGNMENT" FORM SUBMISSION LOGIC ===
+// =======================================================
+$('#assignForm').on('submit', function(e) {
+    e.preventDefault(); // Default form submission එක නවත්වනවා
+
+    // 1. Form එකෙන් දත්ත ලබාගෙන object එකක් හදනවා
+    const assignmentData = {
+        doctorId: $('#assignDoctorSelect').val(),
+        clinicId: $('#assignClinicSelect').val(),
+        assignedDate: $('#assignDate').val(),
+        startTime: $('#startTime').val(),
+        endTime: $('#endTime').val()
+    };
+    
+    // --- Frontend Validation ---
+    if (!assignmentData.doctorId || !assignmentData.clinicId || !assignmentData.assignedDate || !assignmentData.startTime || !assignmentData.endTime) {
+        alert("Please fill in all the required fields.");
+        return;
+    }
+
+    // 2. Backend එකට AJAX POST request එක යැවීම
     $.ajax({
+        url: `${API_BASE_URL}/assignments`, // අපි සෑදූ නව Controller එකේ URL එක
+        type: 'POST',
+        headers: {
+            'Authorization': `Bearer ${JWT_TOKEN}`,
+            'Content-Type': 'application/json'
+        },
+        data: JSON.stringify(assignmentData) // Data, JSON string එකක් ලෙස යැවීම
+    })
+    .done(function(response) {
+        // 3a. සාර්ථක වූ විට
+        alert('Assignment created successfully!');
+        $('#assignClinicModal').removeClass('show'); // Modal එක වැසීම
+        // ඔබට අවශ්‍ය නම්, assignments පෙන්වන table එකක් refresh කළ හැක.
+    })
+    .fail(function(jqXHR) {
+        // 3b. අසාර්ථක වූ විට
+        const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.message : jqXHR.responseText;
+        alert(`Error creating assignment: ${errorMessage}`);
+        console.error("Assignment creation failed:", jqXHR);
+    });
+});
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    $.ajax({
+        // Backend Controller: @GetMapping("/load")
         url: `${API_BASE_URL}/doctors/load`,
         type: 'GET',
         headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
@@ -685,9 +734,49 @@ function loadDoctors() {
     });
 }
 
-/**
- * Opens the Doctor Registration/Update modal in the correct mode.
- */
+
+// --- "CREATE ASSIGNMENT" FORM SUBMISSION LOGIC ---
+$('#assignForm').on('submit', function(e) {
+    e.preventDefault();
+
+    const assignmentData = {
+        doctorId: $('#assignDoctorSelect').val(),
+        clinicId: $('#assignClinicSelect').val(),
+        assignedDate: $('#assignDate').val(),
+        startTime: $('#startTime').val(),
+        endTime: $('#endTime').val()
+    };
+    
+    if (!assignmentData.doctorId || !assignmentData.clinicId || !assignmentData.assignedDate) {
+        alert("Please select a doctor, clinic, and date.");
+        return;
+    }
+
+    $.ajax({
+        url: `${API_BASE_URL}/assignments`, // Backend Controller: @PostMapping("/assignments/create")
+        type: 'POST',
+        headers: {
+            'Authorization': `Bearer ${JWT_TOKEN}`,
+            'Content-Type': 'application/json'
+        },
+        data: JSON.stringify(assignmentData)
+    })
+    .done(function() {
+        alert('Assignment created successfully!');
+        $('#assignClinicModal').removeClass('show');
+    })
+    .fail(function(jqXHR) {
+        const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.message : (jqXHR.responseText || "Unknown error");
+        alert(`Error creating assignment: ${errorMessage}`);
+    });
+});
+
+
+
+
+
+
+// --- Function to Open the Doctor Modal (Handles BOTH Add & Edit) ---
 function openDoctorModal(mode, doctorId = null) {
     const $modal = $('#registerDoctorModal');
     const $form = $('#registerForm');
@@ -706,10 +795,12 @@ function openDoctorModal(mode, doctorId = null) {
         $form.find('button[type="submit"]').html('<i class="fas fa-sync-alt"></i> Update Changes');
         
         $.ajax({
+            // Backend Controller: @GetMapping("/get/{doctorId}")
             url: `${API_BASE_URL}/doctors/get/${doctorId}`,
             type: 'GET',
             headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
         }).done(function(doctor) {
+            // Populate the form with the fetched data
             $('#fullName').val(doctor.fullName);
             $('#slmcNo').val(doctor.slmcRegistrationNo);
             $('#specialization').val(doctor.specialization);
@@ -723,70 +814,101 @@ function openDoctorModal(mode, doctorId = null) {
     }
 }
 
+// --- Event Listener for "Register New Doctor" Button ---
+$('#openRegisterModalBtn').on('click', function() {
+    openDoctorModal('add');
+});
+
+
+// =======================================================
+// === ASSIGN DOCTOR TO CLINIC - COMPLETE LOGIC ===
+// =======================================================
+
 /**
- * Loads both doctors and clinics for the Assignment modal dropdowns.
+ * "Assign" modal එක සඳහා අවශ්‍ය Doctors සහ Clinics ලැයිස්තු දෙකම
+ * AJAX මගින් backend එකෙන් ලබාගන්නා function එක.
  */
 function loadDataForAssignmentModal() {
     const $doctorSelect = $('#assignDoctorSelect');
     const $clinicSelect = $('#assignClinicSelect');
 
+    // 1. Dropdowns "Loading..." state එකට පත් කිරීම
     $doctorSelect.prop('disabled', true).html('<option value="">Loading doctors...</option>');
     $clinicSelect.prop('disabled', true).html('<option value="">Loading clinics...</option>');
 
+    // 2. AJAX call to fetch Doctors
     const doctorsRequest = $.ajax({
-        url: `${API_BASE_URL}/doctors/load`,
+        url: `${API_BASE_URL}/doctors/load`, // සියලුම doctors ලා get කරන endpoint එක
         type: 'GET',
         headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
     });
 
+    // 3. AJAX call to fetch Clinics
     const clinicsRequest = $.ajax({
-        url: `${API_BASE_URL}/clinics`,
+        url: `${API_BASE_URL}/clinics`, // සියලුම clinics ලා get කරන endpoint එක
         type: 'GET',
         headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
     });
 
+    // 4. AJAX calls දෙකම අවසන් වූ පසු, dropdowns පිරවීම
+    // $.when() මගින් AJAX calls දෙකම එකවර යවා, දෙකම අවසන් වූ පසු .done() එක ක්‍රියාත්මක කරවයි.
     $.when(doctorsRequest, clinicsRequest).done(function(doctorsResponse, clinicsResponse) {
-        const doctors = doctorsResponse[0];
+        
+        // --- Doctor Dropdown පිරවීම ---
+        const doctors = doctorsResponse[0]; // AJAX response එක array එකක එන නිසා, [0] යොදා data ටික ගන්නවා
         $doctorSelect.empty().append('<option value="">Select a doctor</option>');
         if (doctors && doctors.length > 0) {
             $.each(doctors, function(i, doctor) {
                 $doctorSelect.append(`<option value="${doctor.id}">${doctor.fullName} (${doctor.specialization || 'N/A'})</option>`);
             });
-            $doctorSelect.prop('disabled', false);
+            $doctorSelect.prop('disabled', false); // Dropdown එක enable කරනවා
+        } else {
+            $doctorSelect.html('<option value="">No doctors available</option>');
         }
 
-        const clinics = clinicsResponse[0].data || clinicsResponse[0];
+        // --- Clinic Dropdown පිරවීම ---
+        const clinics = clinicsResponse[0].data || clinicsResponse[0]; // ඔබගේ clinic response එක data object එකක් තුල එනවා විය හැක
         $clinicSelect.empty().append('<option value="">Select a clinic</option>');
         if (clinics && clinics.length > 0) {
             $.each(clinics, function(i, clinic) {
                 $clinicSelect.append(`<option value="${clinic.id}">${clinic.name} (${clinic.hospitalName})</option>`);
             });
-            $clinicSelect.prop('disabled', false);
+            $clinicSelect.prop('disabled', false); // Dropdown එක enable කරනවා
+        } else {
+             $clinicSelect.html('<option value="">No clinics available</option>');
         }
+
     }).fail(function() {
-        console.error("Failed to load data for assignment modal.");
+        // AJAX calls දෙකෙන් එකක් හෝ අසාර්ථක උනොත්
+        console.error("Failed to load data (doctors or clinics) for assignment modal.");
+        $doctorSelect.prop('disabled', true).html('<option value="">Error loading doctors</option>');
+        $clinicSelect.prop('disabled', true).html('<option value="">Error loading clinics</option>');
     });
 }
 
-
-// -------------------------------------------------------
-// SECTION 2: EVENT LISTENERS (Clicks, Submits)
-// -------------------------------------------------------
-
-// --- Listens for click on "Register New Doctor" button ---
-$('#openRegisterModalBtn').on('click', function() {
-    openDoctorModal('add');
-});
-
-// --- Listens for click on "Assign to Clinic" button ---
+// --- Event Listener for "Assign to Clinic" Button ---
+// මෙම button එක doctor table එකට පිටතින් ඇති නිසා, සරල click listener එකක් ප්‍රමාණවත්
 $('#doctors .assign-btn').on('click', function() {
+    const $modal = $('#assignClinicModal');
+    
+    // 1. Modal එක පෙන්වීමට පෙර, dropdowns වලට දත්ත load කරන function එක call කිරීම
     loadDataForAssignmentModal();
+    
+    // 2. Form එක reset කර, modal එක පෙන්වීම
     $('#assignForm')[0].reset();
     $('#assignModalTitle').text('Assign Doctor to Clinic');
-    $('#assignClinicModal').addClass('show');
+    $modal.addClass('show');
 });
 
-// --- Listens for Doctor Form Submission (Handles BOTH Add & Update) ---
+
+
+
+
+
+
+
+
+// --- Event Listener for Doctor Form Submission (Handles BOTH Add & Update) ---
 $('#registerForm').on('submit', function (e) {
     e.preventDefault();
     
@@ -809,56 +931,28 @@ $('#registerForm').on('submit', function (e) {
     };
 
     if (mode === 'add') {
+        // Backend Controller: @PostMapping("/saved")
         ajaxOptions.url = `${API_BASE_URL}/doctors/saved`;
         ajaxOptions.type = 'POST';
     } else if (mode === 'edit') {
+        // Backend Controller: @PutMapping("/update/{doctorId}")
         ajaxOptions.url = `${API_BASE_URL}/doctors/update/${doctorId}`;
         ajaxOptions.type = 'PUT';
     }
 
-    $.ajax(ajaxOptions).done(function () {
+    $.ajax(ajaxOptions)
+    .done(function () {
         alert(`Doctor ${mode === 'edit' ? 'updated' : 'registered'} successfully!`);
         $('#registerDoctorModal').removeClass('show');
-        loadDoctors();
-    }).fail(function (jqXHR) {
-        alert(`Error: ${jqXHR.responseText}`);
+        loadDoctors(); // Refresh the table
+    })
+    .fail(function (jqXHR) {
+        const errorMessage = jqXHR.responseText || `Failed to ${mode} doctor.`;
+        alert(`Error: ${errorMessage}`);
     });
 });
 
-// --- Listens for Assignment Form Submission ---
-$('#assignForm').on('submit', function(e) {
-    e.preventDefault();
-
-    const assignmentData = {
-        doctorId: $('#assignDoctorSelect').val(),
-        clinicId: $('#assignClinicSelect').val(),
-        assignedDate: $('#assignDate').val(),
-        startTime: $('#startTime').val(),
-        endTime: $('#endTime').val()
-    };
-    
-    if (!assignmentData.doctorId || !assignmentData.clinicId || !assignmentData.assignedDate) {
-        alert("Please select a doctor, clinic, and date.");
-        return;
-    }
-
-    $.ajax({
-        url: `${API_BASE_URL}/assignments`,
-        type: 'POST',
-        headers: {
-            'Authorization': `Bearer ${JWT_TOKEN}`,
-            'Content-Type': 'application/json'
-        },
-        data: JSON.stringify(assignmentData)
-    }).done(function() {
-        alert('Assignment created successfully!');
-        $('#assignClinicModal').removeClass('show');
-    }).fail(function(jqXHR) {
-        alert(`Error creating assignment: ${jqXHR.responseText}`);
-    });
-});
-
-// --- Listens for clicks on Update/Delete buttons inside the table ---
+// --- Event Delegation for Update/Delete Buttons in the Table ---
 $('#doctorTableBody').on('click', 'button.btn-icon', function() {
     const $button = $(this);
     const doctorId = $button.data('doctorId');
@@ -871,13 +965,16 @@ $('#doctorTableBody').on('click', 'button.btn-icon', function() {
         const doctorName = $button.data('doctorName');
         if (confirm(`Are you sure you want to delete ${doctorName}?`)) {
             $.ajax({
+                // Backend Controller: @DeleteMapping("/delete/{doctorId}")
                 url: `${API_BASE_URL}/doctors/delete/${doctorId}`,
                 type: 'DELETE',
                 headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
-            }).done(function() {
+            })
+            .done(function() {
                 alert(`${doctorName} has been deleted successfully.`);
-                loadDoctors();
-            }).fail(function() {
+                loadDoctors(); // Refresh the table
+            })
+            .fail(function() {
                 alert(`Error: Could not delete ${doctorName}.`);
             });
         }
@@ -886,12 +983,115 @@ $('#doctorTableBody').on('click', 'button.btn-icon', function() {
 
 
 
+
+
+// e.js (අනෙකුත් event listeners සමඟ, එකම තැනක)
+
+// --- Event Delegation for User Table Actions (Update & Delete) ---
+$('#userTableBody').on('click', 'button.btn-icon', function() {
+    const $button = $(this);
+    const userId = $button.data('userId');
+    
+    
+    // DELETE button click
+    if ($button.hasClass('btn-delete-user')) {
+        if (confirm('Are you sure you want to delete this user?')) {
+            // Backend එකට DELETE request එක යැවීම
+            $.ajax({
+                url: `${API_BASE_URL}/users/${userId}`,
+                type: 'DELETE',
+                headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
+            })
+            .done(function() {
+                alert('User deleted successfully.');
+                loadUsers(); // Table එක refresh කිරීම
+            })
+            .fail(function() {
+                alert('Error: Could not delete the user.');
+            });
+        }
+    }
+});
+
+// --- Event Listener for User Update Form Submission ---
+$('#updateUserForm').on('submit', function(e) {
+    e.preventDefault();
+
+    const userId = $('#updateUserId').val();
+    
+    // 1. Form එකෙන් update වූ දත්ත ලබාගැනීම
+    const updatedUserData = {
+        firstName: $('#updateFirstName').val(),
+        lastName: $('#updateLastName').val(),
+        role: $('#updateUserRole').val()
+    };
+    
+    // 2. Backend එකට PUT request එක යැවීම
+    $.ajax({
+        url: `${API_BASE_URL}/users/${userId}`,
+        type: 'PUT',
+        headers: {
+            'Authorization': `Bearer ${JWT_TOKEN}`,
+            'Content-Type': 'application/json'
+        },
+        data: JSON.stringify(updatedUserData)
+    })
+    .done(function() {
+        alert('User updated successfully!');
+        $('#updateUserModal').removeClass('show'); // Modal එක වැසීම
+        loadUsers(); // Table එක refresh කිරීම
+    })
+    .fail(function(jqXHR) {
+        const errorMsg = jqXHR.responseText || "Failed to update user.";
+        alert(`Error: ${errorMsg}`);
+    });
+});
+
+
+
+
+        // e.js (අනෙකුත් load functions සමඟ)
+function loadUsers() {
+    const $userTableBody = $('#userTableBody');
+    $userTableBody.empty().html('<tr><td colspan="6" style="text-align: center;">Loading users...</td></tr>');
+
+    $.ajax({
+         url: `${API_BASE_URL}/users/patients`,
+        type: 'GET',
+        headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
+    }).done(function (users) {
+        $userTableBody.empty();
+        if (users && users.length > 0) {
+            $.each(users, function (index, user) {
+                const row = `
+                    <tr>
+                        <td>${user.firstName} ${user.lastName}</td>
+                        <td>${user.email}</td>
+                        <td>${user.contactNumber}</td>
+                        <td>${user.role}</td>
+                        <td>${user.gender || 'N/A'}</td>
+                        <td class="action-buttons">
+                            
+                            <button class="btn-icon btn-delete-user" data-user-id="${user.id}" title="Delete User"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>`;
+                $userTableBody.append(row);
+            });
+        } else {
+            $userTableBody.html('<tr><td colspan="6" style="text-align: center;">No users found.</td></tr>');
+        }
+    }).fail(function () {
+        $userTableBody.empty().html('<tr><td colspan="6" style="text-align: center; color: red;">Error loading users.</td></tr>');
+    });
+}
+
+
+
+
     // =================================================================
     // INITIAL PAGE LOAD ACTIONS
     // =================================================================
     loadAdminHeaderDetails();
-    
-
     showSection('overview');
 });
 

@@ -29,6 +29,7 @@ public class SecurityConfig {
                         .requestMatchers("/avatars/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/admin/users/**").hasAuthority("ADMIN")
                         .requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN")
                         .requestMatchers("/api/v1/patient/**").hasAuthority("PATIENT")
                         .requestMatchers("/api/v1/admin/assignments/**").hasAuthority("ADMIN")
