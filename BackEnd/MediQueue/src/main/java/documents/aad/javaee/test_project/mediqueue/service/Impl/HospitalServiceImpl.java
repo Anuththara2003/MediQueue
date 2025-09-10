@@ -32,6 +32,8 @@ public class HospitalServiceImpl implements HospitalService {
     @Override
     public List<HospitalDto> searchHospitals(String query) {
         List<Hospital> hospitals = hospitalRepository.findByNameContainingIgnoreCase(query);
+
+        // Hospital entities ටික HospitalDto වලට convert කරලා return කරනවා
         return hospitals.stream()
                 .map(hospital -> modelMapper.map(hospital, HospitalDto.class))
                 .collect(Collectors.toList());

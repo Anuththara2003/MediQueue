@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="../StyleSheet/AdminModel.css">
     <link rel="stylesheet" href="../StyleSheet/AdminSearch.css">
       <link rel="stylesheet" href="../StyleSheet/AdminClinic.css">
+      <link rel="stylesheet" href="../StyleSheet/AdminDashBoard.css">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -28,7 +29,8 @@
             <div class="nav-menu">
                 <div class="nav-item active" onclick="showSection('overview')"><i class="fas fa-chart-pie"></i><span>Dashboard Overview</span></div>
                 <div class="nav-item" onclick="showSection('hospitals')"><i class="fas fa-hospital"></i><span>Hospitals </span></div>
-                <div class="nav-item" onclick="showSection('clinics')"><i class="fas fa-clinic-medical"></i><span>Manage Clinics</span></div>
+                <div class="nav-item" onclick="showSection('clinics')"><i class="fas fa-clinic-medical"></i><span>Manage Clinics</span></div> 
+                <div class="nav-item" onclick="showSection('doctors')"><i class="fas fa-user-edit"></i><span>Manage Doctors</span></div> 
                 <div class="nav-item" onclick="showSection('reports')"><i class="fas fa-file-alt"></i><span>Reports & Analytics</span></div>
                 <div class="nav-item" onclick="showSection('sms')"><i class="fas fa-comment-sms"></i><span>SMS Management</span></div>
                 <div class="nav-item" onclick="showSection('system')"><i class="fas fa-cogs"></i><span>System Health</span></div>
@@ -152,6 +154,49 @@
                     <!-- JavaScript එකෙන් Clinic data ටික මෙතනට load වේවි -->
                     <tr>
                         <td colspan="7" style="text-align: center;">No clinics found. Add a new one to get started.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<!-- ========================================================== -->
+<!-- === අලුතින් එකතු කළ Manage Doctors Section === -->
+<!-- ========================================================== -->
+<div class="dashboard-section" id="doctors">
+    <div class="section-header">
+        <h2>Manage Doctors</h2>
+        <div>
+            <button class="btn btn-secondary assign-btn">
+                <i class="fas fa-clinic-medical"></i> Assign to Clinic
+            </button>
+            <button id="openRegisterModalBtn" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Register New Doctor
+            </button>
+        </div>
+    </div>
+    <div class="content-card">
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Full Name</th>
+                        <th>SLMC Registration No.</th>
+                        <th>Specialization</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="doctorTableBody">
+                    <!-- Sample Row 1 -->
+                    <tr>
+                    </tr>
+                    <!-- Sample Row 2 -->
+                    <tr>
+                        
+                        
                     </tr>
                 </tbody>
             </table>
@@ -296,8 +341,112 @@
             </form>
         </div>
     </div>
+    
+<!-- ========================================================== -->
+<!-- === MODAL 1: Register New Doctor Popup === -->
+<!-- ========================================================== -->
+<div id="registerDoctorModal" class="modal-backdrop">
+    <div class="modal-content">
+        <form id="registerForm">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-plus"></i> Register New Doctor</h2>
+                <span class="modal-close-btn">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" name="fullName" required>
+                </div>
+                <div class="form-group">
+                    <label for="slmcNo">SLMC Registration No.</label>
+                    <input type="text" id="slmcNo" name="slmcNo" required>
+                </div>
+                <div class="form-group">
+                    <label for="specialization">Specialization</label>
+                    <input type="text" id="specialization" name="specialization">
+                </div>
+                 <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email">
+                </div>
+                 <div class="form-group">
+                    <label for="contactNumber">Contact Number</label>
+                    <input type="tel" id="contactNumber" name="contactNumber">
+                </div>
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select id="status" name="status" required>
+                        <option value="ACTIVE" selected>Active</option>
+                        <option value="ON_LEAVE">On Leave</option>
+                        <option value="RETIRED">Retired</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit"  class="btn btn-primary">
+                    <i class="fas fa-save"></i> Save Doctor
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ========================================================== -->
+<!-- === MODAL 2: Assign Doctor to Clinic Popup === -->
+<!-- ========================================================== -->
+<div id="assignClinicModal" class="modal-backdrop">
+    <div class="modal-content">
+        <form id="assignForm">
+            <div class="modal-header">
+                <h2 id="assignModalTitle">Assign Doctor to Clinic</h2>
+                <span class="modal-close-btn">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="assignDoctorName">Doctor</label>
+                    <input type="text" id="assignDoctorName" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="assignClinicSelect">Select Clinic</label>
+                    <select id="assignClinicSelect" required>
+                        <option value="">Select a clinic...</option>
+                        <!-- Backend එකෙන් Clinic List එක Load වෙන්න ඕන -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="assignDate">Date</label>
+                    <input type="date" id="assignDate" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="startTime">Start Time</label>
+                        <input type="time" id="startTime">
+                    </div>
+                    <div class="form-group">
+                        <label for="endTime">End Time</label>
+                        <input type="time" id="endTime">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-check-circle"></i> Create Assignment
+                </button>
+            </div>
+        </form>
+    </div>```
+
+
+
+<!-- ========================================================== -->
+<!-- === MODAL 2: Assign Doctor to Clinic Popup === -->
+<!-- ========================================================== -->
+
+
+
 
     <!-- Single JS File Link -->
+          <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../JS/Main.js"></script>
 </body>
 

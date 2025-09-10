@@ -4,6 +4,7 @@ package documents.aad.javaee.test_project.mediqueue.service.Impl;
 import documents.aad.javaee.test_project.mediqueue.Exception.ResourceNotFoundException;
 import documents.aad.javaee.test_project.mediqueue.dto.AdminProfileDto;
 import documents.aad.javaee.test_project.mediqueue.dto.AdminProfileViewDto;
+import documents.aad.javaee.test_project.mediqueue.dto.ClinicDto;
 import documents.aad.javaee.test_project.mediqueue.dto.ClinicSaveDto;
 import documents.aad.javaee.test_project.mediqueue.entity.Clinic;
 import documents.aad.javaee.test_project.mediqueue.entity.Hospital;
@@ -13,8 +14,10 @@ import documents.aad.javaee.test_project.mediqueue.repostry.HospitalRepository;
 import documents.aad.javaee.test_project.mediqueue.repostry.UserRepository;
 import documents.aad.javaee.test_project.mediqueue.service.AdminService;
 import io.jsonwebtoken.io.IOException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -38,8 +41,10 @@ public class AdminServiceImpl implements AdminService {
     private final Path rootLocation = Paths.get("uploads/avatars");
 
 
+
     private final HospitalRepository hospitalRepository;
     private final ClinicRepository clinicRepository;
+    private final ModelMapper modelMapper;
 
     @Override
     public void updateProfile(String username, AdminProfileDto profileDto, MultipartFile profileImage) throws IOException, java.io.IOException {
@@ -95,23 +100,21 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    @Transactional
     public void addClinic(ClinicSaveDto clinicSaveDto) {
         Hospital hospital = hospitalRepository.findById(Math.toIntExact(clinicSaveDto.getHospitalId()))
                 .orElseThrow(() -> new ResourceNotFoundException("Hospital not found with ID: " + clinicSaveDto.getHospitalId()));
 
-        // 2. අලුත් Clinic object එකක් හදනවා.
         Clinic newClinic = new Clinic();
         newClinic.setName(clinicSaveDto.getName());
         newClinic.setStartTime(clinicSaveDto.getStartTime());
         newClinic.setEndTime(clinicSaveDto.getEndTime());
 
-        // 3. Clinic එකට අදාළ Hospital එක සම්බන්ධ කරනවා.
         newClinic.setHospital(hospital);
 
-        // 4. Hospital එකේ තියෙන clinics list එකට, මේ අලුත් clinic එක එකතු කරනවා.
         hospital.getClinics().add(newClinic);
 
-        // 5. Hospital එකම save කරනවා. CascadeType.ALL නිසා Clinic එකත් ඉබේම save වෙනවා.
+
         hospitalRepository.save(hospital);
     }
 
@@ -132,5 +135,17 @@ public class AdminServiceImpl implements AdminService {
     }
 
 
+    @Override
+    public ClinicSaveDto getClinicById(Integer id) {
+        Clinic clinic = clinicRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Clinic not found with ID: " + id));
+
+        ClinicSaveDto dto = modelMapper.map(clinic, ClinicSaveDto.class);
+
+        if (clinic.getHospital() != null) {
+            dto.setId(Math.toIntExact(clinic.getHospital().getId())); // Assuming Hospital ID is Long
+        }
+        return dto;
+    }
 
 }

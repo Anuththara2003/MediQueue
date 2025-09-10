@@ -54,7 +54,6 @@ public class ApplicationConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
         // Frontend එකේ origin එකට අවසර දීම
         configuration.setAllowedOrigins(List.of("http://127.0.0.1:5501"));
         // අවසර දෙන HTTP methods
@@ -69,7 +68,6 @@ public class ApplicationConfig {
     }
 
     @Bean
-    // model mapper
     public ModelMapper modelMapper() {
         return new ModelMapper();
     }

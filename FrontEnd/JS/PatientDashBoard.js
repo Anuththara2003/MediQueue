@@ -112,6 +112,8 @@ function showNotification(message, type = 'success') {
 
 $(document).ready(function() {
 
+
+
     loadPatientHeaderAndSidebar();
 
     async function loadPatientHeaderAndSidebar() {
@@ -156,13 +158,38 @@ $(document).ready(function() {
         } else {
             $('#hospitalSearchResults').empty();
         }
+  $(".sidebar-nav li a").click(function (e) {
+        let target = $(this).attr("href");
+        if (target.startsWith("#")) {
+          e.preventDefault();
+          $(".content-section").hide();
+          $(target).show();
+          $(".sidebar-nav li").removeClass("active");
+          $(this).parent().addClass("active");
+        }
+      });
     });
 
 
+    
 
 
 
-// ==========================
+
+
+    $(document).ready(function () {
+      $(".sidebar-nav li a").click(function (e) {
+        let target = $(this).attr("href");
+        if (target.startsWith("#")) {
+          e.preventDefault();
+          $(".content-section").hide();
+          $(target).show();
+          $(".sidebar-nav li").removeClass("active");
+          $(this).parent().addClass("active");
+        }
+      });
+    });
+ 
 // Load Clinics by Selected Hospital
 // ==========================
 async function loadClinicsByHospital(hospitalId) {
@@ -380,6 +407,11 @@ $(document).on('change', '#hospitalSelect', function() {
         }
     });
     $('#get-help-btn').on('click', function() { showNotification("Contacting support..."); });
+
+
+
+
+    
 });
 
 

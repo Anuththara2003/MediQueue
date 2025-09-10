@@ -14,4 +14,5 @@ public interface AdminService {
     AdminProfileViewDto getAdminProfile(String username);
     void addClinic(ClinicSaveDto clinicSaveDto);
     List<ClinicSaveDto> getAllClinics();
+    ClinicSaveDto getClinicById(Integer id);
 }

@@ -22,19 +22,16 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public DashboardDataDto getPatientDashboardData(Long patientId) {
-        // 1. User ගේ දත්ත ලබාගැනීම
         User patient = userRepository.findById(patientId)
                 .orElseThrow(() -> new RuntimeException("Patient not found"));
 
-        // 2. අලුත් ContentService එකෙන් health tips ලබාගැනීම
         List<HealthTipDto> allTips = contentService.getAllHealthTips();
-        HealthTipDto randomTip = allTips.isEmpty() ? null : allTips.get(0); // Random logic එකක් යොදන්න
+        HealthTipDto randomTip = allTips.isEmpty() ? null : allTips.get(0);
 
-        // 3. දැන් මේ DTOs භාවිතා කර response object එක හදනවා
         DashboardDataDto dashboardData = new DashboardDataDto();
         dashboardData.setPatientName(patient.getUsername());
-        dashboardData.setHealthTip(randomTip); // මෙතනදී HealthTipDto එක set කරනවා
+        dashboardData.setHealthTip(randomTip);
 
-        return dashboardData; // අවසානයේ DashboardDataDto එක return කරනවා
+        return dashboardData;
     }
 }

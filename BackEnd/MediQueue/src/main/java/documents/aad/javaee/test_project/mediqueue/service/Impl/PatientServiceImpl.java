@@ -46,19 +46,18 @@ public class PatientServiceImpl implements PatientService {
     public void updatePatientInfo(String username, PatientInfoUpdateDto infoDto, MultipartFile profileImage) throws IOException {
         User patient = findUserByUsername(username);
 
-        // Full Name එක update කිරීම
+
         if (infoDto.getFullName() != null && !infoDto.getFullName().trim().isEmpty()) {
             String[] names = infoDto.getFullName().split(" ", 2);
             patient.setFirstName(names.length > 0 ? names[0] : "");
             patient.setLastName(names.length > 1 ? names[1] : "");
         }
 
-        // Email එක update කිරීම
+
         if (infoDto.getEmail() != null && !infoDto.getEmail().trim().isEmpty()) {
             patient.setEmail(infoDto.getEmail());
         }
 
-        // Profile Image එක update කිරීම
         if (profileImage != null && !profileImage.isEmpty()) {
             if (!List.of("image/jpeg", "image/png", "image/gif").contains(profileImage.getContentType())) {
                 throw new IOException("Invalid image file type");
@@ -81,11 +80,11 @@ public class PatientServiceImpl implements PatientService {
     public void changePatientPassword(String username, PasswordChangeDto passwordDto) {
         User patient = findUserByUsername(username);
 
-        // Current password එක හරිදැයි බැලීම
+
         if (!passwordEncoder.matches(passwordDto.getCurrentPassword(), patient.getPassword())) {
             throw new IllegalStateException("Incorrect current password");
         }
-        // New password එක හිස්දැයි බැලීම
+
         if (passwordDto.getNewPassword() == null || passwordDto.getNewPassword().trim().isEmpty()) {
             throw new IllegalStateException("New password cannot be empty");
         }

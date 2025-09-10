@@ -12,12 +12,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/content") // සම්පූර්ණයෙන්ම අලුත් URL path එකක්
+@RequestMapping("/api/content")
 @RequiredArgsConstructor
 public class ContentController {
 
-    private final ContentService contentService; // අලුත් service එක පමණක් inject කරයි
-
+    private final ContentService contentService;
     // GET http://localhost:8080/api/content/tips
     @GetMapping("/tips")
     public ResponseEntity<List<HealthTipDto>> getAllTips() {

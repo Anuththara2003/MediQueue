@@ -1,0 +1,80 @@
+/* Doctor table action buttons */
+.data-table .action-buttons .btn {
+    padding: 8px 12px;
+    font-size: 0.9em;
+}
+
+/* Status badges for doctors table */
+.status-badge.status-active { background-color: #eaf7ea; color: #28a745; }
+.status-badge.status-on-leave { background-color: #fff4e5; color: #f39c12; }
+
+/* Making modals consistent with existing ones */
+#registerDoctorModal .modal-close-btn,
+#assignClinicModal .modal-close-btn {
+    font-size: 2em;
+    font-weight: bold;
+    color: #aaa;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+#registerDoctorModal .modal-close-btn:hover,
+#assignClinicModal .modal-close-btn:hover {
+    color: #333;
+}
+
+#assignClinicModal input[readonly] {
+    background-color: #f0f0f0;
+    cursor: not-allowed;
+}
+
+    /* Doctor Management Section Header */
+#doctors .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Action Buttons in the Table */
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    font-size: 1.1em;
+    border-radius: 5px;
+    transition: background-color 0.2s, color 0.2s;
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* Update Button Style (Orange/Yellow) */
+.btn-update {
+    color: #f39c12; 
+}
+.btn-update:hover {
+    background-color: #fef5e7;
+    color: #d68910;
+}
+
+/* Delete Button Style (Red) */
+.btn-delete {
+    color: #e74c3c;
+}
+.btn-delete:hover {
+    background-color: #fdedec;
+    color: #c0392b;
+}
+
+/* Status Badges */
+.status-badge.status-active { background-color: #d4edda; color: #155724; }
+.status-badge.status-on-leave { background-color: #fff3cd; color: #856404; }
