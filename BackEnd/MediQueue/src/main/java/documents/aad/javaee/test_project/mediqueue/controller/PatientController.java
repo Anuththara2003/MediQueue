@@ -1,11 +1,13 @@
 package documents.aad.javaee.test_project.mediqueue.controller;
 
-import documents.aad.javaee.test_project.mediqueue.dto.ApiResponse;
-import documents.aad.javaee.test_project.mediqueue.dto.PasswordChangeDto;
-import documents.aad.javaee.test_project.mediqueue.dto.PatientInfoUpdateDto;
-import documents.aad.javaee.test_project.mediqueue.dto.PatientProfileViewDto;
+import documents.aad.javaee.test_project.mediqueue.dto.*;
+import documents.aad.javaee.test_project.mediqueue.entity.Doctor;
+import documents.aad.javaee.test_project.mediqueue.repostry.DoctorRepository;
 import documents.aad.javaee.test_project.mediqueue.service.PatientService;
+import documents.aad.javaee.test_project.mediqueue.service.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,13 +15,18 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/patient")
 @RequiredArgsConstructor
 public class PatientController {
 
+    private final UserService userService;
     private final PatientService patientService;
+
+    @Autowired
+    private DoctorRepository doctorRepository;
 
     @GetMapping("/profile")
     public ResponseEntity<PatientProfileViewDto> getPatientProfile(@AuthenticationPrincipal UserDetails userDetails) {
@@ -51,5 +58,21 @@ public class PatientController {
         } catch (IllegalStateException e) {
             return ResponseEntity.badRequest().body(new ApiResponse(400, e.getMessage(), null));
         }
+    }
+
+    @GetMapping("/details/contact/{mobileNumber}")
+    public ResponseEntity<UserResponseDto> getMyDetailsByContact(@PathVariable String mobileNumber) {
+        try {
+            UserResponseDto patientDto = userService.findPatientByContactNumber(mobileNumber);
+            return ResponseEntity.ok(patientDto);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/details/doctors") // URL: GET /api/v1/patient/doctors
+    public ResponseEntity<List<Doctor>> getAvailableDoctors() {
+        List<Doctor> doctors = doctorRepository.findAll();
+        return ResponseEntity.ok(doctors);
     }
 }

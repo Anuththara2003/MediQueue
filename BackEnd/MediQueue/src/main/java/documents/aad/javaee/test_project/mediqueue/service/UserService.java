@@ -9,5 +9,6 @@ public interface UserService {
     List<UserResponseDto> getAllUsers();
     List<UserResponseDto> getUsersByRole(Role role);
     void deleteUser(Long id);
+    UserResponseDto findPatientByContactNumber(String contactNumber);
 
 }

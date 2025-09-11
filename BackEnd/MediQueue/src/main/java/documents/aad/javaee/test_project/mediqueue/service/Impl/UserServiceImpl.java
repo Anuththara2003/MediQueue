@@ -5,6 +5,7 @@ import documents.aad.javaee.test_project.mediqueue.entity.Role;
 import documents.aad.javaee.test_project.mediqueue.entity.User;
 import documents.aad.javaee.test_project.mediqueue.repostry.UserRepository;
 import documents.aad.javaee.test_project.mediqueue.service.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +41,20 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("User not found with id: " + id);
         }
         userRepository.deleteById(id);
+    }
+
+    @Override
+    public UserResponseDto findPatientByContactNumber(String contactNumber) {
+
+        User user = userRepository.findByContactNumber(contactNumber)
+                .orElseThrow(() -> new EntityNotFoundException("Patient not found with contact number: " + contactNumber));
+
+
+        if (user.getRole() != Role.PATIENT) {
+            throw new IllegalStateException("The provided number does not belong to a patient account.");
+        }
+
+        return convertToDto(user);
     }
 
 

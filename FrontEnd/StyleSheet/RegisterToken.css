@@ -2,7 +2,7 @@
 
 body {
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #d9dce9 0%, #764ba2 100%);
+    background: #2c3e50;
     color: #333;
     margin: 0;
     padding: 20px;
@@ -14,14 +14,77 @@ body {
 
 .dashboard-container {
     text-align: center;
-    background-color: white;
-    padding: 40px;
+    background-color: #5e84ab65;
+    padding: 220px;
     border-radius: 12px;
+    color: white;
+    font-weight: bold;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
+
+
+
+
+
+
+/* භාෂා තේරීමේ බොත්තම් සඳහා මූලික සැකසුම */
+.language-selector {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex; /* බොත්තම් එක පෙළට තැබීම සඳහා */
+    gap: 10px; /* බොත්තම් අතර පරතරය */
+}
+
+/* එක් එක් බොත්තම සඳහා වන සැකසුම් */
+.language-btn {
+    padding: 8px 16px; /* බොත්තම ඇතුළත ඉඩ */
+    font-size: 14px; /* අකුරුවල ප්‍රමාණය */
+    color: white; /* අකුරුවල වර්ණය */
+    background-color: #007BFF; /* බොත්තමේ පසුබිම් වර්ණය (නිල්) */
+    border: none; /* рамка ඉවත් කිරීම */
+    border-radius: 5px; /* කොන් වටකුරු කිරීම */
+    cursor: pointer; /* mouse pointer එක වෙනස් කිරීම */
+    transition: background-color 0.3s ease; /* වර්ණ වෙනස් වීමේ වේගය */
+}
+
+/* Mouse එක බොත්තම මතට ගෙන ආ විට (Hover) */
+.language-btn:hover {
+    background-color: #0056b3; /* තරමක් තද නිල් පැහැයක් */
+}
+
+/* එක් එක් භාෂාව සඳහා වෙන වෙනම වර්ණ යෙදීමට අවශ්‍ය නම් */
+.language-btn[data-lang="en"] {
+    background-color: #4c5a4f; /* කොළ පාට */
+}
+
+.language-btn[data-lang="en"]:hover {
+    background-color: #293b50;
+}
+
+.language-btn[data-lang="si"] {
+    background-color: #4c5a4f; /* රතු පාට */
+}
+
+.language-btn[data-lang="si"]:hover {
+    background-color: #335479;
+}
+
+.language-btn[data-lang="ta"] {
+    background-color: #4c5a4f; /* කහ පාට */
+    color: #f5f8fa; /* කහ පාටට ගැලපෙන අකුරු වර්ණය */
+}
+
+.language-btn[data-lang="ta"]:hover {
+    background-color: #335479;
+}
+
+
+
+
 h1 {
-    color: #4a4a4a;
+    color: #fdfbfb;
 }
 
 /* General Button Styles */
@@ -36,17 +99,17 @@ h1 {
 }
 
 .btn-primary {
-    background-color: #5e35b1;
+    background-color: #26232d;
     color: white;
 }
 
 .btn-primary:hover {
-    background-color: #4527a0;
+    background-color: #89888b;
 }
 
 .btn-secondary {
-    background-color: #e0e0e0;
-    color: #333;
+    background-color: #26232d;
+    color: #f1eded;
 }
 
 .btn-secondary:hover {

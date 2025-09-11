@@ -1,0 +1,13 @@
+package documents.aad.javaee.test_project.mediqueue.repostry;
+
+import documents.aad.javaee.test_project.mediqueue.entity.Queue;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
+import java.util.Optional;
+
+@Repository
+public interface QueueRepository extends JpaRepository<Queue, Integer> {
+    Optional<Queue> findByClinicIdAndQueueDate(Integer clinicId, LocalDate date);
+}
