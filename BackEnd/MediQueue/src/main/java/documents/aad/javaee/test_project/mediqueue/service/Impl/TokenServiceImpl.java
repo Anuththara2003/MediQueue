@@ -1,6 +1,7 @@
 package documents.aad.javaee.test_project.mediqueue.service.Impl;
 
 
+import documents.aad.javaee.test_project.mediqueue.dto.TokenDetailsDto;
 import documents.aad.javaee.test_project.mediqueue.dto.TokenRequestDto;
 import documents.aad.javaee.test_project.mediqueue.entity.*;
 import documents.aad.javaee.test_project.mediqueue.repostry.*;
@@ -9,6 +10,9 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Transactional
@@ -55,5 +59,44 @@ public class TokenServiceImpl implements TokenService {
         queueRepository.save(queue);
 
         return tokenRepository.save(newToken);
+    }
+
+    @Override
+    public TokenDetailsDto getLatestActiveTokenForPatient(Integer patientId) {
+        List<TokenStatus> activeStatuses = List.of(TokenStatus.WAITING, TokenStatus.IN_PROGRESS);
+
+
+        List<Token> activeTokens = tokenRepository.findByPatientIdAndStatusInOrderByCreatedAtDesc(patientId, activeStatuses);
+        if (activeTokens.isEmpty()) {
+            throw new EntityNotFoundException("No active token found for the patient.");
+        }
+
+        Token latestToken = activeTokens.get(0);
+        return convertToTokenDetailsDto(latestToken);
+    }
+
+    @Override
+    public Token updateTokenStatus(Integer tokenId, TokenStatus newStatus) {
+        Token token = tokenRepository.findById(tokenId)
+                .orElseThrow(() -> new EntityNotFoundException("Token not found with ID: " + tokenId));
+
+        token.setStatus(newStatus);
+
+        if (newStatus == TokenStatus.IN_PROGRESS) {
+            token.setCheckInTime(LocalDateTime.now());
+        }
+
+        return tokenRepository.save(token);
+    }
+
+    private TokenDetailsDto convertToTokenDetailsDto(Token token) {
+        TokenDetailsDto dto = new TokenDetailsDto();
+        dto.setTokenId(token.getId());
+        dto.setTokenNumber(token.getTokenNumber());
+        dto.setAppointmentDate(token.getQueue().getQueueDate());
+        dto.setStatus(token.getStatus());
+        dto.setClinicName(token.getQueue().getClinic().getName());
+        dto.setHospitalName(token.getQueue().getClinic().getHospital().getName());
+        return dto;
     }
 }

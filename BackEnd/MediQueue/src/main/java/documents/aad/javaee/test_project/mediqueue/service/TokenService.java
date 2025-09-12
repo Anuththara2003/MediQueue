@@ -1,9 +1,13 @@
 package documents.aad.javaee.test_project.mediqueue.service;
 
+import documents.aad.javaee.test_project.mediqueue.dto.TokenDetailsDto;
 import documents.aad.javaee.test_project.mediqueue.dto.TokenRequestDto;
 import documents.aad.javaee.test_project.mediqueue.entity.Token;
+import documents.aad.javaee.test_project.mediqueue.entity.TokenStatus;
 
 public interface TokenService {
     Token createToken(TokenRequestDto tokenRequestDto);
+    TokenDetailsDto getLatestActiveTokenForPatient(Integer patientId);
+    Token updateTokenStatus(Integer tokenId, TokenStatus newStatus);
 
 }
