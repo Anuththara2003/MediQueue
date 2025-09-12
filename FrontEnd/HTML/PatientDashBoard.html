@@ -141,64 +141,21 @@
         </div>
       </div>
 
-    <div id="appointments-section" class="content-section">
-            <h2><i class="fas fa-calendar-check"></i> Upcoming Appointments</h2>
-            <div class="appointments-grid">
-                <div class="appointment-card">
-                    <div class="appointment-header">
-                        <div>
-                            <div class="appointment-title">Cardiology Consultation</div>
-                        </div>
-                        <span class="appointment-status status-upcoming">Upcoming</span>
-                    </div>
-                    <div class="appointment-details">
-                        <div class="detail-item">
-                            <i class="fas fa-user-md"></i>
-                            <span>Dr. Anura Silva</span>
-                        </div>
-                        <div class="detail-item">
-                            <i class="fas fa-hospital"></i>
-                            <span>Nawaloka Hospital</span>
-                        </div>
-                        <div class="detail-item">
-                            <i class="fas fa-clock"></i>
-                            <span>Tomorrow, 2:30 PM</span>
-                        </div>
-                        <div class="detail-item">
-                            <i class="fas fa-phone"></i>
-                            <span>011-2345678</span>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="appointment-card">
-                    <div class="appointment-header">
-                        <div>
-                            <div class="appointment-title">General Checkup</div>
-                        </div>
-                        <span class="appointment-status status-upcoming">Upcoming</span>
-                    </div>
-                    <div class="appointment-details">
-                        <div class="detail-item">
-                            <i class="fas fa-user-md"></i>
-                            <span>Dr. Priya Fernando</span>
-                        </div>
-                        <div class="detail-item">
-                            <i class="fas fa-hospital"></i>
-                            <span>Lanka Hospital</span>
-                        </div>
-                        <div class="detail-item">
-                            <i class="fas fa-clock"></i>
-                            <span>Sept 15, 10:00 AM</span>
-                        </div>
-                        <div class="detail-item">
-                            <i class="fas fa-phone"></i>
-                            <span>011-7654321</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+      
+        <!-- ================= Appointments Section ================= -->
+<div id="appointments-section" class="content-section">
+    <h2><i class="fas fa-calendar-check"></i> Upcoming Appointments</h2>
+    
+    <!-- === මෙන්න සිදුකළ යුතු වෙනස === -->
+    <!-- Dummy cards ඉවත් කර, JavaScript එකට හඳුනාගැනීමට ID එකක් ලබා දී ඇත -->
+    <div class="appointments-grid" id="upcoming-appointments-container">
+        <!-- JavaScript (jQuery) මගින් සැබෑ appointment cards මෙතනට load වනු ඇත -->
+    </div>
+    <!-- ============================= -->
+</div>
+
+
 
         <!-- ================= Medical Records Section ================= -->
         <div id="medical-records-section" class="content-section" style="display: none;">
@@ -393,7 +350,7 @@
         </div>
     </div>
 
-       <!-- ========================================================== -->
+    <!-- ========================================================== -->
 <!-- MANAGE TOKEN MODAL HTML (CORRECTED WITH IDs) -->
 <!-- ========================================================== -->
 <div class="modal-overlay" id="manageTokenModal">
@@ -435,7 +392,6 @@
         </div>
     </div>
 </div>
-
 
     <!-- SCRIPT TAGS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

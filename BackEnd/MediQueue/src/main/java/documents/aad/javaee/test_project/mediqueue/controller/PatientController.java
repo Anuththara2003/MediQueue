@@ -2,13 +2,18 @@ package documents.aad.javaee.test_project.mediqueue.controller;
 
 import documents.aad.javaee.test_project.mediqueue.dto.*;
 import documents.aad.javaee.test_project.mediqueue.entity.Doctor;
+import documents.aad.javaee.test_project.mediqueue.entity.User;
 import documents.aad.javaee.test_project.mediqueue.repostry.DoctorRepository;
 import documents.aad.javaee.test_project.mediqueue.service.PatientService;
+import documents.aad.javaee.test_project.mediqueue.service.TokenService;
 import documents.aad.javaee.test_project.mediqueue.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.lang.annotation.SuppressAjWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +32,10 @@ public class PatientController {
 
     @Autowired
     private DoctorRepository doctorRepository;
+
+    @Autowired
+    private TokenService tokenService;
+
 
     @GetMapping("/profile")
     public ResponseEntity<PatientProfileViewDto> getPatientProfile(@AuthenticationPrincipal UserDetails userDetails) {
@@ -74,5 +83,12 @@ public class PatientController {
     public ResponseEntity<List<Doctor>> getAvailableDoctors() {
         List<Doctor> doctors = doctorRepository.findAll();
         return ResponseEntity.ok(doctors);
+    }
+
+    @GetMapping("/appointments/upcoming")
+    public ResponseEntity<List<AppointmentCardDto>> getMyUpcomingAppointments(Authentication authentication) {
+        User loggedInUser = (User) authentication.getPrincipal();
+        List<AppointmentCardDto> appointments = tokenService.getUpcomingAppointmentsForPatient(loggedInUser.getId());
+        return ResponseEntity.ok(appointments);
     }
 }

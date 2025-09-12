@@ -286,11 +286,16 @@ function handleSubmit(event) {
         },
         data: JSON.stringify(tokenData) // සකස් කරගත් tokenData object එක යැවීම
     })
-    .done(function(response) {
-        // සාර්ථකව Token එක save වූ පසු
-        alert(`Token registered successfully! Your token number is: ${response.tokenNumber}`);
-        closeModal();
-    })
+
+
+   // RegisterToken.js -> handleSubmit()
+.done(function(response) {
+    // Backend එකෙන් එන 'response' object එකේ 'tokenNumber' property එක භාවිතා කරනවා
+    alert(`Token registered successfully! Your token number is: ${response.tokenNumber}`);
+    closeModal();
+})
+
+
     .fail(function(jqXHR) {
         // යම් දෝෂයක් ඇතිවුවහොත්
         const errorMsg = jqXHR.responseJSON ? jqXHR.responseJSON.message : (jqXHR.responseText || "An unknown error occurred.");

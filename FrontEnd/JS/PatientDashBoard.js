@@ -110,11 +110,102 @@ function showNotification(message, type = 'success') {
 }
 
 
+
+
+/**
+ * Loads the logged-in patient's upcoming appointments from the backend
+ * and displays them dynamically on the dashboard.
+ */
+function loadUpcomingAppointments() {
+    // 1. Select the container where appointment cards will be displayed.
+    const $container = $('#upcoming-appointments-container'); // You need to add this ID to your HTML.
+    const JWT_TOKEN = localStorage.getItem('jwtToken'); // Get the token
+
+    // 2. Display a loading message while data is being fetched.
+    $container.html('<p class="loading-text">Loading your appointments...</p>');
+
+    // 3. Make the AJAX call to the backend.
+    $.ajax({
+        url: 'http://localhost:8080/api/v1/patient/appointments/upcoming',
+        type: 'GET',
+        headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
+    })
+    .done(function(appointments) {
+        // 4. On SUCCESS, clear the loading message.
+        $container.empty();
+
+        if (appointments && appointments.length > 0) {
+            // 4a. If appointments are found, loop through them and create a card for each.
+            $.each(appointments, function(index, app) {
+                
+                // Format the date for better readability (e.g., "Tomorrow", "Today", "15 Sept")
+                const date = new Date(app.appointmentDate);
+                let formattedDateText;
+                const today = new Date();
+                const tomorrow = new Date();
+                tomorrow.setDate(today.getDate() + 1);
+
+                if (date.toDateString() === today.toDateString()) {
+                    formattedDateText = "Today";
+                } else if (date.toDateString() === tomorrow.toDateString()) {
+                    formattedDateText = "Tomorrow";
+                } else {
+                    formattedDateText = date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+                }
+                
+                // Format the time to 12-hour AM/PM format
+                const timeParts = app.appointmentTime.split(':');
+                const formattedTime = new Date(0, 0, 0, timeParts[0], timeParts[1]).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+                // Create the HTML for the appointment card using your existing class structure
+                const appointmentCard = `
+                    <div class="appointment-card">
+                        <div class="appointment-header">
+                            <div>
+                                <div class="appointment-title">${app.clinicName}</div>
+                            </div>
+                            <span class="appointment-status status-upcoming">Upcoming</span>
+                        </div>
+                        <div class="appointment-details">
+                            <div class="detail-item">
+                                <i class="fas fa-user-md"></i>
+                                <span>Dr. ${app.doctorName}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-hospital"></i>
+                                <span>${app.hospitalName}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-clock"></i>
+                                <span>${formattedDateText}, ${formattedTime}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-phone"></i>
+                                <span>${app.doctorContact || 'N/A'}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                $container.append(appointmentCard);
+            });
+        } else {
+            // 4b. If no appointments are found.
+            $container.html('<p class="no-appointments-text">You have no upcoming appointments.</p>');
+        }
+    })
+    .fail(function() {
+        // 5. On FAILURE, show an error message.
+        $container.html('<p class="error-text">Could not load appointments. Please refresh the page.</p>');
+    });
+}
+
+
 $(document).ready(function() {
 
 
 
     loadPatientHeaderAndSidebar();
+      loadUpcomingAppointments();
 
     async function loadPatientHeaderAndSidebar() {
         try {
@@ -415,4 +506,3 @@ $(document).on('change', '#hospitalSelect', function() {
 });
 
 
-//done js

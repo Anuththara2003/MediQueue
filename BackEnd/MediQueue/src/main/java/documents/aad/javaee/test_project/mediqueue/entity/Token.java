@@ -45,9 +45,15 @@ public class Token {
     @JoinColumn(name = "patient_id", nullable = false)
     private User patient;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "doctor_id", nullable = false)
+    private Doctor doctor;
+
     @OneToOne(mappedBy = "token", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private MedicalRecord medicalRecord;
 
     @OneToMany(mappedBy = "token", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Notification> notifications = new ArrayList<>();
+
+
 }

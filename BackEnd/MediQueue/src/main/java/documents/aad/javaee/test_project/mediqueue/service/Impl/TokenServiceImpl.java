@@ -1,6 +1,7 @@
 package documents.aad.javaee.test_project.mediqueue.service.Impl;
 
 
+import documents.aad.javaee.test_project.mediqueue.dto.AppointmentCardDto;
 import documents.aad.javaee.test_project.mediqueue.dto.TokenDetailsDto;
 import documents.aad.javaee.test_project.mediqueue.dto.TokenRequestDto;
 import documents.aad.javaee.test_project.mediqueue.entity.*;
@@ -11,8 +12,10 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -30,36 +33,42 @@ public class TokenServiceImpl implements TokenService {
 
 
 
+
     @Override
+    @Transactional
     public Token createToken(TokenRequestDto dto) {
 
-        User patient = userRepository.findById(Long.valueOf(dto.getPatientId()))
-                .orElseThrow(() -> new EntityNotFoundException("Patient not found with ID: " + dto.getPatientId()));
-        Doctor doctor = doctorRepository.findById(dto.getDoctorId())
-                .orElseThrow(() -> new EntityNotFoundException("Doctor not found with ID: " + dto.getDoctorId()));
-        Clinic clinic = clinicRepository.findById(dto.getClinicId())
-                .orElseThrow(() -> new EntityNotFoundException("Clinic not found with ID: " + dto.getClinicId()));
+        User patient = userRepository.findById(Long.valueOf(dto.getPatientId())).orElseThrow();
+        Doctor doctor = doctorRepository.findById(dto.getDoctorId()).orElseThrow();
+        Clinic clinic = clinicRepository.findById(dto.getClinicId()).orElseThrow();
 
-
-        Queue queue = queueRepository.findByClinicIdAndQueueDate(dto.getClinicId(), dto.getAppointmentDate())
+        Queue queue = queueRepository.findByClinicIdAndDoctorIdAndQueueDate
+                        (dto.getClinicId(), dto.getDoctorId(), dto.getAppointmentDate())
                 .orElseGet(() -> {
                     Queue newQueue = new Queue();
                     newQueue.setClinic(clinic);
+                    newQueue.setDoctor(doctor);
                     newQueue.setQueueDate(dto.getAppointmentDate());
                     return queueRepository.save(newQueue);
                 });
 
-        int nextTokenNumber = queue.getTotalTokens() + 1;
+
+        long existingTokenCount = tokenRepository.countByQueueId(queue.getId());
+
+        int nextTokenNumber = (int) existingTokenCount + 1;
+
 
         Token newToken = new Token();
         newToken.setPatient(patient);
         newToken.setQueue(queue);
+        newToken.setDoctor(doctor);
         newToken.setTokenNumber(nextTokenNumber);
-        queue.setTotalTokens(nextTokenNumber);
-        queueRepository.save(queue);
+
 
         return tokenRepository.save(newToken);
+
     }
+
 
     @Override
     public TokenDetailsDto getLatestActiveTokenForPatient(Integer patientId) {
@@ -89,6 +98,63 @@ public class TokenServiceImpl implements TokenService {
         return tokenRepository.save(token);
     }
 
+    @Override
+    public Token cancelToken(Integer tokenId, Integer patientId) {
+        Token token = tokenRepository.findById(tokenId)
+                .orElseThrow(() -> new EntityNotFoundException("Token not found with ID: " + tokenId));
+
+        if (!token.getPatient().getId().equals(patientId)) {
+            throw new IllegalStateException("Access Denied: You are not the owner of this token.");
+        }
+
+        if (token.getStatus() == TokenStatus.COMPLETED || token.getStatus() == TokenStatus.CANCELLED) {
+            throw new IllegalStateException("This token cannot be cancelled as it is already " + token.getStatus().toString().toLowerCase());
+        }
+
+        token.setStatus(TokenStatus.CANCELLED);
+
+        return tokenRepository.save(token);
+    }
+
+    @Override
+    public List<AppointmentCardDto> getUpcomingAppointmentsForPatient(Integer patientId) {
+        // 1. සක්‍රීය තත්වයන් සහ අද දිනය ලබාගැනීම
+        List<TokenStatus> activeStatuses = List.of(TokenStatus.WAITING, TokenStatus.IN_PROGRESS);
+        LocalDate today = LocalDate.now();
+
+        // 2. Repository එක call කර, upcoming appointments ලබාගැනීම
+        List<Token> upcomingTokens = tokenRepository.findUpcomingAppointments(patientId, activeStatuses, today);
+
+        // 3. ලැබුණු Token list එක, DTO list එකක් බවට පත් කර return කිරීම
+        return upcomingTokens.stream()
+                .map(this::convertToAppointmentCardDto)
+                .collect(Collectors.toList());
+    }
+
+    // Token entity එක AppointmentCardDto එකක් බවට පත් කරන helper method එක
+    private AppointmentCardDto convertToAppointmentCardDto(Token token) {
+        AppointmentCardDto dto = new AppointmentCardDto();
+
+        Queue queue = token.getQueue();
+        Clinic clinic = queue.getClinic();
+
+        // === වෙනස මෙතනයි: Doctor ව කෙලින්ම Token එකෙන් ලබාගැනීම ===
+        Doctor doctor = token.getDoctor();
+
+        // Hospital entity එක Clinic එකෙන් ලබාගැනීම
+        Hospital hospital = clinic.getHospital();
+
+        dto.setClinicName(clinic.getName());
+        dto.setDoctorName(doctor.getFullName());
+        dto.setHospitalName(hospital.getName());
+        dto.setDoctorContact(doctor.getContactNumber());
+        dto.setAppointmentDate(queue.getQueueDate());
+        dto.setAppointmentTime(clinic.getStartTime());
+
+
+        return dto;
+    }
+
     private TokenDetailsDto convertToTokenDetailsDto(Token token) {
         TokenDetailsDto dto = new TokenDetailsDto();
         dto.setTokenId(token.getId());
@@ -99,4 +165,6 @@ public class TokenServiceImpl implements TokenService {
         dto.setHospitalName(token.getQueue().getClinic().getHospital().getName());
         return dto;
     }
+
+
 }

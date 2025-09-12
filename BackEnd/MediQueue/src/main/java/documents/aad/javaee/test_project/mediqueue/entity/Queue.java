@@ -22,6 +22,7 @@ public class Queue {
 
     @Column(nullable = false)
     private LocalDate queueDate;
+
     private int currentToken = 0;
     private int totalTokens = 0;
 
@@ -32,6 +33,10 @@ public class Queue {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "doctor_id", nullable = false)
+    private Doctor doctor;
+
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
@@ -41,4 +46,6 @@ public class Queue {
 
     @OneToMany(mappedBy = "queue", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Token> tokens = new ArrayList<>();
+
+
 }

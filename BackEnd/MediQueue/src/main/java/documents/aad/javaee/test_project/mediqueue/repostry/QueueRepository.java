@@ -10,4 +10,5 @@ import java.util.Optional;
 @Repository
 public interface QueueRepository extends JpaRepository<Queue, Integer> {
     Optional<Queue> findByClinicIdAndQueueDate(Integer clinicId, LocalDate date);
+    Optional<Queue> findByClinicIdAndDoctorIdAndQueueDate(Integer clinicId, Integer doctorId, LocalDate date);
 }
