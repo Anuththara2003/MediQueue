@@ -6,6 +6,7 @@
 const API_BASE_URL_PATIENT = 'http://localhost:8080/api/v1/patient';
 const API_BASE_URL_HOSPITALS = 'http://localhost:8080/api/v1/hospitals'; 
 const JWT_TOKEN = localStorage.getItem('jwtToken');
+let liveUpdateInterval;
 
 if (!JWT_TOKEN) {
     alert('Authentication token not found. Please log in.');
@@ -226,11 +227,9 @@ function loadAppointmentHistory() {
     if (history && history.length > 0) {
         $.each(history, function(index, item) {
             const date = new Date(item.appointmentDate);
-            const formattedDate = date.toLocaleDateString('en-GB'); // "dd/mm/yyyy" format
+            const formattedDate = date.toLocaleDateString('en-GB'); 
 
-            // === මෙන්න නිවැරදි කිරීම ===
-            // 1. status එක null දැයි පරීක්ෂා කර, එසේනම් default අගයක් ('N/A') ලබා දීම
-            const statusText = item.status || 'N/A'; // 'N/A' stands for Not Available
+            const statusText = item.status || 'N/A'; 
             
             // 2. CSS class එක සඳහා, null නොවන අගය toLowerCase() කරනවා
             const statusClass = statusText.toLowerCase();
@@ -268,15 +267,12 @@ function loadAppointmentHistory() {
 
 $(document).ready(function() {
 
-
-
-    
-
-
-
     loadPatientHeaderAndSidebar();
       loadUpcomingAppointments();
       loadAppointmentHistory();
+    startLiveTokenUpdates();  
+
+
 
     async function loadPatientHeaderAndSidebar() {
         try {
@@ -296,6 +292,8 @@ $(document).ready(function() {
             console.error("Error loading patient data:", error);
         }
     }
+
+    
 
     $('#currentToken').text(currentToken);
     $('#yourTokenNumber').text(yourToken);
@@ -338,42 +336,14 @@ $(document).ready(function() {
 
 
 
-
-    $(document).ready(function () {
-      // PatientDashboard.js -> $(document).ready() block එක ඇතුලේ
-// --- Sidebar Navigation ---
-$(".sidebar-nav li a").on('click', function (e) {
-    const targetSectionId = $(this).attr("href"); // e.g., "#appointments-section"
-    
-    // Logout button එකට සහ Profile modal trigger එකට මෙය බලපාන්නේ නැත
-    if (targetSectionId && targetSectionId.startsWith("#")) {
-      e.preventDefault();
-      
-      // Hide all content sections and show the target one
-      $(".content-section").hide();
-      $(targetSectionId).show();
-      
-      // Update active class on the sidebar
-      $(".sidebar-nav li").removeClass("active");
-      $(this).closest("li").addClass("active");
-      
-      
-      if (targetSectionId === "#appointments-section") {
-          loadAppointmentHistory();
-      }
-      
-      // Dashboard link එක click කළ විට, upcoming appointments නැවත load කිරීම
-      if (targetSectionId === "#dashboard-section") {
-          loadUpcomingAppointments();
-      }
-    }
-});
-
-
     });
  
+
+
 // Load Clinics by Selected Hospital
-// ==========================
+
+
+
 async function loadClinicsByHospital(hospitalId) {
     if (!hospitalId) return;
 
@@ -409,6 +379,8 @@ async function loadClinicsByHospital(hospitalId) {
         clinicSelect.append('<option value="">Error loading clinics</option>');
     }
 }
+
+
 
 
 
@@ -464,6 +436,108 @@ function loadAppointmentHistory() {
 }
 
 
+
+
+
+// =======================================================
+// === LIVE TOKEN TRACKING LOGIC ===
+// =======================================================
+ // Interval ID එක ගබඩා කර තබාගැනීමට
+
+/**
+ * Updates the UI elements related to the live token status.
+ */
+function updateTokenStatusDisplay(statusData) {
+
+    $('#currentToken').text(statusData.currentTokenNumber);
+
+ 
+    $('#yourTokenNumber').text(statusData.yourTokenNumber);
+    const remaining = Math.max(0, statusData.yourTokenNumber - statusData.currentTokenNumber);
+    $('#queueInfo').text(`${remaining} more patient(s) to go`); 
+    const estimatedWaitTime = remaining * 10; 
+    $('#waitTime').text(`${estimatedWaitTime} minutes`);
+    $('#queueCount').text(`${statusData.totalPatientsInQueue} patients`);
+
+}
+
+/**
+ * Fetches the live token status from the backend.
+ */
+function fetchLiveTokenStatus() {
+    if (!JWT_TOKEN) {
+        if (liveUpdateInterval) clearInterval(liveUpdateInterval);
+        return;
+    }
+    $.ajax({
+        url: `${API_BASE_URL_PATIENT}/tokens/live-status`,
+        type: 'GET',
+        headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
+    }).done(function(statusData) {
+        console.log("Live status received:", statusData);
+        updateTokenStatusDisplay(statusData);
+        if (statusData.yourTokenStatus !== 'WAITING' && statusData.yourTokenStatus !== 'IN_PROGRESS') {
+            if (liveUpdateInterval) clearInterval(liveUpdateInterval);
+            console.log("Token is no longer active. Stopping live updates.");
+        }
+    }).fail(function(jqXHR) {
+        if (jqXHR.status === 404) {
+            if (liveUpdateInterval) clearInterval(liveUpdateInterval);
+            $('#currentToken').text('-');
+            $('#yourTokenNumber').text('-');
+            $('#queueInfo').text('No active token');
+            console.log("No active token found. Stopping live updates.");
+        }
+    });
+}
+
+/**
+ * Starts the process of polling for live token updates.
+ */
+function startLiveTokenUpdates() {
+    if (liveUpdateInterval) clearInterval(liveUpdateInterval);
+    fetchLiveTokenStatus();
+    liveUpdateInterval = setInterval(fetchLiveTokenStatus, 15000);
+}
+
+
+
+
+    $(document).ready(function () {
+ 
+$(".sidebar-nav li a").on('click', function (e) {
+    const targetSectionId = $(this).attr("href"); 
+    
+   
+    if (targetSectionId && targetSectionId.startsWith("#")) {
+      e.preventDefault();
+      
+      // Hide all content sections and show the target one
+      $(".content-section").hide();
+      $(targetSectionId).show();
+      
+      // Update active class on the sidebar
+      $(".sidebar-nav li").removeClass("active");
+      $(this).closest("li").addClass("active");
+      
+      
+      if (targetSectionId === "#appointments-section") {
+          loadAppointmentHistory();
+      }
+      
+      if (targetSectionId === "#dashboard-section") {
+          loadUpcomingAppointments();
+      }
+    }
+});
+
+
+
+
+
+
+
+
 // ==========================
 // Hospital Selection Change Event
 // ==========================
@@ -472,12 +546,6 @@ $(document).on('change', '#hospitalSelect', function() {
     console.log("Selected Hospital ID:", selectedHospitalId);
     loadClinicsByHospital(selectedHospitalId);
 });
-
-
-
-
-
-
 
 
 
@@ -491,10 +559,6 @@ $(document).on('change', '#hospitalSelect', function() {
              loadClinicsByHospital(hospitalId); 
         }
     });
-
-
-
-
 
 
 

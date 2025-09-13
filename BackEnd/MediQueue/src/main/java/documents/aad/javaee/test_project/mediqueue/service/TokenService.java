@@ -1,6 +1,7 @@
 package documents.aad.javaee.test_project.mediqueue.service;
 
 import documents.aad.javaee.test_project.mediqueue.dto.AppointmentCardDto;
+import documents.aad.javaee.test_project.mediqueue.dto.QueueStatusDto;
 import documents.aad.javaee.test_project.mediqueue.dto.TokenDetailsDto;
 import documents.aad.javaee.test_project.mediqueue.dto.TokenRequestDto;
 import documents.aad.javaee.test_project.mediqueue.entity.Token;
@@ -15,5 +16,6 @@ public interface TokenService {
     Token cancelToken(Integer tokenId, Integer patientId);
     List<AppointmentCardDto> getUpcomingAppointmentsForPatient(Integer patientId);
     List<AppointmentCardDto> getPastAppointmentsForPatient(Integer patientId);
+    QueueStatusDto getLiveQueueStatusForPatient(Integer patientId);
 
 }

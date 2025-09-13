@@ -1,5 +1,6 @@
 package documents.aad.javaee.test_project.mediqueue.controller;
 
+import documents.aad.javaee.test_project.mediqueue.dto.QueueStatusDto;
 import documents.aad.javaee.test_project.mediqueue.dto.TokenDetailsDto;
 import documents.aad.javaee.test_project.mediqueue.dto.TokenRequestDto;
 import documents.aad.javaee.test_project.mediqueue.entity.Token;
@@ -70,6 +71,18 @@ public class TokenController {
         } catch (IllegalStateException e) {
             // User, token එකේ හිමිකරු නොවන විට
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+
+    @GetMapping("/live-status") // URL: GET /api/v1/patient/token/live-status
+    public ResponseEntity<?> getMyLiveTokenStatus(Authentication authentication) {
+        try {
+            User loggedInUser = (User) authentication.getPrincipal();
+            QueueStatusDto statusDto = tokenService.getLiveQueueStatusForPatient(loggedInUser.getId());
+            return ResponseEntity.ok(statusDto);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage()));
         }
     }
 }

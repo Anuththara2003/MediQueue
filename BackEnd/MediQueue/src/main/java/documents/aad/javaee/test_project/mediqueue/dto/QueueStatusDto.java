@@ -1,0 +1,19 @@
+package documents.aad.javaee.test_project.mediqueue.dto;
+
+import documents.aad.javaee.test_project.mediqueue.entity.TokenStatus;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class QueueStatusDto {
+    private int currentTokenNumber;
+    private int yourTokenNumber;
+    private String clinicName;
+    private TokenStatus yourTokenStatus;
+    private int totalPatientsInQueue;
+}

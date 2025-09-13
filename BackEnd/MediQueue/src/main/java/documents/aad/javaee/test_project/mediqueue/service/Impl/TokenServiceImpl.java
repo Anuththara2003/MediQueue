@@ -2,6 +2,7 @@ package documents.aad.javaee.test_project.mediqueue.service.Impl;
 
 
 import documents.aad.javaee.test_project.mediqueue.dto.AppointmentCardDto;
+import documents.aad.javaee.test_project.mediqueue.dto.QueueStatusDto;
 import documents.aad.javaee.test_project.mediqueue.dto.TokenDetailsDto;
 import documents.aad.javaee.test_project.mediqueue.dto.TokenRequestDto;
 import documents.aad.javaee.test_project.mediqueue.entity.*;
@@ -139,6 +140,32 @@ public class TokenServiceImpl implements TokenService {
         return pastTokens.stream()
                 .map(this::convertToAppointmentCardDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public QueueStatusDto getLiveQueueStatusForPatient(Integer patientId) {
+        List<TokenStatus> activeStatuses = List.of(TokenStatus.WAITING, TokenStatus.IN_PROGRESS);
+        List<Token> activeTokens = tokenRepository.findByPatientIdAndStatusInOrderByCreatedAtDesc(patientId, activeStatuses);
+
+        if (activeTokens.isEmpty()) {
+            throw new EntityNotFoundException("No active token found to track.");
+        }
+        Token myToken = activeTokens.get(0);
+        Queue currentQueue = myToken.getQueue();
+
+        // 3. DTO එකක් නිර්මාණය කර, අවශ්‍ය දත්ත පිරවීම
+        QueueStatusDto dto = new QueueStatusDto();
+        dto.setCurrentTokenNumber(currentQueue.getCurrentToken());
+        dto.setYourTokenNumber(myToken.getTokenNumber());
+        dto.setClinicName(currentQueue.getClinic().getName());
+        dto.setYourTokenStatus(myToken.getStatus());
+
+        // === මෙන්න වැදගත්ම වෙනස ===
+        // Queue entity එකේ ඇති totalTokens අගය, DTO එකට set කරනවා
+        dto.setTotalPatientsInQueue(currentQueue.getTotalTokens());
+        // ============================
+
+        return dto;
     }
 
 
