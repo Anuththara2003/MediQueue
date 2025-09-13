@@ -131,17 +131,23 @@ public class TokenServiceImpl implements TokenService {
                 .collect(Collectors.toList());
     }
 
-    // Token entity එක AppointmentCardDto එකක් බවට පත් කරන helper method එක
+    @Override
+    public List<AppointmentCardDto> getPastAppointmentsForPatient(Integer patientId) {
+        List<TokenStatus> pastStatuses = List.of(TokenStatus.COMPLETED, TokenStatus.CANCELLED, TokenStatus.SKIPPED);
+
+        List<Token> pastTokens = tokenRepository.findPastAppointments(patientId, pastStatuses);
+        return pastTokens.stream()
+                .map(this::convertToAppointmentCardDto)
+                .collect(Collectors.toList());
+    }
+
+
     private AppointmentCardDto convertToAppointmentCardDto(Token token) {
         AppointmentCardDto dto = new AppointmentCardDto();
 
         Queue queue = token.getQueue();
         Clinic clinic = queue.getClinic();
-
-        // === වෙනස මෙතනයි: Doctor ව කෙලින්ම Token එකෙන් ලබාගැනීම ===
         Doctor doctor = token.getDoctor();
-
-        // Hospital entity එක Clinic එකෙන් ලබාගැනීම
         Hospital hospital = clinic.getHospital();
 
         dto.setClinicName(clinic.getName());

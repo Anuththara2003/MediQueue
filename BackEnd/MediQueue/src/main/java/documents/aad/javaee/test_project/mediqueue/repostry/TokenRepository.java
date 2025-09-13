@@ -20,4 +20,7 @@ public interface TokenRepository extends JpaRepository<Token, Integer> {
             @Param("patientId") Integer patientId,
             @Param("statuses") List<TokenStatus> statuses,
             @Param("today") LocalDate today);
+
+    @Query("SELECT t FROM Token t WHERE t.patient.id = :patientId AND t.status IN :statuses ORDER BY t.queue.queueDate DESC")
+    List<Token> findPastAppointments(@Param("patientId") Integer patientId, @Param("statuses") List<TokenStatus> statuses);
 }

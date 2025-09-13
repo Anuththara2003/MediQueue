@@ -38,6 +38,7 @@
         <ul>
           <li class="active" data-section="dashboard"><a href="#dashboard-section"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
           <li data-section="appointments"><a href="#appointments-section"><i class="fas fa-calendar-check"></i> My Appointments</a></li>
+          <li data-section="appointments"><a href="#my-appointments-section"><i class="fas fa-history"></i> Appointments History</a></li>
           <li data-section="medical-records"><a href="#medical-records-section"><i class="fas fa-file-medical"></i> Medical Records</a></li>
           <li data-section="messages"><a href="#messages-section"><i class="fas fa-envelope"></i> Messages</a></li>
           <li id="profile-modal-trigger"><a href="#"><i class="fas fa-user"></i> Profile</a></li>
@@ -143,18 +144,39 @@
 
 
       
-        <!-- ================= Appointments Section ================= -->
+ 
+
+<!-- ================= Appointments Section ================= -->
 <div id="appointments-section" class="content-section">
     <h2><i class="fas fa-calendar-check"></i> Upcoming Appointments</h2>
     
-    <!-- === මෙන්න සිදුකළ යුතු වෙනස === -->
     <!-- Dummy cards ඉවත් කර, JavaScript එකට හඳුනාගැනීමට ID එකක් ලබා දී ඇත -->
     <div class="appointments-grid" id="upcoming-appointments-container">
         <!-- JavaScript (jQuery) මගින් සැබෑ appointment cards මෙතනට load වනු ඇත -->
     </div>
-    <!-- ============================= -->
 </div>
 
+<!-- ========================================================== -->
+<!-- === My Appointment History Section === -->
+<!-- ========================================================== -->
+<div id="my-appointments-section" class="content-section" style="display: none;">
+    <h2><i class="fas fa-history"></i> My Appointment History</h2>
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Doctor</th>
+                    <th>Clinic</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="appointment-history-tbody">
+                <!-- jQuery will load the history here -->
+            </tbody>
+        </table>
+    </div>
+</div>
 
 
         <!-- ================= Medical Records Section ================= -->

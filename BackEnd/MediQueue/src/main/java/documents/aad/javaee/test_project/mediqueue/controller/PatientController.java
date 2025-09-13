@@ -91,4 +91,11 @@ public class PatientController {
         List<AppointmentCardDto> appointments = tokenService.getUpcomingAppointmentsForPatient(loggedInUser.getId());
         return ResponseEntity.ok(appointments);
     }
+
+    @GetMapping("/appointments/history") // URL: GET /api/v1/patient/appointments/history
+    public ResponseEntity<List<AppointmentCardDto>> getMyAppointmentHistory(Authentication authentication) {
+        User loggedInUser = (User) authentication.getPrincipal();
+        List<AppointmentCardDto> appointmentHistory = tokenService.getPastAppointmentsForPatient(loggedInUser.getId());
+        return ResponseEntity.ok(appointmentHistory);
+    }
 }

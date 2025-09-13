@@ -712,3 +712,102 @@ body {
             animation: pulse 2s infinite;
         }
 
+/* ========================================================== */
+/* === MY APPOINTMENT HISTORY TABLE STYLES === */
+/* ========================================================== */
+
+#my-appointments-section {
+    padding: 20px;
+}
+
+/* ... and ... */
+#my-appointments-section {
+    align-items: center;
+}
+
+/* White card-like background for the table */
+#my-appointments-section .table-container {
+    background-color: #456381;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 15px;
+    overflow-x: auto;
+    margin-top: 55px; /* Helps with responsiveness on small screens */
+}
+
+/* General styles for the data table */
+#my-appointments-section .data-table {
+    width: 100%;
+    border-collapse: collapse; /* Removes space between borders */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Table Header (Date, Doctor, Clinic, Status) */
+#my-appointments-section .data-table thead th {
+    text-align: left;
+    padding: 12px 16px;
+    background-color: #456381; /* Very light grey for the header */
+    color: #fbfdff; /* Dark grey text */
+    font-weight: 600;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    border-bottom: 2px solid #446688;
+}
+
+/* Table Body Rows */
+#my-appointments-section .data-table tbody tr {
+    transition: background-color 0.2s ease-in-out;
+}
+
+/* Table data cells */
+#my-appointments-section .data-table tbody td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #e9ecef; /* Light line between rows */
+    color: #f2f4f7; /* Main text color */
+    vertical-align: middle;
+    font-weight: bold;
+}
+
+/* Removes the border from the very last row */
+#my-appointments-section .data-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Hover effect for rows to give user feedback */
+#my-appointments-section .data-table tbody tr:hover {
+    background-color: #0e0e0e; /* Light hover color */
+}
+
+/* --- Status Tag Styles --- */
+.status-tag {
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.8em;
+    font-weight: 700;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+/* Style for COMPLETED status */
+.status-tag.status-completed {
+    background-color: #d4edda; /* Light green */
+    color: #155724; /* Dark green */
+}
+
+/* Style for CANCELLED status */
+.status-tag.status-cancelled,
+.status-tag.status-skipped {
+    background-color: #f8d7da; /* Light red */
+    color: #721c24; /* Dark red */
+}
+
+/* Style for UNKNOWN or other statuses */
+.status-tag.status-unknown,
+.status-tag.status-n\/a { /* For 'N/A' class */
+    background-color: #e9ecef; /* Neutral grey */
+    color: #495057; /* Dark grey */
+}
+
+#my-appointments-section {
+    margin-top: 25px; /* ඔබට අවශ්‍ය ප්‍රමාණයට මෙම අගය වෙනස් කළ හැක (e.g., 20px, 30px, 1.5rem) */
+}

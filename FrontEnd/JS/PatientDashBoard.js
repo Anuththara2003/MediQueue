@@ -17,6 +17,8 @@ let smsEnabled = true;
 let currentToken = 45;
 let yourToken = 52;
 
+
+
 // === HOSPITAL SEARCH FUNCTION එක, ලස්සන emoji එකක් සමග ===
 function searchPrivateHospitals(query) {
     const url = `${API_BASE_URL_HOSPITALS}/search?query=${encodeURIComponent(query)}`;
@@ -200,12 +202,81 @@ function loadUpcomingAppointments() {
 }
 
 
+/**
+ * Loads the patient's past appointments (history) and displays them in a table.
+ */
+
+
+
+function loadAppointmentHistory() {
+    const $tbody = $('#appointment-history-tbody');
+    const JWT_TOKEN = localStorage.getItem('jwtToken');
+
+    $tbody.html('<tr><td colspan="4" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Loading history...</td></tr>');
+
+    $.ajax({
+        url: 'http://localhost:8080/api/v1/patient/appointments/history',
+        type: 'GET',
+        headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
+    })
+
+// PatientDashboard.js -> loadAppointmentHistory function එකේ
+.done(function(history) {
+    $tbody.empty();
+    if (history && history.length > 0) {
+        $.each(history, function(index, item) {
+            const date = new Date(item.appointmentDate);
+            const formattedDate = date.toLocaleDateString('en-GB'); // "dd/mm/yyyy" format
+
+            // === මෙන්න නිවැරදි කිරීම ===
+            // 1. status එක null දැයි පරීක්ෂා කර, එසේනම් default අගයක් ('N/A') ලබා දීම
+            const statusText = item.status || 'N/A'; // 'N/A' stands for Not Available
+            
+            // 2. CSS class එක සඳහා, null නොවන අගය toLowerCase() කරනවා
+            const statusClass = statusText.toLowerCase();
+            
+            const row = `
+                <tr>
+                    <td>${formattedDate}</td>
+                    <td>Dr. ${item.doctorName}</td>
+                    <td>${item.clinicName}</td>
+                    <td><span class="status-tag status-${statusClass}">${statusText}</span></td>
+                </tr>
+            `;
+            // =========================
+
+            $tbody.append(row);
+        });
+    } else {
+        $tbody.html('<tr><td colspan="4" style="text-align: center;">You have no past appointments.</td></tr>');
+    }
+})
+
+
+
+    .fail(function() {
+        $tbody.html('<tr><td colspan="4" style="text-align: center; color: red;">Could not load appointment history.</td></tr>');
+    });
+}
+
+
+
+
+
+
+
+
 $(document).ready(function() {
+
+
+
+    
 
 
 
     loadPatientHeaderAndSidebar();
       loadUpcomingAppointments();
+      loadAppointmentHistory();
 
     async function loadPatientHeaderAndSidebar() {
         try {
@@ -269,16 +340,36 @@ $(document).ready(function() {
 
 
     $(document).ready(function () {
-      $(".sidebar-nav li a").click(function (e) {
-        let target = $(this).attr("href");
-        if (target.startsWith("#")) {
-          e.preventDefault();
-          $(".content-section").hide();
-          $(target).show();
-          $(".sidebar-nav li").removeClass("active");
-          $(this).parent().addClass("active");
-        }
-      });
+      // PatientDashboard.js -> $(document).ready() block එක ඇතුලේ
+// --- Sidebar Navigation ---
+$(".sidebar-nav li a").on('click', function (e) {
+    const targetSectionId = $(this).attr("href"); // e.g., "#appointments-section"
+    
+    // Logout button එකට සහ Profile modal trigger එකට මෙය බලපාන්නේ නැත
+    if (targetSectionId && targetSectionId.startsWith("#")) {
+      e.preventDefault();
+      
+      // Hide all content sections and show the target one
+      $(".content-section").hide();
+      $(targetSectionId).show();
+      
+      // Update active class on the sidebar
+      $(".sidebar-nav li").removeClass("active");
+      $(this).closest("li").addClass("active");
+      
+      
+      if (targetSectionId === "#appointments-section") {
+          loadAppointmentHistory();
+      }
+      
+      // Dashboard link එක click කළ විට, upcoming appointments නැවත load කිරීම
+      if (targetSectionId === "#dashboard-section") {
+          loadUpcomingAppointments();
+      }
+    }
+});
+
+
     });
  
 // Load Clinics by Selected Hospital
@@ -318,6 +409,60 @@ async function loadClinicsByHospital(hospitalId) {
         clinicSelect.append('<option value="">Error loading clinics</option>');
     }
 }
+
+
+
+
+
+ 
+function loadAppointmentHistory() {
+    const $tbody = $('#appointment-history-tbody');
+    const JWT_TOKEN = localStorage.getItem('jwtToken');
+
+    $tbody.html('<tr><td colspan="4" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Loading history...</td></tr>');
+
+    $.ajax({
+        url: 'http://localhost:8080/api/v1/patient/appointments/history',
+        type: 'GET',
+        headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
+    })
+    .done(function(history) {
+        $tbody.empty();
+        if (history && history.length > 0) {
+            $.each(history, function(index, item) {
+                const date = new Date(item.appointmentDate);
+                const formattedDate = date.toLocaleDateString('en-GB'); // "dd/mm/yyyy" format
+
+           
+                
+           
+                const statusText = item.status || 'CANCELLED'; // 'N/A' stands for Not Available
+                
+               
+                const statusClass = statusText.toLowerCase();
+                
+            
+                const row = `
+                    <tr>
+                        <td>${formattedDate}</td>
+                        <td>Dr. ${item.doctorName}</td>
+                        <td>${item.clinicName}</td>
+                        <td><span class="status-tag status-${statusClass}">${statusText}</span></td>
+                    </tr>
+                `;
+                // =======================================================
+
+                $tbody.append(row);
+            });
+        } else {
+            $tbody.html('<tr><td colspan="4" style="text-align: center;">You have no past appointments.</td></tr>');
+        }
+    })
+    .fail(function() {
+        $tbody.html('<tr><td colspan="4" style="text-align: center; color: red;">Could not load appointment history.</td></tr>');
+    });
+}
+
 
 // ==========================
 // Hospital Selection Change Event
