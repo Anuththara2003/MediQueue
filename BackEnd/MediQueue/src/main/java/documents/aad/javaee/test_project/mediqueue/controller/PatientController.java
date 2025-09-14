@@ -4,6 +4,7 @@ import documents.aad.javaee.test_project.mediqueue.dto.*;
 import documents.aad.javaee.test_project.mediqueue.entity.Doctor;
 import documents.aad.javaee.test_project.mediqueue.entity.User;
 import documents.aad.javaee.test_project.mediqueue.repostry.DoctorRepository;
+import documents.aad.javaee.test_project.mediqueue.service.MedicalRecordService;
 import documents.aad.javaee.test_project.mediqueue.service.PatientService;
 import documents.aad.javaee.test_project.mediqueue.service.TokenService;
 import documents.aad.javaee.test_project.mediqueue.service.UserService;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/patient")
@@ -35,6 +37,9 @@ public class PatientController {
 
     @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    private MedicalRecordService medicalRecordService;
 
 
     @GetMapping("/profile")
@@ -98,4 +103,13 @@ public class PatientController {
         List<AppointmentCardDto> appointmentHistory = tokenService.getPastAppointmentsForPatient(loggedInUser.getId());
         return ResponseEntity.ok(appointmentHistory);
     }
+
+    @GetMapping("/medical-records") // URL: GET /api/v1/patient/medical-records
+    public ResponseEntity<List<MedicalRecordDto>> getMyMedicalRecords(Authentication authentication) {
+        User loggedInUser = (User) authentication.getPrincipal();
+        List<MedicalRecordDto> records = medicalRecordService.getMedicalRecordsForPatient(loggedInUser.getId());
+        return ResponseEntity.ok(records);
+    }
+
+
 }

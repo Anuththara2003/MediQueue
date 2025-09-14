@@ -97,21 +97,48 @@
             
             <!-- ========= 3. Reports & Analytics Section ========= -->
             <div class="dashboard-section" id="reports">
-                <div class="section-header">
-                    <div class="date-range-picker"><label for="dateRangeStart"><i class="fas fa-calendar-alt"></i> Date Range:</label><input type="date" id="dateRangeStart" class="date-input"><span>to</span><input type="date" id="dateRangeEnd" class="date-input"><button class="btn btn-secondary">Apply</button></div>
-                    <button class="btn btn-primary"><i class="fas fa-download"></i> Export Report (PDF)</button>
-                </div>
-                <div class="stats-grid">
-                    <div class="stat-card"><div class="stat-header"><div class="stat-title">Total Tokens (Period)</div></div><div class="stat-value">45,821</div></div>
-                    <div class="stat-card"><div class="stat-header"><div class="stat-title">Avg. Wait Time</div></div><div class="stat-value">32 mins</div></div>
-                    <div class="stat-card"><div class="stat-header"><div class="stat-title">Busiest Clinic</div></div><div class="stat-value">Cardiology</div></div>
-                    <div class="stat-card"><div class="stat-header"><div class="stat-title">SMS Sent</div></div><div class="stat-value">31,250</div></div>
-                </div>
-                <div class="content-card">
-                    <div class="card-header"><div class="card-title"><i class="fas fa-chart-bar"></i> Token Distribution by Hospital</div></div>
-                    <div class="chart-placeholder">📊 Bar Chart Showing Token Counts for Each Hospital</div>
-                </div>
-            </div>
+    <div class="section-header">
+        <div class="date-range-picker">
+            <label for="dateRangeStart"><i class="fas fa-calendar-alt"></i> Date Range:</label>
+            <input type="date" id="dateRangeStart" class="date-input">
+            <span>to</span>
+            <input type="date" id="dateRangeEnd" class="date-input">
+            <!-- === "Apply" button එකට ID එකක් ලබා දී ඇත === -->
+            <button class="btn btn-secondary" id="apply-analytics-filter">Apply</button>
+        </div>
+        <button class="btn btn-primary"><i class="fas fa-download"></i> Export Report (PDF)</button>
+    </div>
+    
+    <div class="stats-grid">
+        <!-- === Stat Cards වල අගයන්ට IDs ලබා දී ඇත === -->
+        <div class="stat-card">
+            <div class="stat-header"><div class="stat-title">Total Tokens (Period)</div></div>
+            <div class="stat-value" id="total-tokens">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-header"><div class="stat-title">Avg. Wait Time</div></div>
+            <div class="stat-value" id="avg-wait-time">0 mins</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-header"><div class="stat-title">Busiest Clinic</div></div>
+            <div class="stat-value" id="busiest-clinic">N/A</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-header"><div class="stat-title">SMS Sent</div></div>
+            <div class="stat-value" id="sms-sent">0</div>
+        </div>
+    </div>
+    
+    <div class="content-card">
+        <div class="card-header">
+            <div class="card-title"><i class="fas fa-chart-bar"></i> Token Distribution by Hospital</div>
+        </div>
+        <!-- === Chart එක ඇඳීමට <canvas> tag එකක් සහ ID එකක් ලබා දී ඇත === -->
+        <div class="chart-container" style="height:300px;">
+             <canvas id="token-distribution-chart"></canvas>
+        </div>
+    </div>
+</div>
 
             <!-- ========= 4. SMS Management Section ========= -->
             <div class="dashboard-section" id="sms">
@@ -276,6 +303,9 @@
         </div>
     </div>
 </div>
+
+
+
 
 
         </div>
@@ -517,16 +547,44 @@
     </div>
 </div>
 
-
-<!-- ========================================================== -->
-<!-- === MODAL 2: Assign Doctor to Clinic Popup === -->
-<!-- ========================================================== -->
-
+<!-- AdminDashboard.html (අනෙකුත් modals සමඟ) -->
+<!-- Add Medical Record Modal -->
+<div id="add-record-modal" class="modal-backdrop">
+    <div class="modal-content">
+        <form id="add-record-form">
+            <div class="modal-header">
+                <h2>Add Medical Record</h2>
+                <span class="modal-close-btn">&times;</span>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="record-token-id">
+                <div class="form-group">
+                    <label for="record-diagnosis">Diagnosis</label>
+                    <textarea id="record-diagnosis" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="record-prescription">Prescription</label>
+                    <textarea id="record-prescription" rows="5" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="record-notes">Additional Notes (Optional)</label>
+                    <textarea id="record-notes" rows="2"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Save Record</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 
 
     <!-- Single JS File Link -->
           <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+              <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+          
+
     <script src="../JS/Main.js"></script>
 </body>
 

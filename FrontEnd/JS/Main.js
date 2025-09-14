@@ -1119,13 +1119,69 @@ function loadClinicsForQueueFilter() {
     });
 }
 
-/**
- * Loads the token queue for a selected clinic and date.
- */
-/**
- * Loads the token queue for a selected clinic and date.
- * Also handles the enabled/disabled state of action buttons based on token status.
- */
+
+
+// AdminDashboard.js -> $(document).ready() -> EVENT LISTENERS කොටසට
+$('#add-record-form').on('submit', function(e) {
+    e.preventDefault();
+
+    const tokenId = $('#record-token-id').val();
+    const recordData = {
+        diagnosis: $('#record-diagnosis').val(),
+        prescription: $('#record-prescription').val(),
+        notes: $('#record-notes').val()
+    };
+
+    $.ajax({
+        url: `${API_BASE_URL}/tokens/${tokenId}/record`,
+        type: 'POST',
+        headers: {
+            'Authorization': `Bearer ${JWT_TOKEN}`,
+            'Content-Type': 'application/json'
+        },
+        data: JSON.stringify(recordData)
+    }).done(function() {
+        alert('Medical record saved successfully!');
+        $('#add-record-modal').removeClass('show');
+        loadTokenQueue(); // Queue table එක refresh කිරීම
+    }).fail(function() {
+        alert('Error: Could not save the medical record.');
+    });
+});
+
+
+
+// AdminDashboard.js -> $(document).ready() -> EVENT LISTENERS කොටසට
+$('#queue-table-body').on('click', '.btn-call', function() {
+    const tokenId = $(this).data('tokenId');
+
+    $('#record-token-id').val(tokenId);
+    $('#add-record-form')[0].reset();
+    $('#add-record-modal').addClass('show');
+});
+
+$('#queue-table-body').on('click', '.button_add_record', function() { // '.btn_add_record' -> '.btn-add-record'
+    const tokenId = $(this).data('tokenId');
+
+    if (!tokenId) {
+        console.error("Token ID not found on the button!");
+        return;
+    }
+
+    console.log("Add Record button clicked for Token ID:", tokenId);
+    
+    // Modal එකට අදාළ inputs නිවැරදිව select කර, ID එක set කර, reset කර, පෙන්වයි.
+    $('#record-token-id').val(tokenId);
+    $('#add-record-form')[0].reset();
+    $('#add-record-modal').addClass('show');
+});
+
+
+
+
+
+
+
 function loadTokenQueue() {
     const clinicId = $('#queue-clinic-select').val();
     const date = $('#queue-date-picker').val();
@@ -1164,6 +1220,16 @@ function loadTokenQueue() {
 
                 // ====================================================================
 
+                
+                    // <button class="btn-queue-action btn-sm btn-primary btn-add-record" data-token-id="${token.tokenId}" ${completeSkipDisabled}>Call Next</button>
+                    //          <button class="btn-queue-action btn-complete" data-token-id="${token.tokenId}" ${completeSkipDisabled}>Complete</button>
+                    //          <button class="btn-queue-action btn-skip" data-token-id="${token.tokenId}" ${completeSkipDisabled}>Skip</button>
+
+
+
+
+
+
                 const row = `
                     <tr data-status="${tokenStatus}">
                         <td><strong>${token.tokenNumber}</strong></td>
@@ -1171,9 +1237,8 @@ function loadTokenQueue() {
                         <td>${token.patientContact}</td>
                         <td><span class="status-badge status-${tokenStatus.toLowerCase()}">${tokenStatus}</span></td>
                         <td class="action-buttons">
-                            <button class="btn-queue-action btn-call" data-token-id="${token.tokenId}" ${callDisabled}>Call Next</button>
-                            <button class="btn-queue-action btn-complete" data-token-id="${token.tokenId}" ${completeSkipDisabled}>Complete</button>
-                            <button class="btn-queue-action btn-skip" data-token-id="${token.tokenId}" ${completeSkipDisabled}>Skip</button>
+                            <button class="btn-queue-action btn-call" data-token-id="${token.tokenId}" ${callDisabled}>Add Record</button>   
+                             
                         </td>
                     </tr>`;
                 $tbody.append(row);
@@ -1187,6 +1252,107 @@ function loadTokenQueue() {
 }
 
 
+
+
+// =======================================================
+// === REPORTS & ANALYTICS LOGIC ===
+// =======================================================
+
+let tokenDistributionChart; // Chart object එක ගබඩා කර තබාගැනීමට global variable එකක්
+
+/**
+ * Renders or updates the token distribution bar chart.
+ * @param {object} chartData - Data from the backend, e.g., {"Hospital A": 120, "Hospital B": 85}
+ */
+function renderTokenDistributionChart(chartData) {
+    const chartCanvas = document.getElementById('token-distribution-chart');
+    if (!chartCanvas) return;
+    
+    const ctx = chartCanvas.getContext('2d');
+    const labels = Object.keys(chartData); // e.g., ["Hospital A", "Hospital B"]
+    const dataPoints = Object.values(chartData); // e.g., [120, 85]
+
+    // If a chart instance already exists, destroy it before creating a new one
+    if (tokenDistributionChart) {
+        tokenDistributionChart.destroy();
+    }
+
+    tokenDistributionChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Total Tokens',
+                data: dataPoints,
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Number of Tokens'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false // Hide the legend if there's only one dataset
+                }
+            }
+        }
+    });
+}
+
+// --- "Apply" Button Click Event Listener ---
+$('#apply-analytics-filter').on('click', function() {
+    const startDate = $('#dateRangeStart').val();
+    const endDate = $('#dateRangeEnd').val();
+
+    if (!startDate || !endDate) {
+        alert("Please select both a start and end date for the report.");
+        return;
+    }
+    
+    // Show a loading state on the cards
+    $('#total-tokens, #avg-wait-time, #busiest-clinic, #sms-sent').text('...');
+
+    // AJAX call to the backend analytics endpoint
+    $.ajax({
+        
+            url: `${API_BASE_URL}/tokens/analytics/report`,
+            type: 'GET',
+        headers: { 'Authorization': `Bearer ${JWT_TOKEN}` },
+        data: {
+            startDate: startDate,
+            endDate: endDate
+        }
+    }).done(function(analytics) {
+        // Update the stat cards with the fetched data
+        $('#total-tokens').text(analytics.totalTokens.toLocaleString()); // Add commas for thousands
+        $('#avg-wait-time').text(`${Math.round(analytics.averageWaitTimeMinutes)} mins`);
+        $('#busiest-clinic').text(analytics.busiestClinic || 'N/A');
+        $('#sms-sent').text(analytics.smsSentCount.toLocaleString());
+
+        // Call the function to render the bar chart
+        if (analytics.tokenDistributionByHospital) {
+            renderTokenDistributionChart(analytics.tokenDistributionByHospital);
+        }
+    }).fail(function() {
+        alert("Failed to load analytics data. Please try again.");
+        // Reset cards to default values on failure
+        $('#total-tokens').text('0');
+        $('#avg-wait-time').text('0 mins');
+        $('#busiest-clinic').text('N/A');
+        $('#sms-sent').text('0');
+    });
+});
 
 
 

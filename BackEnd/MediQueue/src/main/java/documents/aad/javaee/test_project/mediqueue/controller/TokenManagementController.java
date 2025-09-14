@@ -1,11 +1,18 @@
 package documents.aad.javaee.test_project.mediqueue.controller;
 
+import documents.aad.javaee.test_project.mediqueue.dto.AnalyticsResponseDto;
+import documents.aad.javaee.test_project.mediqueue.dto.MedicalRecordCreateDto;
 import documents.aad.javaee.test_project.mediqueue.dto.QueueTokenDto;
+import documents.aad.javaee.test_project.mediqueue.entity.MedicalRecord;
 import documents.aad.javaee.test_project.mediqueue.entity.Token;
 import documents.aad.javaee.test_project.mediqueue.entity.TokenStatus;
+import documents.aad.javaee.test_project.mediqueue.service.AnalyticsService;
+import documents.aad.javaee.test_project.mediqueue.service.MedicalRecordService;
 import documents.aad.javaee.test_project.mediqueue.service.TokenService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +25,12 @@ public class TokenManagementController {
 
     @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    private AnalyticsService analyticsService;
+
+    @Autowired
+    private MedicalRecordService medicalRecordService;
 
     @PatchMapping("/{tokenId}/check-in")
     public ResponseEntity<Token> checkInToken(@PathVariable Integer tokenId) {
@@ -34,4 +47,23 @@ public class TokenManagementController {
         return ResponseEntity.ok(tokens);
     }
 
+    @GetMapping("/analytics/report")
+    public ResponseEntity<AnalyticsResponseDto> getAnalytics(
+
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+
+        System.out.println("Fetching analytics from " + startDate + " to " + endDate);
+        AnalyticsResponseDto analytics = analyticsService.getAnalytics(startDate, endDate);
+        return ResponseEntity.ok(analytics);
+    }
+
+    @PostMapping("/{tokenId}/status") // URL: POST /api/v1/admin/tokens/{tokenId}/record
+    public ResponseEntity<MedicalRecord> createRecordForToken(
+            @PathVariable Integer tokenId,
+            @Valid @RequestBody MedicalRecordCreateDto dto) {
+
+        MedicalRecord createdRecord = medicalRecordService.createMedicalRecord(tokenId, dto);
+        return new ResponseEntity<>(createdRecord, HttpStatus.CREATED);
+    }
 }

@@ -437,6 +437,44 @@ function loadAppointmentHistory() {
 
 
 
+function loadMedicalRecords() {
+    const $container = $('#records-container');
+    $container.html('<p class="loading-text">Loading your medical records...</p>');
+
+    $.ajax({
+        url: `${API_BASE_URL_PATIENT}/medical-records`,
+        type: 'GET',
+        headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
+    }).done(function(records) {
+        $container.empty();
+        if (records && records.length > 0) {
+            $.each(records, function(index, record) {
+                const date = new Date(record.consultationDate);
+                const formattedDate = date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+
+                const recordCard = `
+                    <div class="record-item">
+                        <div class="record-icon"><i class="fas fa-file-invoice"></i></div>
+                        <div class="record-info">
+                            <h4>Consultation on ${formattedDate}</h4>
+                            <p><strong>Doctor:</strong> Dr. ${record.doctorName || 'N/A'}<br>
+                               <strong>Clinic:</strong> ${record.clinicName || 'N/A'}<br>
+                               <strong>Diagnosis:</strong> ${record.diagnosis || 'No diagnosis recorded.'}</p>
+                        </div>
+                        <div class="record-actions">
+                            <button class="btn btn-view-prescription" data-record-id="${record.recordId}">
+                                <i class="fas fa-eye"></i> View Prescription
+                            </button>
+                        </div>
+                    </div>`;
+                $container.append(recordCard);
+            });
+        } else {
+            $container.html('<p class="no-records-text">No medical records found.</p>');
+        }
+    });
+}
+
 
 
 // =======================================================
@@ -528,6 +566,10 @@ $(".sidebar-nav li a").on('click', function (e) {
       if (targetSectionId === "#dashboard-section") {
           loadUpcomingAppointments();
       }
+
+      if (targetSectionId === "#medical-records-section") {
+        loadMedicalRecords();
+    }
     }
 });
 
