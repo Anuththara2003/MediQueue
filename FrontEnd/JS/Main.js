@@ -227,12 +227,19 @@ $(document).on('click', '.modal-backdrop', function(event) {
         
         loadDoctors(); 
         }
-         else if (sectionId === 'users') { // <<--- මෙම else if block එක එකතු කරන්න
+         else if (sectionId === 'users') { 
         loadUsers();
 
         }
 
+        else if (sectionId === 'queue-management') {
+        loadClinicsForQueueFilter();
+        document.getElementById('queue-date-picker').valueAsDate = new Date();
+
+    }
+
         updateHeader(sectionId);
+
     };
 
     // ===================================
@@ -1047,6 +1054,9 @@ $('#updateUserForm').on('submit', function(e) {
     });
 });
 
+// --- Queue Management Listeners ---
+$('#load-queue-btn').on('click', loadTokenQueue);
+
 
 
 
@@ -1084,6 +1094,101 @@ function loadUsers() {
         $userTableBody.empty().html('<tr><td colspan="6" style="text-align: center; color: red;">Error loading users.</td></tr>');
     });
 }
+
+// === QUEUE MANAGEMENT FUNCTIONS ===
+
+/**
+ * Loads all clinics into the queue filter dropdown.
+ */
+function loadClinicsForQueueFilter() {
+    const $clinicSelect = $('#queue-clinic-select');
+    $clinicSelect.html('<option value="">Loading clinics...</option>');
+
+    $.ajax({
+        url: `${API_BASE_URL}/clinics`, // Adjust this URL if needed
+        type: 'GET',
+        headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
+    }).done(function(response) {
+        const clinics = response.data || response;
+        $clinicSelect.empty().append('<option value="">Select a Clinic</option>');
+        $.each(clinics, function(i, clinic) {
+            $clinicSelect.append(`<option value="${clinic.id}">${clinic.name} - ${clinic.hospitalName}</option>`);
+        });
+    }).fail(function() {
+        $clinicSelect.html('<option value="">Error loading clinics</option>');
+    });
+}
+
+/**
+ * Loads the token queue for a selected clinic and date.
+ */
+/**
+ * Loads the token queue for a selected clinic and date.
+ * Also handles the enabled/disabled state of action buttons based on token status.
+ */
+function loadTokenQueue() {
+    const clinicId = $('#queue-clinic-select').val();
+    const date = $('#queue-date-picker').val();
+
+    if (!clinicId || !date) {
+        alert("Please select a clinic and a date.");
+        return;
+    }
+
+    const $tbody = $('#queue-table-body');
+    $tbody.html('<tr><td colspan="5" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Loading queue...</td></tr>');
+
+    $.ajax({
+        url: `${API_BASE_URL}/tokens/queue`,
+        type: 'GET',
+        headers: { 'Authorization': `Bearer ${JWT_TOKEN}` },
+        data: {
+            clinicId: clinicId,
+            date: date
+        }
+    }).done(function(tokens) {
+        $tbody.empty();
+        if (tokens && tokens.length > 0) {
+            $.each(tokens, function(i, token) {
+                
+                // ====================================================================
+                // === මෙන්න `callDisabled` error එකට අදාළ නිවැරදි කිරීම ===
+                // ====================================================================
+                
+                // 1. Token status එක, null නම්, 'UNKNOWN' ලෙස සලකා, upper case කරනවා
+                const tokenStatus = (token.status || 'UNKNOWN').toUpperCase();
+                
+                // 2. Token status එකට අනුව, button වල disabled තත්වය තීරණය කරනවා
+                const callDisabled = (tokenStatus !== 'WAITING') ? 'disabled' : '';
+                const completeSkipDisabled = (tokenStatus !== 'IN_PROGRESS') ? 'disabled' : '';
+
+                // ====================================================================
+
+                const row = `
+                    <tr data-status="${tokenStatus}">
+                        <td><strong>${token.tokenNumber}</strong></td>
+                        <td>${token.patientName}</td>
+                        <td>${token.patientContact}</td>
+                        <td><span class="status-badge status-${tokenStatus.toLowerCase()}">${tokenStatus}</span></td>
+                        <td class="action-buttons">
+                            <button class="btn-queue-action btn-call" data-token-id="${token.tokenId}" ${callDisabled}>Call Next</button>
+                            <button class="btn-queue-action btn-complete" data-token-id="${token.tokenId}" ${completeSkipDisabled}>Complete</button>
+                            <button class="btn-queue-action btn-skip" data-token-id="${token.tokenId}" ${completeSkipDisabled}>Skip</button>
+                        </td>
+                    </tr>`;
+                $tbody.append(row);
+            });
+        } else {
+            $tbody.html('<tr><td colspan="5" style="text-align: center;">No tokens found for the selected clinic and date.</td></tr>');
+        }
+    }).fail(function() {
+        $tbody.html('<tr><td colspan="5" style="text-align: center; color: red;">Failed to load the queue.</td></tr>');
+    });
+}
+
+
+
+
 
 
 

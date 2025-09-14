@@ -197,6 +197,7 @@ body {
     cursor: pointer;
     font-size: 1rem;
     padding: 5px
+    
 }
 
 .btn-warning {
@@ -239,4 +240,73 @@ body {
 .status-pending {
     background-color: #fff8e1;
     color: #f59e0b
+}
+
+/* ========================================================== */
+/* === QUEUE MANAGEMENT - ACTION BUTTON STYLES === */
+/* ========================================================== */
+
+/* A container for the action buttons to align them properly */
+.action-buttons {
+    display: flex;
+    gap: 8px; /* Adds space between buttons */
+}
+
+/* Base style for all action buttons in the queue table */
+.action-buttons .btn-queue-action {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    white-space: nowrap; /* Prevents button text from wrapping */
+}
+
+/* --- Specific Button Colors --- */
+
+/* "Call Next" Button Style (Primary Action) */
+.btn-call {
+    background-color: #6a0fc2; /* Bootstrap primary blue */
+    color: #ffffff;
+    border-color: #007bff;
+}
+.btn-call:hover:not(:disabled) {
+    background-color: #0069d9;
+    border-color: #0062cc;
+}
+
+/* "Complete" Button Style (Success Action) */
+.btn-complete {
+    background-color: #28a745; /* Bootstrap success green */
+    color: #ffffff;
+    border-color: #28a745;
+}
+.btn-complete:hover:not(:disabled) {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+/* "Skip" Button Style (Warning/Secondary Action) */
+.btn-skip {
+    background-color: #ffc107; /* Bootstrap warning yellow */
+    color: #212529; /* Dark text for better contrast on yellow */
+    border-color: #ffc107;
+}
+.btn-skip:hover:not(:disabled) {
+    background-color: #e0a800;
+    border-color: #d39e00;
+}
+
+
+/* --- Disabled State --- */
+
+/* Style for any button that is disabled */
+.btn-queue-action:disabled {
+    background-color: #e9ecef; /* Light grey background */
+    color: #6c757d; /* Muted text color */
+    border-color: #ced4da;
+    cursor: not-allowed; /* Show a "not allowed" cursor */
+    opacity: 0.65; /* Make it slightly transparent */
 }

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <link rel="icon" href="../HTML/Images/icon.png" type="image/png"> 
+    <link rel="icon" href="../HTML/Images/images.png" type="image/png"> 
 
     
     <link rel="stylesheet" href="../StyleSheet/AdminDashBoard.css">
@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="../StyleSheet/AdminSearch.css">
       <link rel="stylesheet" href="../StyleSheet/AdminClinic.css">
       <link rel="stylesheet" href="../StyleSheet/AdminDashBoard.css">
+      <link rel="stylesheet" href="../StyleSheet/AdminQueue.css">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -32,6 +33,7 @@
                 <div class="nav-item" onclick="showSection('clinics')"><i class="fas fa-clinic-medical"></i><span>Manage Clinics</span></div> 
                 <div class="nav-item" onclick="showSection('doctors')"><i class="fas fa-user-edit"></i><span>Manage Doctors</span></div> 
                 <div class="nav-item" onclick="showSection('users')"><i class="fas fa-users-cog"></i><span>Manage users</span></div> 
+                <div class="nav-item" onclick="showSection('queue-management')"><i class="fas fa-clipboard-list"></i><span>Queue Management</span></div>
                 <div class="nav-item" onclick="showSection('reports')"><i class="fas fa-file-alt"></i><span>Reports & Analytics</span></div>
                 <div class="nav-item" onclick="showSection('sms')"><i class="fas fa-comment-sms"></i><span>SMS Management</span></div>
                 <div class="nav-item" onclick="showSection('system')"><i class="fas fa-cogs"></i><span>System Health</span></div>
@@ -228,6 +230,47 @@
                 </thead>
                 <tbody id="userTableBody">
                     <!-- Data will be loaded here by jQuery -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+          
+<!-- ========= Queue Management Section ========= -->
+<div class="dashboard-section" id="queue-management">
+    <div class="section-header">
+        <h2><i class="fas fa-clipboard-list"></i> Manage Daily Queue</h2>
+    </div>
+    <div class="content-card">
+        <!-- Filters -->
+        <div class="filters-container">
+            <div class="form-group">
+                <label for="queue-clinic-select">Select Clinic:</label>
+                <select id="queue-clinic-select" required></select>
+            </div>
+            <div class="form-group">
+                <label for="queue-date-picker">Select Date:</label>
+                <input type="date" id="queue-date-picker" required>
+            </div>
+            <button class="btn btn-primary" id="load-queue-btn">Load Queue</button>
+        </div>
+
+        <!-- Queue Table -->
+        <div class="table-container" style="margin-top: 20px;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Token #</th>
+                        <th>Patient Name</th>
+                        <th>Contact</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="queue-table-body">
+                    <!-- Data will be loaded here -->
                 </tbody>
             </table>
         </div>

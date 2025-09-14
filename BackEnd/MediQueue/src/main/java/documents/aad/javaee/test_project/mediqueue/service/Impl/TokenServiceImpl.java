@@ -1,10 +1,7 @@
 package documents.aad.javaee.test_project.mediqueue.service.Impl;
 
 
-import documents.aad.javaee.test_project.mediqueue.dto.AppointmentCardDto;
-import documents.aad.javaee.test_project.mediqueue.dto.QueueStatusDto;
-import documents.aad.javaee.test_project.mediqueue.dto.TokenDetailsDto;
-import documents.aad.javaee.test_project.mediqueue.dto.TokenRequestDto;
+import documents.aad.javaee.test_project.mediqueue.dto.*;
 import documents.aad.javaee.test_project.mediqueue.entity.*;
 import documents.aad.javaee.test_project.mediqueue.repostry.*;
 import documents.aad.javaee.test_project.mediqueue.service.TokenService;
@@ -15,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -164,6 +163,39 @@ public class TokenServiceImpl implements TokenService {
         // Queue entity එකේ ඇති totalTokens අගය, DTO එකට set කරනවා
         dto.setTotalPatientsInQueue(currentQueue.getTotalTokens());
         // ============================
+
+        return dto;
+    }
+
+    @Override
+    public List<QueueTokenDto> getTokensForQueue(Integer clinicId, LocalDate date) {
+        // 1. අදාළ clinic/date එකට අදාළ Queue එක සොයාගන්නවා
+        Queue queue = queueRepository.findByClinicIdAndQueueDate(clinicId, date)
+                .orElse(null); // Queue එකක් නැත්නම්, null ලෙස return කරනවා
+
+        if (queue == null) {
+            // Queue එකක් නොමැතිනම්, හිස් list එකක් return කරනවා
+            return Collections.emptyList();
+        }
+
+        // 2. Queue එකේ ඇති සියලුම tokens, අංකය අනුව sort කර DTO බවට පත් කරනවා
+        return queue.getTokens().stream()
+                .sorted(Comparator.comparing(Token::getTokenNumber)) // Token අංකය අනුව sort කිරීම
+                .map(this::convertToQueueTokenDto)
+                .collect(Collectors.toList());
+    }
+
+    // Token entity එක QueueTokenDto එකක් බවට පත් කරන helper method එක
+    private QueueTokenDto convertToQueueTokenDto(Token token) {
+        QueueTokenDto dto = new QueueTokenDto();
+        dto.setTokenId(token.getId());
+        dto.setTokenNumber(token.getTokenNumber());
+        dto.setStatus(token.getStatus());
+
+        // Token එකට සම්බන්ධ Patient ගේ දත්ත ලබාගැනීම
+        User patient = token.getPatient();
+        dto.setPatientName(patient.getFirstName() + " " + patient.getLastName());
+        dto.setPatientContact(patient.getContactNumber());
 
         return dto;
     }
