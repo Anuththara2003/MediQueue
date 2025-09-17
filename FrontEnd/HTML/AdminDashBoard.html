@@ -57,7 +57,7 @@
                             <div class="admin-role">System Administrator</div>
                         </div>
                     </div>
-                    <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                    <button  class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
                 </div>
             </div>
 
@@ -145,10 +145,17 @@
                 <div class="config-grid">
                     <div class="content-card form-section"><div class="card-header"><div class="card-title"><i class="fas fa-cogs"></i> Gateway Configuration</div></div><div class="form-group"><label for="smsApiKey">API Key</label><input type="password" id="smsApiKey" value="abc123def456ghi789"></div><div class="form-group"><label for="senderId">Sender ID</label><input type="text" id="senderId" value="MediQueue"></div><div class="form-group"><label for="smsBalance">SMS Credits Remaining</label><input type="text" id="smsBalance" value="4,812" disabled></div></div>
                     <div class="content-card form-section"><div class="card-header"><div class="card-title"><i class="fas fa-envelope-open-text"></i> Message Templates</div></div><div class="form-group"><label for="smsTemplate">"Approaching Turn" Message:</label><textarea id="smsTemplate">Hello {patient_name}, your token {token_number} at {clinic_name} is approaching. Please be ready.</textarea></div></div>
+                      <div class="form-actions-bar">
+        <button class="btn btn-primary" id="save-sms-config-btn">
+            <i class="fas fa-save"></i> Save Configuration
+        </button>
+    </div>
                 </div>
                 <div class="content-card">
                     <div class="card-header"><div class="card-title"><i class="fas fa-history"></i> Recent SMS Log</div></div>
-                    <div class="table-container"><table class="data-table"><thead><tr><th>To</th><th>Message</th><th>Status</th><th>Timestamp</th></tr></thead><tbody><tr><td>+9477...</td><td>Hello Kamal, your token A52 is approaching...</td><td><span class="status-badge status-active">Delivered</span></td><td>09:32 AM</td></tr><tr><td>+9471...</td><td>Hello Nimal, your token C12 is approaching...</td><td><span class="status-badge status-failed">Failed</span></td><td>09:31 AM</td></tr></tbody></table></div>
+                <div class="table-container"><table class="data-table"><thead><tr><th>To</th><th>Message</th><th>Status</th><th>Timestamp</th></tr></thead><tbody><tr><td>+9477...</td><td>Hello Kamal, your token A52 is approaching...</td><td><span class="status-badge status-active">Delivered</span></td><td>09:32 AM</td></tr><tr><td>+9471...</td><td>Hello Nimal, your token C12 is approaching...</td><td><span class="status-badge status-failed">Failed</span></td><td>09:31 AM</td></tr></tbody></table></div>
+
+                
                 </div>
             </div>
 

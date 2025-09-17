@@ -26,21 +26,23 @@ public class TokenController {
     @PostMapping
     public ResponseEntity<?> createToken(@Valid @RequestBody TokenRequestDto tokenRequestDto) {
         try {
-            // Service එක call කර, token එක save කරගන්නවා
+
             Token createdToken = tokenService.createToken(tokenRequestDto);
 
-            // **වෙනස මෙතනයි:** සම්පූර්ණ object එක වෙනුවට,
-            // සරල Map (JSON object) එකක්, සාර්ථක පණිවිඩයක් සහ token අංකය සමඟ යවනවා.
+
             return new ResponseEntity<>(
                     Map.of(
                             "message", "Token created successfully!",
-                            "tokenNumber", createdToken.getTokenNumber()
+                            "tokenNumber", createdToken.getTokenNumber(),
+                            "tokenId", createdToken.getId()
                     ),
                     HttpStatus.CREATED
             );
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-
-            return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.BAD_REQUEST);
+            // අනෙකුත් දෝෂ සඳහා
+            return new ResponseEntity<>(Map.of("error", "An unexpected error occurred."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -85,4 +87,8 @@ public class TokenController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage()));
         }
     }
+
+
+
+
 }

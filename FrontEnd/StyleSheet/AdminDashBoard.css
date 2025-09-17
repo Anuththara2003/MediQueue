@@ -440,3 +440,26 @@ body {
 #add-record-modal .modal-footer .btn-primary:hover {
     background-color: #218838;
 }
+
+/* AdminDashboard.css (ගොනුවේ අවසානයට) */
+
+.form-actions-bar {
+    display: block;
+    justify-content: flex-end; /* Button එක දකුණු පැත්තට align කිරීම */
+    padding: 20px;
+    margin-top: -10px; /* Adjust spacing if needed */
+    background-color: #f8f9fa; /* A very light grey background */
+    border-radius: 0 0 12px 12px; /* Match the content-card's bottom corners */
+    margin-bottom: 25px;
+    border-top: 1px solid #e9ecef;
+}
+
+#save-sms-config-btn {
+    padding: 10px 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: background-color 0.2s;
+    /* The .btn and .btn-primary classes from your existing CSS should handle the rest */
+}

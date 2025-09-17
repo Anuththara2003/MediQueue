@@ -4,6 +4,7 @@ package documents.aad.javaee.test_project.mediqueue.service.Impl;
 import documents.aad.javaee.test_project.mediqueue.dto.*;
 import documents.aad.javaee.test_project.mediqueue.entity.*;
 import documents.aad.javaee.test_project.mediqueue.repostry.*;
+import documents.aad.javaee.test_project.mediqueue.service.SmsService;
 import documents.aad.javaee.test_project.mediqueue.service.TokenService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -31,6 +32,8 @@ public class TokenServiceImpl implements TokenService {
     @Autowired
     private QueueRepository queueRepository;
 
+    @Autowired
+    private SmsService smsService;
 
 
 
@@ -84,19 +87,19 @@ public class TokenServiceImpl implements TokenService {
         return convertToTokenDetailsDto(latestToken);
     }
 
-    @Override
-    public Token updateTokenStatus(Integer tokenId, TokenStatus newStatus) {
-        Token token = tokenRepository.findById(tokenId)
-                .orElseThrow(() -> new EntityNotFoundException("Token not found with ID: " + tokenId));
-
-        token.setStatus(newStatus);
-
-        if (newStatus == TokenStatus.IN_PROGRESS) {
-            token.setCheckInTime(LocalDateTime.now());
-        }
-
-        return tokenRepository.save(token);
-    }
+//    @Override
+//    public Token updateTokenStatus(Integer tokenId, TokenStatus newStatus) {
+//        Token token = tokenRepository.findById(tokenId)
+//                .orElseThrow(() -> new EntityNotFoundException("Token not found with ID: " + tokenId));
+//
+//        token.setStatus(newStatus);
+//
+//        if (newStatus == TokenStatus.IN_PROGRESS) {
+//            token.setCheckInTime(LocalDateTime.now());
+//        }
+//
+//        return tokenRepository.save(token);
+//    }
 
     @Override
     public Token cancelToken(Integer tokenId, Integer patientId) {
@@ -229,6 +232,45 @@ public class TokenServiceImpl implements TokenService {
         dto.setClinicName(token.getQueue().getClinic().getName());
         dto.setHospitalName(token.getQueue().getClinic().getHospital().getName());
         return dto;
+    }
+
+
+
+    @Override
+    public Token updateTokenStatus(Integer tokenId, TokenStatus newStatus) {
+        Token tokenToUpdate = tokenRepository.findById(tokenId)
+                .orElseThrow(() -> new EntityNotFoundException("Token not found with ID: " + tokenId));
+
+        // 2. අලුත් status එක set කරනවා
+        tokenToUpdate.setStatus(newStatus);
+
+        // 3. Status එකට අදාළව, අමතර දේවල් update කිරීම
+        if (newStatus == TokenStatus.IN_PROGRESS) {
+            tokenToUpdate.setCalledTime(LocalDateTime.now());
+
+            // --- IDE එකේ දෝෂය මගහැරීමට, variables නැවත ලබාගැනීම ---
+            final Queue currentQueue = tokenToUpdate.getQueue();
+            final int currentTokenNumber = tokenToUpdate.getTokenNumber();
+
+            // Queue එකේ currentToken අංකයද update කරනවා
+            currentQueue.setCurrentToken(currentTokenNumber);
+
+            // 4. ඊළඟට සිටින (next waiting) patient ව සොයාගැනීම
+            tokenRepository.findFirstByQueueAndStatusAndTokenNumberGreaterThanOrderByTokenNumberAsc(
+                    currentQueue,
+                    TokenStatus.WAITING,
+                    currentTokenNumber
+            ).ifPresent(nextToken -> {
+                // 5. ඊළඟ patient හමු වුවහොත්, SMS එක යැවීම
+                smsService.sendApproachingTurnSms(nextToken);
+            });
+        }
+        else if (newStatus == TokenStatus.COMPLETED) {
+            tokenToUpdate.setCompletedTime(LocalDateTime.now());
+        }
+
+        // 6. Update වූ token එක save කර, return කරනවා
+        return tokenRepository.save(tokenToUpdate);
     }
 
 

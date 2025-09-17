@@ -1151,31 +1151,66 @@ $('#add-record-form').on('submit', function(e) {
 
 
 
-// AdminDashboard.js -> $(document).ready() -> EVENT LISTENERS කොටසට
-$('#queue-table-body').on('click', '.btn-call', function() {
-    const tokenId = $(this).data('tokenId');
+// AdminDashboard.js -> $(document).ready() block එක ඇතුලේ
 
-    $('#record-token-id').val(tokenId);
-    $('#add-record-form')[0].reset();
-    $('#add-record-modal').addClass('show');
-});
+// =======================================================
+// === QUEUE TABLE ACTION BUTTONS - COMPLETE EVENT LISTENERS ===
+// =======================================================
 
-$('#queue-table-body').on('click', '.button_add_record', function() { // '.btn_add_record' -> '.btn-add-record'
-    const tokenId = $(this).data('tokenId');
+// Helper function to update token status via AJAX
+function updateTokenStatus(tokenId, newStatus, successMessage) {
+    $.ajax({
+        // Backend එකේ අපි සෑදූ නව PATCH endpoint එක
+         url: `${API_BASE_URL}/tokens/${tokenId}/status?newStatus=${newStatus}`,
+        type: 'PATCH',
+        headers: { 
+            'Authorization': `Bearer ${JWT_TOKEN}`
+        }
+    })
+    .done(function() {
+        console.log(`Token ${tokenId} status updated to ${newStatus}`);
+        if(successMessage) {
+            alert(successMessage);
+        }
+        loadTokenQueue(); // Status එක update වූ පසු, table එක refresh කිරීම
+    })
+    .fail(function() {
+        alert(`Error: Could not update token status to ${newStatus}.`);
+    });
+}
 
-    if (!tokenId) {
-        console.error("Token ID not found on the button!");
-        return;
+// Event Delegation for all action buttons inside the queue table
+$('#queue-table-body').on('click', '.btn-queue-action', function() {
+    const $button = $(this);
+    const tokenId = $button.data('tokenId');
+
+    if (!tokenId) { return; }
+
+    // --- "Call Next" Button Click ---
+    if ($button.hasClass('btn-call')) {
+        console.log("Call Next clicked for Token ID:", tokenId);
+        updateTokenStatus(tokenId, 'IN_PROGRESS'); // Status එක IN_PROGRESS ලෙස වෙනස් කරනවා
     }
-
-    console.log("Add Record button clicked for Token ID:", tokenId);
     
-    // Modal එකට අදාළ inputs නිවැරදිව select කර, ID එක set කර, reset කර, පෙන්වයි.
-    $('#record-token-id').val(tokenId);
-    $('#add-record-form')[0].reset();
-    $('#add-record-modal').addClass('show');
+    // --- "Complete" Button Click ---
+    if ($button.hasClass('btn-complete')) {
+        console.log("Complete clicked for Token ID:", tokenId);
+        updateTokenStatus(tokenId, 'COMPLETED'); // Status එක COMPLETED ලෙස වෙනස් කරනවා
+    }
+    
+    // --- "Skip" Button Click ---
+    if ($button.hasClass('btn-skip')) {
+        console.log("Skip clicked for Token ID:", tokenId);
+        updateTokenStatus(tokenId, 'SKIPPED'); // Status එක SKIPPED ලෙස වෙනස් කරනවා
+    }
+    
+    // --- "Add Record" Button Click (මෙය වෙනස් වී නැත) ---
+    if ($button.hasClass('btn-add-record')) {
+        $('#record-token-id').val(tokenId);
+        $('#add-record-form')[0].reset();
+        $('#add-record-modal').addClass('show');
+    }
 });
-
 
 
 
@@ -1202,6 +1237,7 @@ function loadTokenQueue() {
             clinicId: clinicId,
             date: date
         }
+
     }).done(function(tokens) {
         $tbody.empty();
         if (tokens && tokens.length > 0) {
@@ -1220,15 +1256,7 @@ function loadTokenQueue() {
 
                 // ====================================================================
 
-                
-                    // <button class="btn-queue-action btn-sm btn-primary btn-add-record" data-token-id="${token.tokenId}" ${completeSkipDisabled}>Call Next</button>
-                    //          <button class="btn-queue-action btn-complete" data-token-id="${token.tokenId}" ${completeSkipDisabled}>Complete</button>
-                    //          <button class="btn-queue-action btn-skip" data-token-id="${token.tokenId}" ${completeSkipDisabled}>Skip</button>
-
-
-
-
-
+            
 
                 const row = `
                     <tr data-status="${tokenStatus}">
@@ -1237,7 +1265,12 @@ function loadTokenQueue() {
                         <td>${token.patientContact}</td>
                         <td><span class="status-badge status-${tokenStatus.toLowerCase()}">${tokenStatus}</span></td>
                         <td class="action-buttons">
-                            <button class="btn-queue-action btn-call" data-token-id="${token.tokenId}" ${callDisabled}>Add Record</button>   
+                            <button class="btn-queue-action btn-call" data-token-id="${token.tokenId}" ${callDisabled}>Call Next</button>  
+                            
+                    <button class="btn-queue-action btn-sm btn-primary btn-add-record" data-token-id="${token.tokenId}" ${completeSkipDisabled}>Add Record</button>
+                     <button class="btn-queue-action btn-complete" data-token-id="${token.tokenId}" ${completeSkipDisabled}>Complete</button>
+                   <button class="btn-queue-action btn-skip" data-token-id="${token.tokenId}" ${completeSkipDisabled}>Skip</button>
+ 
                              
                         </td>
                     </tr>`;
@@ -1355,6 +1388,35 @@ $('#apply-analytics-filter').on('click', function() {
 });
 
 
+// =======================================================
+// === SMS MANAGEMENT - SAVE CONFIGURATION ===
+// =======================================================
+$('#save-sms-config-btn').on('click', function() {
+    
+    // 1. Form එකේ inputs වලින් දත්ත ලබාගැනීම
+    const configData = {
+        apiKey: $('#smsApiKey').val(), // Twilio වලදී, මෙය Account SID එක විය හැක
+        senderId: $('#senderId').val(), // Twilio වලදී, මෙය Phone Number එක විය හැක
+        template: $('#smsTemplate').val()
+    };
+
+    // 2. Backend එකට AJAX POST request එක යැවීම
+    $.ajax({
+        url: `${API_BASE_URL}/sms-config/save`, // ඔබගේ backend endpoint එක
+        type: 'POST',
+        headers: {
+            'Authorization': `Bearer ${JWT_TOKEN}`,
+            'Content-Type': 'application/json'
+        },
+        data: JSON.stringify(configData)
+    }).done(function(response) {
+        // 3a. සාර්ථක වූ විට
+        alert(response.message || "Configuration saved successfully!");
+    }).fail(function() {
+        // 3b. අසාර්ථක වූ විට
+        alert("Error: Could not save SMS configuration.");
+    });
+});
 
 
 

@@ -1,5 +1,6 @@
 package documents.aad.javaee.test_project.mediqueue.repostry;
 
+import documents.aad.javaee.test_project.mediqueue.entity.Queue;
 import documents.aad.javaee.test_project.mediqueue.entity.Token;
 import documents.aad.javaee.test_project.mediqueue.entity.TokenStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public interface TokenRepository extends JpaRepository<Token, Integer> {
@@ -38,4 +40,8 @@ public interface TokenRepository extends JpaRepository<Token, Integer> {
             @Param("endDate") LocalDate endDate);
 
     List<Token> findAllByQueue_QueueDateBetween(LocalDate startDate, LocalDate endDate);
+
+    Optional<Token> findFirstByQueueAndStatusAndTokenNumberGreaterThanOrderByTokenNumberAsc(
+            Queue queue, TokenStatus status, int currentTokenNumber);
+
 }

@@ -539,7 +539,34 @@ function startLiveTokenUpdates() {
 }
 
 
+function loadMessages() {
+    const $container = $('.messages-container'); 
+    $container.html('<p>Loading messages...</p>');
 
+    $.ajax({
+        url: `${API_BASE_URL_PATIENT}/messages`,
+        type: 'GET',
+        headers: { 'Authorization': `Bearer ${JWT_TOKEN}` }
+    }).done(function(messages) {
+        $container.empty();
+        if (messages && messages.length > 0) {
+            $.each(messages, function(i, msg) {
+                const messageHtml = `
+                    <div class.message-preview">
+                        ... (ඔබගේ HTML structure එකට අනුව දත්ත යොදන්න) ...
+                        <h4>${msg.sender}</h4>
+                        <p>${msg.content}</p>
+                        <div class="message-time">${msg.time}</div>
+                    </div>`;
+                $container.append(messageHtml);
+            });
+        } else {
+            $container.html('<p>You have no messages.</p>');
+        }
+    });
+}
+
+// Sidebar click listener එකේදී, "Messages" section එකට යන විට `loadMessages()` call කරන්න.
 
     $(document).ready(function () {
  

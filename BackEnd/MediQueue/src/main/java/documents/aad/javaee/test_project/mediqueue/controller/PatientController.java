@@ -4,10 +4,7 @@ import documents.aad.javaee.test_project.mediqueue.dto.*;
 import documents.aad.javaee.test_project.mediqueue.entity.Doctor;
 import documents.aad.javaee.test_project.mediqueue.entity.User;
 import documents.aad.javaee.test_project.mediqueue.repostry.DoctorRepository;
-import documents.aad.javaee.test_project.mediqueue.service.MedicalRecordService;
-import documents.aad.javaee.test_project.mediqueue.service.PatientService;
-import documents.aad.javaee.test_project.mediqueue.service.TokenService;
-import documents.aad.javaee.test_project.mediqueue.service.UserService;
+import documents.aad.javaee.test_project.mediqueue.service.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.annotation.SuppressAjWarnings;
@@ -40,6 +37,9 @@ public class PatientController {
 
     @Autowired
     private MedicalRecordService medicalRecordService;
+
+    @Autowired
+    private NotificationService notificationService;
 
 
     @GetMapping("/profile")
@@ -111,5 +111,22 @@ public class PatientController {
         return ResponseEntity.ok(records);
     }
 
+
+    @GetMapping("/messages")
+    public ResponseEntity<List<Map<String, String>>> getMyMessages() {
+        // This is dummy data. In a real app, you would fetch this from the database.
+        List<Map<String, String>> messages = List.of(
+                Map.of("sender", "Dr. Anura Silva", "content", "Your lab reports are ready...", "time", "10:45 AM"),
+                Map.of("sender", "Hospital Administration", "content", "Reminder: Your appointment...", "time", "Yesterday")
+        );
+        return ResponseEntity.ok(messages);
+    }
+
+    @GetMapping("/notifications") // URL: GET /api/v1/patient/notifications
+    public ResponseEntity<List<NotificationDto>> getMyNotifications(Authentication authentication) {
+        User loggedInUser = (User) authentication.getPrincipal();
+        List<NotificationDto> notifications = notificationService.getNotificationsForPatient(loggedInUser.getId());
+        return ResponseEntity.ok(notifications);
+    }
 
 }

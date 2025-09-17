@@ -98,6 +98,12 @@
             <version>1.4</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.twilio.sdk</groupId>
+            <artifactId>twilio</artifactId>
+            <version>9.2.5</version> <!-- Use the latest version -->
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>

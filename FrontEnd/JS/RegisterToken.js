@@ -291,8 +291,8 @@ function handleSubmit(event) {
    // RegisterToken.js -> handleSubmit()
 .done(function(response) {
     // Backend එකෙන් එන 'response' object එකේ 'tokenNumber' property එක භාවිතා කරනවා
-    alert(`Token registered successfully! Your token number is: ${response.tokenNumber}`);
-    closeModal();
+        alert(`Token registered successfully! Your token number is: ${response.tokenNumber}`);
+        closeModal();
 })
 
 

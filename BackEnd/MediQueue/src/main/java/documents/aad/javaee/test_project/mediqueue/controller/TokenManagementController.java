@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/admin/tokens") // Admin ට අදාළ URL
@@ -65,5 +66,25 @@ public class TokenManagementController {
 
         MedicalRecord createdRecord = medicalRecordService.createMedicalRecord(tokenId, dto);
         return new ResponseEntity<>(createdRecord, HttpStatus.CREATED);
+    }
+
+    // controller/TokenManagementController.java
+
+    @PatchMapping("/{tokenId}/status")
+    public ResponseEntity<?> updateTokenStatus(
+            @PathVariable Integer tokenId,
+            @RequestParam TokenStatus newStatus) {
+
+        try {
+            // Service එක call කර, token එක update කරනවා
+            tokenService.updateTokenStatus(tokenId, newStatus);
+
+            // **වෙනස මෙතනයි:** සම්පූර්ණ object එක වෙනුවට, සරල Map (JSON object) එකක් යවනවා
+            return ResponseEntity.ok(Map.of("message", "Token status updated successfully to " + newStatus));
+
+        } catch (Exception e) {
+            // යම් දෝෂයක් ඇතිවුවහොත්
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 }
