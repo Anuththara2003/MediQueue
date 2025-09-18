@@ -44,6 +44,3 @@ public class SecurityConfig {
         return http.build();
     }
 }
-
-
-// iwarai me anthima commite eka jjjj

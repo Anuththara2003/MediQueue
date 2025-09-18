@@ -1,2 +1,0 @@
-5c0f85ed47aefc7174ebbbc7dd3f10d35a36fbd2 733 application.properties
-17bdf5b59272ddb5a2c29b390678d94766640bfd 879 application.properties
