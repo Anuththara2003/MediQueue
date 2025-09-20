@@ -117,10 +117,10 @@ Domain Layer (Entity): Represents database entities as Java objects.
 (Replace with real screenshots from your project UI)
 
 1 . Home Page
-![Home Page]([Home Page](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/Screenshot%202025-09-20%20084804.png))  
+!([Home Page](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/Screenshot%202025-09-20%20084804.png))  
 
 2. Login Page
-![Login Page]([screenshot/login.png](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/Screenshot%202025-09-20%20085000.png))
+![Login Page]([screenshot/Screenshot 2025-09-20 085000.png))
 
 3. Sign up Page
 ![Sign up Page]([screenshot/login.png](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/Screenshot%202025-09-20%20084846.png))  
