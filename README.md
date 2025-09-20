@@ -117,19 +117,24 @@ Domain Layer (Entity): Represents database entities as Java objects.
 (Replace with real screenshots from your project UI)
 
 1 . Home Page
-!([Home Page](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/Screenshot%202025-09-20%20084804.png))  
+![Home Page](screenshot/Screenshot-2025-09-20-084804.png)
+
 
 2. Login Page
-![Login Page]([screenshot/Screenshot 2025-09-20 085000.png))
+![Login Page](screenshot/Screenshot-2025-09-20-085000.png)
 
-3. Sign up Page
-![Sign up Page]([screenshot/login.png](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/Screenshot%202025-09-20%20084846.png))  
+
+4. Sign up Page
+![Sign up Page](screenshot/Screenshot-2025-09-20-084846.png)
+
 
 4.Admin Dashboard
-![Admin Dashboard]([screenshot/login.png](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/Screenshot%202025-09-20%20085029.png))  
+![Admin Dashboard](screenshot/Screenshot-2025-09-20-085029.png)
+
 
 5. Patinet Dashboard
-![Patinet Dashboard]([screenshot/login.png](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/Screenshot%202025-09-20%20085153.png))  
+![Patinet Dashboard](screenshot/Screenshot-2025-09-20-085153.png)
+
 
 🚀 Setup and Installation Guide
 Prerequisites:
