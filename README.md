@@ -1,215 +1,173 @@
-MediQueue - Advanced API Development Final Project
+# 🏥 MediQueue - Advanced API Development Final Project
 
-This is the final project for the Advanced API Development (ITS 1114) module, part of the Higher Diploma in Software Engineering at the Institute of Software Engineering (IJSE).
+This is the final project for the Advanced API Development (ITS 1114) module, part of the Higher Diploma in Software Engineering (HDSE) at the Institute of Software Engineering (IJSE).
 
-| Student Name | [Sandaru Anuththara] |
-| Batch Number | [GDSE71] |
+| Student Name | Sandaru Anuththara |
+|------------------|---------------------|
+| Batch Number | GDSE 71 |
 
-📋 Table of Contents
+---
 
-Project Overview
+## 📋 Table of Contents
+- [Project Overview](#-project-overview)
+- [Key Features](#-key-features)
+- [Technology Stack](#-technology-stack)
+- [Architecture](#-architecture)
+- [Screenshots](#-screenshots)
+- [Setup and Installation Guide](#-setup-and-installation-guide)
+- [YouTube Project Demo](#-youtube-project-demo)
+- [API Endpoints](#-api-endpoints-documentation)
 
-Key Features
+---
 
-Technology Stack
+## 📖 Project Overview
+MediQueue is a smart healthcare queue and appointment management system that connects patients with doctors and clinics in Sri Lanka.  
 
-Architecture
+- Patients can register, book appointments, track their queue positions, and receive notifications.  
+- Admins/Doctors can manage appointments, patients, and statistics.  
 
-Screenshots
+This project is built using a modern layered architecture with a Spring Boot backend providing secure RESTful APIs, and a React (Vite) frontend for user interaction.  
 
-Setup and Installation Guide
+---
 
-YouTube Project Demo
+## ✨ Key Features
 
-API Endpoints
+### 👨‍⚕ For Patients:
+- Secure registration with Google Authentication  
+- JWT-based login and role-based redirection  
+- Dashboard to manage profile and medical history  
+- Book appointments online with real-time status updates  
+- Track live queue position and estimated waiting time  
+- Receive SMS notifications via Twilio API (confirmations, reminders, queue updates)  
+- View nearby clinics/pharmacies with Google Maps integration  
 
-📖 Project Overview
+### 🩺 For Admins/Doctors:
+- Secure login with JWT-based authentication  
+- Dashboard to manage doctor schedules, patients, and statistics  
+- Manage and monitor appointment queues  
+- View and respond to patient feedback  
+- Generate reports (appointments, patients, daily statistics)  
 
-MediQueue is a smart healthcare queue and appointment management system that connects patients with doctors and clinics in Sri Lanka.
-The system features multiple user roles: Patients, who can register, book appointments, and track their queue positions, and Admins/Doctors, who can manage appointments, patients, and statistics.
+---
 
-This project is built using a modern layered architecture with a Spring Boot backend providing secure RESTful APIs, and a React (Vite) frontend for user interaction.
+## 🛠 Technology Stack
 
-✨ Key Features
-For Patients:
+### 🔹 Backend:
+- Framework: Spring Boot 3.x  
+- Language: Java 17  
+- Security: Spring Security + JWT  
+- Database: MySQL  
+- ORM: Spring Data JPA / Hibernate  
+- API: RESTful APIs  
+- Messaging: Twilio API (SMS Notifications)  
+- Build Tool: Maven  
 
-Secure registration with Google Authentication.
+### 🔹 Frontend:
+- Languages: JavaScript, HTML, CSS  
+- Styling: Tailwind CSS, shadcn/ui, SweetAlert2  
+- Mapping: LocationIQ  
+- SMS Api : Twillio  
 
-JWT-based login and role-based redirection.
+### 🔹 Tools:
+- IDE: IntelliJ IDEA (Backend), VS Code (Frontend)  
+- API Testing: Postman  
+- Database Management: MySQL Workbench  
+- Version Control: Git & GitHub  
 
-Dashboard to manage personal profile and medical history.
+---
 
-Book appointments online with real-time status updates.
-
-Track live queue position and estimated waiting time.
-
-Receive SMS notifications (appointment confirmations, reminders, queue updates) via Twilio API.
-
-View nearby clinics/pharmacies with Google Maps integration.
-
-For Admins/Doctors:
-
-Secure login with JWT-based authentication.
-
-Dashboard to manage doctor schedules, patients, and statistics.
-
-Manage and monitor appointment queues.
-
-View and respond to patient feedback.
-
-Generate reports (appointments, patients, daily statistics).
-
-🛠 Technology Stack
-Backend:
-
-Framework: Spring Boot 3.x
-
-Language: Java 17
-
-Security: Spring Security + JWT Authentication & Authorization
-
-Database: MySQL
-
-Data Access: Spring Data JPA / Hibernate
-
-API: RESTful APIs
-
-Messaging: Twilio API (SMS Notifications)
-
-Build Tool: Maven
-
-Frontend:
-
-Framework: React with Vite
-
-Language: JavaScript, HTML, CSS
-
-Styling: Tailwind CSS, shadcn/ui, SweetAlert2
-
-Mapping: LocationIq 
-
-SMS Api : Twillio 
-
-Tools:
-
-IDE: IntelliJ IDEA (Backend), VS Code (Frontend)
-
-API Testing: Postman
-
-Database Management: MySQL Workbench
-
-Version Control: Git & GitHub
-
-🏗 Architecture
-
+## 🏗 Architecture
 The application follows a Layered Architecture:
 
-Presentation Layer (Controller): Handles all HTTP requests, validates DTOs, and communicates with the service layer.
+1. Presentation Layer (Controller): Handles HTTP requests, validates DTOs, communicates with Service Layer.  
+2. Service Layer (Business Logic): Application logic, transaction management, workflows.  
+3. Persistence Layer (Repository): Data access using Spring Data JPA.  
+4. Domain Layer (Entity): Represents database entities as Java objects.  
 
-Service Layer (Business Logic): Contains application logic, transaction management, and workflows.
+---
 
-Persistence Layer (Repository): Manages data access using Spring Data JPA.
+## 📸 Screenshots
 
-Domain Layer (Entity): Represents database entities as Java objects.
+1. Home Page  
+![Home Page](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/Screenshot%202025-09-20%20084804.png)
 
-📸 Screenshots
+2. Login Page  
+![Login Page](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/Screenshot%202025-09-20%20085000.png)
 
-(Replace with real screenshots from your project UI)
+3. Sign Up Page  
+![Sign up Page](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/Screenshot%202025-09-20%20084846.png)
 
-1 . Home Page
-![Home Page](screenshot/Screenshot-2025-09-20-084804.png)
+4. Admin Dashboard  
+![Admin Dashboard](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/Screenshot%202025-09-20%20085029.png)
 
+5. Patient Dashboard  
+![Patinet Dashboard](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/Screenshot%202025-09-20%20085153.png)  
 
-2. Login Page
-![Login Page](screenshot/Screenshot-2025-09-20-085000.png)
+---
 
+## 🚀 Setup and Installation Guide
 
-4. Sign up Page
-![Sign up Page](screenshot/Screenshot-2025-09-20-084846.png)
+### 🔹 Prerequisites
+- Java 17+  
+- Apache Maven 3.8+  
+- MySQL Server  
+- Node.js (for frontend)  
+- IntelliJ IDEA / VS Code  
 
+### 🔹 Backend Setup
+bash
+# Clone the repository
+git clone https://github.com/Anuththara2003/MediQueue.git
 
-4.Admin Dashboard
-![Admin Dashboard](screenshot/Screenshot-2025-09-20-085029.png)
+# Navigate to backend folder
+cd BackEnd/
 
+# Configure Database
+# - Create MySQL database: mediqueue_db
+# - Update username & password in: src/main/resources/application.properties
 
-5. Patinet Dashboard
-![Patinet Dashboard](screenshot/Screenshot-2025-09-20-085153.png)
-
-
-🚀 Setup and Installation Guide
-Prerequisites:
-
-Java 17 or higher
-
-Apache Maven 3.8 or higher
-
-MySQL Server
-
-Node.js (for frontend)
-
-An IDE like IntelliJ IDEA or VS Code
-
-Backend Setup:
-
-Clone the repository:
-
-git clone (https://github.com/yourusername/mediqueue.git)
-
-
-Navigate to the backend folder:
-
-cd back-end/
-
-
-Configure the database:
-
-Create a new MySQL database named mediqueue_db.
-
-Open src/main/resources/application.properties.
-
-Update the spring.datasource.username and spring.datasource.password.
-
-Build the project:
-
+# Build the project
 mvn clean install
 
-
-Run the application:
-
+# Run the application
 java -jar target/mediqueue-0.0.1-SNAPSHOT.jar
+### Frontend Setup:
+1.  **Navigate to the frontend folder:**
+    bash
+    cd front-end/
+    ```
+2.  *Open the HTML files:*
+    -   Since this is a static project, you can open the .html files directly in your browser.
+    -   For best results, use a live server extension in VS Code to handle CORS issues during development.
+3.  *Update API Keys:*
+    -   Open the relevant HTML/JS files and replace the placeholder for the Google Maps API key with your own key.
+
+---
+
+## 🎬 YouTube Project Demo
+
+A complete video demonstration of the project, including its features and functionality, is available on YouTube. The voice explanation is provided in English as per the submission guidelines.
+
+*[Watch the Project Demo on YouTube](https://youtu.be/9mQpQmLNmHw)*
+
+(Important:* Make sure your video title follows the exact format required)*
+> *Spring Boot Project - IJSE - GDSE  - 71 - Sandaru perera - **Advanced API Development (ITS 1114)* module Semester Final Project**
+
+---
+
+## 🔗 API Endpoints Documentation
+
+Here is a brief overview of some of the key API endpoints.
+
+| Method | Endpoint                        | Description                                | Secured?  |
+| ------ | ------------------------------- | ------------------------------------------ | --------- |
+| POST   | /auth/register                  | Registers a new patient/admin              | ❌ No      |
+| POST   | /auth/login                     | Authenticates a user & returns JWT         | ❌ No      |
+| GET    | /patients/{id}/appointments     | Get all appointments of a patient          | ✅ Patient |
+| POST   | /appointments                   | Create a new appointment                   | ✅ Patient |
+| GET    | /admin/appointments             | Get all appointments for doctor/admin      | ✅ Admin   |
+| PATCH  | /admin/appointments/{id}/status | Update appointment status (Confirm/Cancel) | ✅ Admin   |
+| GET    | /notifications/sms              | Trigger SMS notification via Twilio API    | ✅ Yes     |
 
 
-Backend server will start on: http://localhost:8080
-
-Frontend Setup:
-
-Navigate to the frontend folder:
-
-cd front-end/
-
-Update API Keys:
-
-Replace the Google Maps API key in your frontend files.
-
-Configure Twilio API credentials in backend .env or application.properties.
-
-🎬 YouTube Project Demo
-
-A complete video demonstration of MediQueue, including features and workflows, is available on YouTube with English voice narration.
-[video demonstration of MediQueue](https://youtu.be/9mQpQmLNmHw)))  
-
-
-
-Watch the Project Demo on YouTube
-
-Spring Boot Project - IJSE - GDSE - 71 - Sandaru Anuththara - Advanced API Development (ITS 1114) Module Semester Final Project
-
-🔗 API Endpoints Documentation
-Method	Endpoint	Description	Secured?
-POST	/auth/register	Registers a new patient or admin.	No
-POST	/auth/login	Authenticates a user and returns JWT.	No
-GET	/patients/{id}/appointments	Get all appointments of a patient.	Yes (Patient)
-POST	/appointments	Create a new appointment.	Yes (Patient)
-GET	/admin/appointments	Get all appointments for the doctor/admin.	Yes (Admin)
-PATCH	/admin/appointments/{id}/status	Update appointment status (Confirm/Cancel).	Yes (Admin)
-GET	/notifications/sms	Trigger SMS notification via Twilio API.	Yes
+---
