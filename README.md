@@ -118,6 +118,7 @@ Domain Layer (Entity): Represents database entities as Java objects.
 
 1 . Home Page
 ![Home Page](screenshot/Screenshot-2025-09-20-084804.png)
+[Screenshot-2025-09-20-084804.png](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/Screenshot%202025-09-20%20084804.png)
 
 
 2. Login Page
