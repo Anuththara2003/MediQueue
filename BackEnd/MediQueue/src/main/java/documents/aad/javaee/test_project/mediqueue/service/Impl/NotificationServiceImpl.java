@@ -6,6 +6,7 @@ import documents.aad.javaee.test_project.mediqueue.entity.Notification;
 import documents.aad.javaee.test_project.mediqueue.repostry.NotificationRepository;
 import documents.aad.javaee.test_project.mediqueue.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +20,14 @@ public class NotificationServiceImpl implements NotificationService {
     public List<NotificationDto> getNotificationsForPatient(Integer patientId) {
         return notificationRepository.findByPatientIdOrderByCreatedAtDesc(patientId)
                 .stream().map(this::convertToDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<NotificationDto> getAllNotifications() {
+        return notificationRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"))
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
     private NotificationDto convertToDto(Notification notification) {

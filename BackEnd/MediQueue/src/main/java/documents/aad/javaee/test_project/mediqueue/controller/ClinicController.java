@@ -10,12 +10,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/clinics")
+@RequestMapping("/api/v1/clinics") // <-- JS එකේ තියෙන URL එකට ගැලපෙන්න ඕනේ
 @RequiredArgsConstructor
-public class ClinicController {
+public class
+ClinicController {
 
 
-    private final ClinicService clinicService;
+    private final ClinicService clinicService; // හෝ HospitalService
 
     @GetMapping("/by-hospital/{hospitalId}")
     public ResponseEntity<List<ClinicDto>> getClinicsByHospital(@PathVariable Long hospitalId) {

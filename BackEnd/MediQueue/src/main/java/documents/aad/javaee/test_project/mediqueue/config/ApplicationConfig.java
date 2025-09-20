@@ -54,16 +54,14 @@ public class ApplicationConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Frontend එකේ origin එකට අවසර දීම
+
         configuration.setAllowedOrigins(List.of("http://127.0.0.1:5501"));
-        // අවසර දෙන HTTP methods
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        // අවසර දෙන Headers
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Cache-Control"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration); // සියලුම paths සඳහා
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 

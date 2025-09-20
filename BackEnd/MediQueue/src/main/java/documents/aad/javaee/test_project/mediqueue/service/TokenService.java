@@ -14,7 +14,8 @@ public interface TokenService {
     Token cancelToken(Integer tokenId, Integer patientId);
     List<AppointmentCardDto> getUpcomingAppointmentsForPatient(Integer patientId);
     List<AppointmentCardDto> getPastAppointmentsForPatient(Integer patientId);
-    QueueStatusDto getLiveQueueStatusForPatient(Integer patientId);
-    List<QueueTokenDto> getTokensForQueue(Integer clinicId, LocalDate date);
 
+    QueueStatusDto getLiveQueueStatusForPatient(Integer patientId);
+
+    List<QueueTokenDto> getTokensForQueue(Integer clinicId, LocalDate date);
 }

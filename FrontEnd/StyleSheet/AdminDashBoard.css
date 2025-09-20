@@ -463,3 +463,89 @@ body {
     transition: background-color 0.2s;
     /* The .btn and .btn-primary classes from your existing CSS should handle the rest */
 }
+
+
+/* --- Search Dropdown Styles --- */
+
+/* Search container එක position relative කරනවා, dropdown එක absolute කරන්න */
+.search-container.with-dropdown {
+    position: relative;
+    width: 300px; /* ඔබට අවශ්‍ය පළලක් දෙන්න */
+}
+
+/* Dropdown එකේ පෙනුම */
+.search-suggestions-dropdown {
+    display: none; /* Default විදිහට සඟවලා තියෙන්නේ */
+    position: absolute;
+    top: 100%; /* Search bar එකට යටින් */
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000; /* අනිත් elements වලට උඩින් එන්න */
+}
+
+/* Dropdown එකේ තියෙන එක suggestion item එකක් */
+.search-suggestions-dropdown .suggestion-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* Item එකක් උඩට mouse එක ගෙනාවම */
+.search-suggestions-dropdown .suggestion-item:hover {
+    background-color: #f5f5f5;
+}
+
+/* Last item එකේ border එක අයින් කරන්න */
+.search-suggestions-dropdown .suggestion-item:last-child {
+    border-bottom: none;
+}
+
+
+/* --- Pagination Container Styles --- */
+
+.pagination-container {
+    display: flex;
+    justify-content: flex-end; /* දකුණු පැත්තට align කිරීම */
+    align-items: center;
+    padding: 20px 0;
+    margin-top: 10px;
+}
+
+/* Pagination button එකක් */
+.pagination-container .pagination-btn {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    color: #007bff;
+    padding: 8px 12px;
+    margin: 0 3px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+/* Button එකක් උඩට mouse එක ගෙනාවම */
+.pagination-container .pagination-btn:hover {
+    background-color: #f0f0f0;
+}
+
+/* දැනට තෝරලා තියෙන (active) පිටුවේ button එක */
+.pagination-container .pagination-btn.active {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
+    cursor: default;
+}
+
+/* Disable වෙච්ච button එක (e.g., first page එකේදී previous button එක) */
+.pagination-container .pagination-btn:disabled {
+    color: #aaa;
+    border-color: #ddd;
+    cursor: not-allowed;
+    background-color: #f9f9f9;
+}

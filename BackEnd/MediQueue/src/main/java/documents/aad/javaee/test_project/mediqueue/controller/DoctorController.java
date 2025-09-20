@@ -1,10 +1,12 @@
 package documents.aad.javaee.test_project.mediqueue.controller;
 
+import documents.aad.javaee.test_project.mediqueue.dto.ApiResponse;
 import documents.aad.javaee.test_project.mediqueue.dto.DoctorRegisterDto;
 import documents.aad.javaee.test_project.mediqueue.entity.Doctor;
 import documents.aad.javaee.test_project.mediqueue.service.DoctorService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,10 +32,22 @@ public class DoctorController {
     }
 
 
-    @GetMapping ("/load")
+    @GetMapping ("/load_doctors")
     public ResponseEntity<List<Doctor>> getAllDoctors() {
         List<Doctor> doctors = doctorService.getAllDoctors();
         return ResponseEntity.ok(doctors);
+    }
+
+    @GetMapping("/load")
+    public ResponseEntity<ApiResponse> getAllDoctors(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<DoctorRegisterDto> doctorPage = doctorService.getAllDoctors(page, size);
+
+        return ResponseEntity.ok(
+                new ApiResponse(200, "All doctors retrieved successfully", doctorPage)
+        );
     }
 
 

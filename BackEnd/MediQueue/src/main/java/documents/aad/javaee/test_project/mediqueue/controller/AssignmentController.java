@@ -23,12 +23,14 @@ public class AssignmentController {
         this.assignmentService = assignmentService;
     }
 
-    @PostMapping
+    @PostMapping("/records")
     public ResponseEntity<?> createAssignment(@Valid @RequestBody AssignmentDto assignmentDto) {
         try {
             assignmentService.createAssignment(assignmentDto);
+            // සාර්ථකව save වූ පසු, සරල සාර්ථක පණිවිඩයක් පමණක් යවනවා
             return new ResponseEntity<>(Map.of("message", "Assignment created successfully!"), HttpStatus.CREATED);
         } catch (Exception e) {
+            // යම් දෝෂයක් ඇතිවුවහොත්, error message එකක් යවනවා
             return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }

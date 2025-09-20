@@ -2,6 +2,7 @@ package documents.aad.javaee.test_project.mediqueue.service;
 
 import documents.aad.javaee.test_project.mediqueue.dto.UserResponseDto;
 import documents.aad.javaee.test_project.mediqueue.entity.Role;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -11,4 +12,5 @@ public interface UserService {
     void deleteUser(Long id);
     UserResponseDto findPatientByContactNumber(String contactNumber);
 
+    Page<UserResponseDto> getUsersByRole(int page, int size, Role role);
 }

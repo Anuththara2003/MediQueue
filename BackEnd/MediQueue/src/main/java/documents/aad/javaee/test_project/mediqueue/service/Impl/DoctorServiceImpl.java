@@ -5,7 +5,12 @@ import documents.aad.javaee.test_project.mediqueue.entity.Doctor;
 import documents.aad.javaee.test_project.mediqueue.repostry.DoctorRepository;
 import documents.aad.javaee.test_project.mediqueue.service.DoctorService;
 import jakarta.transaction.Transactional;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,10 +19,12 @@ import java.util.List;
 @Transactional
 public class DoctorServiceImpl implements DoctorService {
     private final DoctorRepository doctorRepository;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    public DoctorServiceImpl(DoctorRepository doctorRepository) {
+    public DoctorServiceImpl(DoctorRepository doctorRepository, ModelMapper modelMapper) {
         this.doctorRepository = doctorRepository;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -44,6 +51,17 @@ public class DoctorServiceImpl implements DoctorService {
     @Override
     public List<Doctor> getAllDoctors() {
         return doctorRepository.findAll();
+    }
+
+    @Override
+    public Page<DoctorRegisterDto> getAllDoctors(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+
+
+        Page<Doctor> doctorPage = doctorRepository.findAll(pageable);
+
+
+        return doctorPage.map(doctor -> modelMapper.map(doctor, DoctorRegisterDto.class));
     }
 
     @Override

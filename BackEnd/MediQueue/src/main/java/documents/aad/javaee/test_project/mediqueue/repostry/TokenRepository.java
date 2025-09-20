@@ -17,18 +17,34 @@ import java.util.Optional;
 public interface TokenRepository extends JpaRepository<Token, Integer> {
 
     List<Token> findByPatientIdAndStatusInOrderByCreatedAtDesc(Integer patientId, List<TokenStatus> statuses);
+
     long countByQueueId(Integer queueId);
-    @Query("SELECT t FROM Token t WHERE t.patient.id = :patientId AND t.status IN :statuses AND t.queue.queueDate >= :today ORDER BY t.queue.queueDate ASC")
+
+
+    @Query("SELECT t FROM Token t " +
+            "LEFT JOIN FETCH t.queue q " +
+            "LEFT JOIN FETCH q.clinic c " +
+            "LEFT JOIN FETCH q.doctor d " +
+            "LEFT JOIN FETCH c.hospital h " +
+            "WHERE t.patient.id = :patientId AND t.status IN :statuses AND q.queueDate >= :today " +
+            "ORDER BY q.queueDate ASC")
     List<Token> findUpcomingAppointments(
             @Param("patientId") Integer patientId,
             @Param("statuses") List<TokenStatus> statuses,
             @Param("today") LocalDate today);
 
-    @Query("SELECT t FROM Token t WHERE t.patient.id = :patientId AND t.status IN :statuses ORDER BY t.queue.queueDate DESC")
+    @Query("SELECT t FROM Token t " +
+            "LEFT JOIN FETCH t.queue q " +
+            "LEFT JOIN FETCH q.clinic c " +
+            "LEFT JOIN FETCH q.doctor d " +
+            "LEFT JOIN FETCH c.hospital h " +
+            "WHERE t.patient.id = :patientId AND t.status IN :statuses " +
+            "ORDER BY q.queueDate DESC")
     List<Token> findPastAppointments(
             @Param("patientId") Integer patientId,
             @Param("statuses") List<TokenStatus> statuses);
 
+    // --- Analytics Queries (මෙම කොටස් වල වෙනසක් අවශ්‍ය නැත) ---
     @Query("SELECT t.queue.clinic.name FROM Token t WHERE t.queue.queueDate BETWEEN :startDate AND :endDate GROUP BY t.queue.clinic.name ORDER BY COUNT(t) DESC LIMIT 1")
     String findBusiestClinicName(
             @Param("startDate") LocalDate startDate,
@@ -44,4 +60,7 @@ public interface TokenRepository extends JpaRepository<Token, Integer> {
     Optional<Token> findFirstByQueueAndStatusAndTokenNumberGreaterThanOrderByTokenNumberAsc(
             Queue queue, TokenStatus status, int currentTokenNumber);
 
+    @Query("SELECT t FROM Token t JOIN t.queue q WHERE q.status = 'ACTIVE' AND t.status = 'WAITING' AND t.isApproachingNotified = false AND t.tokenNumber > q.currentToken AND t.tokenNumber <= (q.currentToken + :notificationThreshold)")
+    List<Token> findApproachingTokensInActiveQueues(
+            @Param("notificationThreshold") int notificationThreshold);
 }

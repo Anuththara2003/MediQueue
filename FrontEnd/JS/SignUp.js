@@ -22,7 +22,7 @@ $(document).ready(function () {
     window.showTerms = () => $('#termsModal').show();
     window.showPrivacy = () => $('#privacyModal').show();
     window.closeModal = (modalId) => $(`#${modalId}`).hide();
-    
+
     // Page navigation functions
     window.signIn = () => window.location.href = 'Login.html';
     window.signUpWithGoogle = () => alert('Google signup is not implemented yet.');
@@ -53,7 +53,7 @@ $(document).ready(function () {
             strengthClass = 'strength-fill strength-strong';
             text = 'Password strength: Strong';
         }
-        
+
         $('#strengthBar').attr('class', strengthClass);
         $('#strengthText').text(text);
     });
@@ -99,7 +99,7 @@ $(document).ready(function () {
         // Terms
         if (!$('#terms').is(':checked')) {
             // Finding a better element to show error for checkbox
-            $('.terms-checkbox').addClass('error'); 
+            $('.terms-checkbox').addClass('error');
             isValid = false;
         } else {
              $('.terms-checkbox').removeClass('error');
@@ -111,8 +111,8 @@ $(document).ready(function () {
     // Handle the button click event for AJAX submission
     $('#submitBtn').on('click', function() {
 
-        alert("aawoooo")
-        
+
+
         if (validateForm()) {
             // 1. Collect form data into a JavaScript object
             const formData = {
@@ -122,13 +122,13 @@ $(document).ready(function () {
                 contactNumber: $('#phone').val(),
                 dateOfBirth: $('#dateOfBirth').val(),
                 gender: $('#gender').val(),
-                username: $('#name').val(), 
+                username: $('#name').val(),
                 password: $('#password').val(),
                 role: "PATIENT"
 
             };
-                
-                
+
+
 
             const submitBtn = $(this);
             const originalText = submitBtn.html();
@@ -138,24 +138,32 @@ $(document).ready(function () {
             $.ajax({
                 type: "POST",
                 // !!! IMPORTANT: Replace this URL with your actual backend API endpoint !!!
-                url: "http://localhost:8080/auth/register", 
+                url: "http://localhost:8080/auth/register",
                 contentType: "application/json",
                 data: JSON.stringify(formData),
                 success: function(response) {
                     // This function runs if the server responds with success (e.g., status 200 or 201)
-                    $('#successMessage').show();
+                    Swal.fire({
+                        title: "Successfully Sign Up😎!",
+                        text: "You will be redirected to the login page.",
+                        icon: "success",
+                        timer: 2000,
+                        timerProgressBar: true,
+                        willClose: () => {
+                            window.location.href = '../HTML/Login.html';
+                        }
+                    });
                     $('#signupForm')[0].reset(); // Reset form fields
-                    // Scroll to success message
 
-                     window.location.href = '../HTML/Login.html'; 
-                  
                 },
                 error: function(xhr, status, error) {
-                    alert("fksdjlfks")
                     // This function runs if the request fails
-                    $('#errorMessage').text('❌ ' + (xhr.responseJSON?.message || 'An unknown error occurred.')).show();
-                     // Scroll to error message
-                   
+                    console.error("Signup Error:", xhr.responseJSON || error); // Log the actual error for debugging
+                    Swal.fire({
+                      icon: "error",
+                      title: "Oops...",
+                      text: "Something went wrong! Please try again later 😒.",
+                    });
                 },
                 complete: function() {
                     // This function runs after success or error, for cleanup
@@ -164,7 +172,14 @@ $(document).ready(function () {
             });
 
         } else {
-            // If validation fails, scroll to the first field with an error
+            // If validation fails, show a SweetAlert
+            Swal.fire({
+              icon: "error",
+              title: "Validation Error",
+              text: "Please fill out all the required fields correctly.🙂",
+            });
+
+            // Scroll to the first field with an error
             const firstError = $('.form-group.error').first();
             if (firstError.length) {
                  $('html, body').animate({ scrollTop: firstError.offset().top - 20 }, 500);

@@ -72,21 +72,39 @@ $(document).ready(function() {
                 localStorage.setItem('jwtToken', responseData.accessToken);
                
                 console.log("Login successful. Token stored.");
-                alert("Successfully Logged In 😉👌");
+                // alert("Successfully Logged In 😉👌");
+              Swal.fire({
+                        text: "Login Successfully Logged In 😉👌 Redirecting to your dashboard...!",
+                        title: "Success!",
+                        icon: "success",
+                        draggable: true
+                    }).then(() => {
+                        if (response.data.role === 'ADMIN') {
+                            window.location.href = '../HTML/AdminDashBoard.html'; 
+                        }else {
+                            window.location.href = '../HTML/PatientDashBoard.html';
+                        }
+                    });
 
                 // Redirect based on the role received from the backend
-                if (responseData.role === 'ADMIN') {
-                    window.location.href = '../HTML/AdminDashBoard.html'; 
-                } else { // Assuming any other role is a PATIENT for now
-                    window.location.href = '../HTML/PatientDashBoard.html'; 
-                }
+                // if (responseData.role === 'ADMIN') {
+                //     window.location.href = '../HTML/AdminDashBoard.html'; 
+                // } else { // Assuming any other role is a PATIENT for now
+                //     window.location.href = '../HTML/PatientDashBoard.html'; 
+                // }
             },
             error: function(xhr) {
                 let errorMessage = 'Invalid username or password.';
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     errorMessage = xhr.responseJSON.message;
                 }
-                loginErrorDiv.text('❌ ' + errorMessage).show();
+                // loginErrorDiv.text('❌ ' + errorMessage).show();
+                Swal.fire({
+                    icon: "error",
+                    title: "❌ Invalid UserName Or password",
+                    text: "Something went wrong!",
+                
+                    });
             },
             complete: function() {
                 submitBtn.html(originalText).prop('disabled', false);

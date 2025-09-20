@@ -18,5 +18,5 @@ public class HealthTip {
     @Column(nullable = false, length = 1000)
     private String content;
 
-    private String language; // e.g., "en", "si", "ta"
+    private String language;
 }

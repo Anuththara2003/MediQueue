@@ -42,6 +42,8 @@ public class PatientController {
     private NotificationService notificationService;
 
 
+
+
     @GetMapping("/profile")
     public ResponseEntity<PatientProfileViewDto> getPatientProfile(@AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(patientService.getPatientProfile(userDetails.getUsername()));
@@ -114,7 +116,7 @@ public class PatientController {
 
     @GetMapping("/messages")
     public ResponseEntity<List<Map<String, String>>> getMyMessages() {
-        // This is dummy data. In a real app, you would fetch this from the database.
+
         List<Map<String, String>> messages = List.of(
                 Map.of("sender", "Dr. Anura Silva", "content", "Your lab reports are ready...", "time", "10:45 AM"),
                 Map.of("sender", "Hospital Administration", "content", "Reminder: Your appointment...", "time", "Yesterday")
@@ -128,5 +130,6 @@ public class PatientController {
         List<NotificationDto> notifications = notificationService.getNotificationsForPatient(loggedInUser.getId());
         return ResponseEntity.ok(notifications);
     }
+
 
 }

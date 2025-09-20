@@ -55,5 +55,8 @@ public class Token {
     @OneToMany(mappedBy = "token", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Notification> notifications = new ArrayList<>();
 
+    @Column(name = "is_approaching_notified", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean isApproachingNotified = false;
+
 
 }

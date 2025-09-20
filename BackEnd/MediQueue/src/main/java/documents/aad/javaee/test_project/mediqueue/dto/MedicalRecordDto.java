@@ -15,5 +15,5 @@ public class MedicalRecordDto {
     private String clinicName;
     private String diagnosis;
     private String prescription;
-    // ඔබට අවශ්‍ය නම්, 'notes' වැනි අමතර fields ද එකතු කළ හැක
+
 }

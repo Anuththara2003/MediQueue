@@ -38,6 +38,7 @@ public class Clinic {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hospital_id", nullable = false)

@@ -6,7 +6,12 @@ import documents.aad.javaee.test_project.mediqueue.entity.User;
 import documents.aad.javaee.test_project.mediqueue.repostry.UserRepository;
 import documents.aad.javaee.test_project.mediqueue.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +22,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
     public List<UserResponseDto> getAllUsers() {
@@ -55,6 +63,17 @@ public class UserServiceImpl implements UserService {
         }
 
         return convertToDto(user);
+    }
+
+    @Override
+    public Page<UserResponseDto> getUsersByRole(int page, int size, Role role) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+
+        // Repository එකේ findByRole method එක call කිරීම
+        Page<User> userPage = userRepository.findByRole(role, pageable);
+
+        // Page<User> object එකක් Page<UserResponseDto> object එකකට map කිරීම
+        return userPage.map(user -> modelMapper.map(user, UserResponseDto.class));
     }
 
 

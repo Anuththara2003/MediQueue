@@ -18,6 +18,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -132,6 +136,13 @@ public class AdminServiceImpl implements AdminService {
                         clinic.getHospital().getName()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<ClinicSaveDto> getAllClinics(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        Page<Clinic> clinicPage = clinicRepository.findAll(pageable);
+        return clinicPage.map(clinic -> modelMapper.map(clinic, ClinicSaveDto.class));
     }
 
 

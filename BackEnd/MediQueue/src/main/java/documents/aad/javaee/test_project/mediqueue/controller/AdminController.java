@@ -3,10 +3,10 @@ package documents.aad.javaee.test_project.mediqueue.controller;
 import documents.aad.javaee.test_project.mediqueue.dto.*;
 import documents.aad.javaee.test_project.mediqueue.entity.Hospital;
 import documents.aad.javaee.test_project.mediqueue.service.AdminService;
-import documents.aad.javaee.test_project.mediqueue.service.HospitalService; // Interface එක import කරන්න
+import documents.aad.javaee.test_project.mediqueue.service.HospitalService;
 import io.jsonwebtoken.io.IOException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,18 +19,14 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/admin")
-//@CrossOrigin ("*")
-//@CrossOrigin(origins = "http://127.0.0.1:5500")
 @RequiredArgsConstructor
 public class AdminController {
 
-    @Autowired
-    private AdminService adminService;
+    private final AdminService adminService;
 
-    @Autowired
-    private HospitalService hospitalService;
-    // GET /api/v1/admin/hospitals
-    @GetMapping("/hospitals")
+    private final HospitalService hospitalService;
+
+    @GetMapping("/hospitals_names") //
     public ResponseEntity<List<HospitalDto>> getAllHospitals() {
         List<Hospital> hospitalList = hospitalService.getAllHospitals();
         List<HospitalDto> hospitalDtoList = hospitalList.stream()
@@ -39,6 +35,38 @@ public class AdminController {
 
         return ResponseEntity.ok(hospitalDtoList);
     }
+
+    @GetMapping("/hospitals")
+    public ResponseEntity<ApiResponse> getAllHospitals(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "search", required = false) String search
+    ) {
+
+
+        Page<SecondHospitalDto> hospitalPage = hospitalService.getAllHospitals(search, page, size);
+
+        return ResponseEntity.ok(
+                new ApiResponse(
+                        200,
+                        "successfully get all hospitals",
+                        hospitalPage
+                )
+        );
+    }
+
+
+    @GetMapping("/suggestions")
+    public ResponseEntity<ApiResponse> getHospitalSuggestions(
+            @RequestParam("search") String search) {
+
+        List<String> suggestions = hospitalService.getHospitalNameSuggestions(search);
+
+        return ResponseEntity.ok(
+                new ApiResponse(200, "Suggestions retrieved successfully", suggestions)
+        );
+    }
+
 
     private HospitalDto convertToDto(Hospital hospital) {
         HospitalDto dto = new HospitalDto();
@@ -52,7 +80,6 @@ public class AdminController {
 
     @GetMapping("/hospitals/{id}")
     public ResponseEntity<Hospital> getHospitalById(@PathVariable Long id) {
-        // hospitalService එක හරහා database එකෙන් hospital එක සොයා ගැනීම
         Hospital hospital = hospitalService.getHospitalById(id);
         return ResponseEntity.ok(hospital);
     }
@@ -114,7 +141,7 @@ public class AdminController {
         }
     }
 
-    @GetMapping("/clinics")
+    @GetMapping("/clinics_names") //
     public ResponseEntity<ApiResponse> getAllClinics() {
         try {
             List<ClinicSaveDto> clinics = adminService.getAllClinics();
@@ -124,6 +151,20 @@ public class AdminController {
                     .body(new ApiResponse(500, e.getMessage(), null));
         }
     }
+
+
+    @GetMapping("/clinics")
+    public ResponseEntity<ApiResponse> getAllClinics(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<ClinicSaveDto> clinicPage = adminService.getAllClinics(page, size);
+
+        return ResponseEntity.ok(
+                new ApiResponse(200, "All clinics retrieved successfully", clinicPage)
+        );
+    }
+
 
 
 }

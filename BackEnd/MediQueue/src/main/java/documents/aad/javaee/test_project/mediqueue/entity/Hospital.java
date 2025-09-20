@@ -63,12 +63,14 @@
 
 package documents.aad.javaee.test_project.mediqueue.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-
-import java.util.ArrayList;;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -95,7 +97,7 @@ public class Hospital {
     private String status;
 
 
-    @JsonManagedReference
+    @JsonBackReference
     @OneToMany(mappedBy = "hospital", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Clinic> clinics = new ArrayList<>();
 

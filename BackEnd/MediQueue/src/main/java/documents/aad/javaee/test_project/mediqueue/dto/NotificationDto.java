@@ -13,4 +13,5 @@ public class NotificationDto {
     private LocalDateTime createdAt;
     private NotificationStatus status;
     private String senderName;
+    private String patientContact;
 }

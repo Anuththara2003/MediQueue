@@ -4,24 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Patient Dashboard</title>
-  <!-- Dashboard CSS -->
+
   <link rel="stylesheet" href="/StyleSheet/PatientDashBoard.css">
-  <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <!-- Profile Modal CSS -->
   <link rel="stylesheet" href="/StyleSheet/Profile.css">
-  <!-- Manage Token Modal CSS -->
   <link rel="stylesheet" href="/StyleSheet/ManageToken.css">
 </head>
 <body>
   <div class="dashboard-container">
-    <!-- ======================= Sidebar ======================= -->
+   
     <aside class="sidebar">
       <div class="sidebar-header">
         <h3><i class="fas fa-heart-pulse"></i> MEDIQUEUE</h3>
       </div>
 
-      <!-- Profile Section -->
       <div class="profile-section">
         <div class="profile-image-container">
           <img src="https://i.pravatar.cc/150?u=kamal" alt="Profile Picture" id="profilePic">
@@ -190,54 +186,18 @@
         
 
         <!-- ================= Messages Section ================= -->
-        <div id="messages-section" class="content-section" style="display: none;">
-            <h2><i class="fas fa-comments"></i> Recent Messages</h2>
-            <div class="messages-container">
-                <div class="message-preview">
-                    <div class="message-badge"></div>
-                    <div class="message-avatar">
-                        <img src="https://i.pravatar.cc/150?u=doctor1" alt="Dr. Anura Silva">
-                    </div>
-                    <div class="message-content">
-                        <h4>Dr. Anura Silva</h4>
-                        <p>Your lab reports are ready. Please check your medical records section for the full blood count results.</p>
-                    </div>
-                    <div class="message-time">10:45 AM</div>
-                </div>
-
-                <div class="message-preview">
-                    <div class="message-avatar">
-                        <img src="https://i.pravatar.cc/150?u=admin1" alt="Hospital Admin">
-                    </div>
-                    <div class="message-content">
-                        <h4>Hospital Administration</h4>
-                        <p>Reminder: Your appointment with Dr. Silva is scheduled for tomorrow at 2:30 PM. Please arrive 15 minutes early.</p>
-                    </div>
-                    <div class="message-time">Yesterday</div>
-                </div>
-
-                <div class="message-preview">
-                    <div class="message-avatar">
-                        <img src="https://i.pravatar.cc/150?u=nurse1" alt="Nurse Maya">
-                    </div>
-                    <div class="message-content">
-                        <h4>Nurse Maya Perera</h4>
-                        <p>Thank you for completing your pre-appointment questionnaire. We'll review it before your consultation.</p>
-                    </div>
-                    <div class="message-time">2 days ago</div>
-                </div>
-
-                <div class="message-preview">
-                    <div class="message-avatar">
-                        <img src="https://i.pravatar.cc/150?u=doctor2" alt="Dr. Priya">
-                    </div>
-                    <div class="message-content">
-                        <h4>Dr. Priya Fernando</h4>
-                        <p>Your general checkup is confirmed for September 15th. Please bring your previous medical reports.</p>
-                    </div>
-                    <div class="message-time">1 week ago</div>
-                </div>
-            </div>
+        <!-- PatientDashboard.html -->
+<!-- ================= Messages Section ================= -->
+<div id="messages-section" class="content-section" style="display: none;">
+    <h2><i class="fas fa-comments"></i> Recent Messages</h2>
+    
+    <!-- === වෙනස මෙතනයි === -->
+    <!-- Dummy messages ඉවත් කර, ID එකක් ලබා දී ඇත -->
+    <div class="messages-container" id="messages-container">
+        <!-- jQuery මගින් සැබෑ messages මෙතනට load වනු ඇත -->
+    </div>
+    <!-- ==================== -->
+</div>
         </div>
     </div>
 
@@ -359,10 +319,14 @@
     </div>
 </div>
 
-    <!-- SCRIPT TAGS -->
+     <!-- SCRIPT TAGS --> 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="../JS/translation.js" defer></script>
-    <script src="../JS/PatientDashBoard.js" defer></script>
-    <script src="../JS/ManageToken.js" defer></script>
+    <!-- <script src="../JS/common.js"></script> -->
+    <!-- PAGE-SPECIFIC SCRIPTS (LOADED AFTER) -->
+    <script src="../JS/translation.js"></script>
+    <script src="../JS/PatientDashBoard.js"></script>
+    <script src="../JS/ManageToken.js"></script>
+
 </body>
 </html>

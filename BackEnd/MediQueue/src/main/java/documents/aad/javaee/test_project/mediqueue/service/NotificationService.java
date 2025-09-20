@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface NotificationService {
     List<NotificationDto> getNotificationsForPatient(Integer patientId);
+    List<NotificationDto> getAllNotifications();
 
 }
 

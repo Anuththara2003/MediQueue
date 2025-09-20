@@ -1,43 +1,67 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>API Test</title>
-    <!-- jQuery එකතු කරගැනීම -->
+    <title>API Test </title>
+    <!-- Include jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Include SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 
-    <h1>Testing MyMemory API...</h1>
-    <p>Check the browser console (F12) for results.</p>
+    <h1>Testing MyMemory API with SweetAlert...</h1>
+    <p>The result will be shown in a popup with a loading indicator.</p>
 
     <script>
-        // පරිවර්තනය කළ යුතු text එක
+        // The text to be translated
         const textToTranslate = "Patient Dashboard";
-        // ඉලක්ක භාෂාව
+        // The target language
         const targetLanguage = "si"; // 'si' for Sinhala
 
-        // API URL එක සකස් කරගැනීම
+        // Prepare the API URL
         const apiUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(textToTranslate)}&langpair=en|${targetLanguage}`;
 
         console.log("Sending request to MyMemory API...");
 
-        // AJAX call එක යැවීම
+        // Show a loading popup before sending the request
+        Swal.fire({
+            title: 'Translating...',
+            text: 'Please wait while we fetch the translation.',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        // Send the AJAX call
         $.ajax({
             method: 'GET',
             url: apiUrl,
             success: function(response) {
-                // සාර්ථක වූ විට, ප්‍රතිචාරය console එකේ පෙන්වීම
+                // On success, show the result in a SweetAlert
                 if (response.responseStatus === 200) {
-                    console.log("✅ SUCCESS! Translation found:");
-                    console.log("Original:", textToTranslate);
-                    console.log("Translated:", response.responseData.translatedText);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Translation Successful!',
+                        html: `<b>Original Text:</b> ${textToTranslate}<br><b>Translated Text:</b> ${response.responseData.translatedText}`
+                    });
                 } else {
-                    console.error("API returned an error:", response.responseDetails);
+                    // If the API returns a known error
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'API Error!',
+                        text: response.responseDetails
+                    });
                 }
             },
             error: function(err) {
-                // අසාර්ථක වූ විට, දෝෂය console එකේ පෙන්වීම
-                console.error("❌ FAILED! There was a network error:", err);
+                // On failure, show an error in a SweetAlert
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops... Something went wrong!',
+                    text: 'There was a network error. Please check your connection and try again.'
+                });
+                console.error("❌ FAILED! Network error details:", err);
             }
         });
     </script>

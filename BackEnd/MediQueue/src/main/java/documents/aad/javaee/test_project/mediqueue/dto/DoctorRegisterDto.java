@@ -16,6 +16,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class DoctorRegisterDto {
 
+    private Integer id;
+
     @NotBlank(message = "SLMC Registration Number is required.")
     private String slmcRegistrationNo;
 

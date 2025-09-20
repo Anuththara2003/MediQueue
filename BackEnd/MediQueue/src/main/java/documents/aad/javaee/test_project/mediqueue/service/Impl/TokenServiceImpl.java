@@ -1,6 +1,7 @@
 package documents.aad.javaee.test_project.mediqueue.service.Impl;
 
 
+import documents.aad.javaee.test_project.mediqueue.Exception.ResourceNotFoundException;
 import documents.aad.javaee.test_project.mediqueue.dto.*;
 import documents.aad.javaee.test_project.mediqueue.entity.*;
 import documents.aad.javaee.test_project.mediqueue.repostry.*;
@@ -173,13 +174,23 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public List<QueueTokenDto> getTokensForQueue(Integer clinicId, LocalDate date) {
         // 1. අදාළ clinic/date එකට අදාළ Queue එක සොයාගන්නවා
-        Queue queue = queueRepository.findByClinicIdAndQueueDate(clinicId, date)
-                .orElse(null); // Queue එකක් නැත්නම්, null ලෙස return කරනවා
+        // ...
+        List<Queue> queues = queueRepository.findByClinicIdAndQueueDate(Long.valueOf(clinicId), date);
 
-        if (queue == null) {
-            // Queue එකක් නොමැතිනම්, හිස් list එකක් return කරනවා
-            return Collections.emptyList();
+        if (queues.isEmpty()) {
+            // Queue එකක් නොමැති නම් කළ යුතු දේ
+            return Collections.emptyList(); // or throw exception
         }
+
+// record කිහිපයක් ආවොත් කුමක්ද කරන්නේ?
+// මෙතනදී, අපි පළමු එක තෝරාගන්නවා යැයි සිතමු.
+        Queue queue = queues.get(0);
+
+        if (queues.size() > 1) {
+            // අනතුරු ඇඟවීමක් log කිරීම හොඳ පුරුද්දක්
+            System.err.println("Warning: Multiple queues found for clinic " + clinicId + " on " + date + ". Using the first one found.");
+        }
+// ...
 
         // 2. Queue එකේ ඇති සියලුම tokens, අංකය අනුව sort කර DTO බවට පත් කරනවා
         return queue.getTokens().stream()
@@ -239,7 +250,7 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public Token updateTokenStatus(Integer tokenId, TokenStatus newStatus) {
         Token tokenToUpdate = tokenRepository.findById(tokenId)
-                .orElseThrow(() -> new EntityNotFoundException("Token not found with ID: " + tokenId));
+                .orElseThrow(() -> new ResourceNotFoundException("Token not found with ID: " + tokenId));
 
         // 2. අලුත් status එක set කරනවා
         tokenToUpdate.setStatus(newStatus);
@@ -262,7 +273,7 @@ public class TokenServiceImpl implements TokenService {
                     currentTokenNumber
             ).ifPresent(nextToken -> {
                 // 5. ඊළඟ patient හමු වුවහොත්, SMS එක යැවීම
-                smsService.sendApproachingTurnSms(nextToken);
+                smsService.sendApproachingSms(nextToken);
             });
         }
         else if (newStatus == TokenStatus.COMPLETED) {

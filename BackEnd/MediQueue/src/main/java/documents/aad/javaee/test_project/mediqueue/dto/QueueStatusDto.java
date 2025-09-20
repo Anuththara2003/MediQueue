@@ -11,8 +11,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class QueueStatusDto {
-    private int currentTokenNumber;
-    private int yourTokenNumber;
+    private int currentTokenNumber; // Queue එකේ දැනට call කරන අංකය
+    private int yourTokenNumber;    // ඔබගේ token අංකය
     private String clinicName;
     private TokenStatus yourTokenStatus;
     private int totalPatientsInQueue;

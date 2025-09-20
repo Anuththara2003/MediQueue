@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface ClinicRepository extends JpaRepository<Clinic, Integer> {
     List<Clinic> findByHospital_Id(Long hospitalId);
+
 }

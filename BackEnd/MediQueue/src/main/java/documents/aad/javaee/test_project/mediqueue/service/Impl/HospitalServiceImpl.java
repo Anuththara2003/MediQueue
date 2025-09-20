@@ -2,12 +2,17 @@ package documents.aad.javaee.test_project.mediqueue.service.Impl;
 
 import documents.aad.javaee.test_project.mediqueue.Exception.ResourceNotFoundException;
 import documents.aad.javaee.test_project.mediqueue.dto.HospitalDto;
+import documents.aad.javaee.test_project.mediqueue.dto.SecondHospitalDto;
 import documents.aad.javaee.test_project.mediqueue.entity.Hospital;
 import documents.aad.javaee.test_project.mediqueue.repostry.HospitalRepository;
 import documents.aad.javaee.test_project.mediqueue.service.HospitalService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,6 +42,40 @@ public class HospitalServiceImpl implements HospitalService {
         return hospitals.stream()
                 .map(hospital -> modelMapper.map(hospital, HospitalDto.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<SecondHospitalDto> getAllHospitals(String search, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+
+        Page<Hospital> hospitalPage;
+
+        if (search != null && !search.trim().isEmpty()) {
+
+            hospitalPage = hospitalRepository.searchByNameCustom(search, pageable);
+        } else {
+
+            hospitalPage = hospitalRepository.findAll(pageable);
+        }
+
+        return hospitalPage.map(hospital -> {
+            SecondHospitalDto dto = modelMapper.map(hospital, SecondHospitalDto.class);
+            dto.setId(hospital.getId());
+            dto.setName(hospital.getName());
+            dto.setAddress(hospital.getAddress());
+            dto.setLocation(hospital.getLocation());
+            dto.setStatus(hospital.getStatus());
+            dto.setClinicCount(hospital.getClinicCount());
+
+            System.out.println(hospital.getName());
+
+            return dto;
+        });
+    }
+
+    @Override
+    public List<String> getHospitalNameSuggestions(String search) {
+        return List.of();
     }
 
     @Override
