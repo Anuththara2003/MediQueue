@@ -156,7 +156,7 @@ Configure Twilio API credentials in application.properties or .env.
 🎬 YouTube Project Demo
 
 A complete video demonstration of MediQueue, including features and workflows, is available on YouTube with English voice narration.
-[![Watch the Project Demo](https://img.youtube.com/vi/9mQpQmLNmHw/0.jpg)](https://youtu.be/9mQpQmLNmHw)
+**[Watch the Project Demo on YouTube](https://youtu.be/9mQpQmLNmHw)**
 
 
 
