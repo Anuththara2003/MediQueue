@@ -93,7 +93,7 @@ The application follows a **Layered Architecture**:
 ![Home Page](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/Screenshot%202025-09-20%20084804.png)
 
 2. **Login Page**  
-![Login Page](https:/github.com/Anuththara2003/MediQueue/blob/master/screenshot/Screenshot%202025-09-20%20085000.png)
+![Login Page](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/Screenshot%202025-09-20%20085000.png)
 
 3. **Sign Up Page**  
 ![Sign up Page](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/Screenshot%202025-09-20%20084846.png)
