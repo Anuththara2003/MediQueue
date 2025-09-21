@@ -89,19 +89,19 @@ The application follows a Layered Architecture:
 ## 📸 Screenshots
 
 1. Home Page  
-![Home Page](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/Screenshot%202025-09-20%20084804.png)
+![Home Page](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/home.png)
 
 2. Login Page  
-![Login Page](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/Screenshot%202025-09-20%20085000.png)
+![Login Page](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/logIn.png)
 
 3. Sign Up Page  
-![Sign up Page](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/Screenshot%202025-09-20%20084846.png)
+![Login Page](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/signup.png)
 
 4. Admin Dashboard  
-![Admin Dashboard](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/Screenshot%202025-09-20%20085029.png)
+![Admin Dashboard](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/admin.png)
 
 5. Patient Dashboard  
-![Patinet Dashboard](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/Screenshot%202025-09-20%20085153.png)  
+![Patinet Dashboard](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/patient.png)
 
 ---
 
@@ -132,14 +132,14 @@ mvn clean install
 # Run the application
 java -jar target/mediqueue-0.0.1-SNAPSHOT.jar
 ### Frontend Setup:
-1.  **Navigate to the frontend folder:**
+1.  **Navigate to the frontend folder:**C:\Users\USER\Documents\AAD\MediQueue – A Real-Time OPD Token\FrontEnd
     bash
     cd front-end/
     ```
-2.  *Open the HTML files:*
+3.  *Open the HTML files:*
     -   Since this is a static project, you can open the .html files directly in your browser.
     -   For best results, use a live server extension in VS Code to handle CORS issues during development.
-3.  *Update API Keys:*
+4.  *Update API Keys:*
     -   Open the relevant HTML/JS files and replace the placeholder for the Google Maps API key with your own key.
 
 ---
