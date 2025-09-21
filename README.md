@@ -132,9 +132,10 @@ mvn clean install
 # Run the application
 java -jar target/mediqueue-0.0.1-SNAPSHOT.jar
 ### Frontend Setup:
-1.  **Navigate to the frontend folder:**C:\Users\USER\Documents\AAD\MediQueue – A Real-Time OPD Token\FrontEnd
+1.  **Navigate to the frontend folder:**
     bash
     cd front-end/
+    C:\Users\USER\Documents\AAD\MediQueue – A Real-Time OPD Token\FrontEnd
     ```
 3.  *Open the HTML files:*
     -   Since this is a static project, you can open the .html files directly in your browser.
