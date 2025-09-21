@@ -1476,7 +1476,7 @@ $(document).ready(function () {
         }
 
         $.ajax({
-            url: `${API_BASE_URL}/assignments`,
+            url: `${API_BASE_URL}/assignments/records`,
             type: 'POST',
             headers: {
                 'Authorization': `Bearer ${JWT_TOKEN}`,
@@ -1916,7 +1916,7 @@ $(document).ready(function () {
             type: 'POST',
             headers: {
                 'Authorization': `Bearer ${JWT_TOKEN}`,
-                // 'Content-Type': 'application/json'
+                 'Content-Type': 'application/json'
             },
             data: JSON.stringify(recordData)
         }).done(function () {
