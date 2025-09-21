@@ -91,10 +91,10 @@ The application follows a Layered Architecture:
 1. Home Page  
 ![Home Page](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/home.png)
 
-2. Login Page  
+2. Sign Up Page  
 ![Login Page](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/logIn.png)
 
-3. Sign Up Page  
+3.  Login Page
 ![Login Page](https://github.com/Anuththara2003/MediQueue/blob/master/screenshot/signup.png)
 
 4. Admin Dashboard  
