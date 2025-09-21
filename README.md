@@ -123,6 +123,7 @@ git clone https://github.com/Anuththara2003/MediQueue.git
 # Navigate to backend folder
 ```bash
 cd BackEnd/
+C:\Users\USER\Documents\AAD\MediQueue – A Real-Time OPD Token\BackEnd
 ```
 # Configure Database
 # - Create MySQL database: mediqueue_db
