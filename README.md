@@ -117,11 +117,13 @@ The application follows a Layered Architecture:
 ### 🔹 Backend Setup
 bash
 # Clone the repository
+```bash
 git clone https://github.com/Anuththara2003/MediQueue.git
-
+```
 # Navigate to backend folder
+```bash
 cd BackEnd/
-
+```
 # Configure Database
 # - Create MySQL database: mediqueue_db
 # - Update username & password in: src/main/resources/application.properties
@@ -132,9 +134,10 @@ mvn clean install
 # Run the application
 java -jar target/mediqueue-0.0.1-SNAPSHOT.jar
 ### Frontend Setup:
-1.  **Navigate to the frontend folder:C:\Users\USER\Documents\AAD\MediQueue – A Real-Time OPD Token\FrontEnd**
-    bash
+1.  **Navigate to the frontend folder:**
+    ```bash
     cd front-end/
+    C:\Users\USER\Documents\AAD\MediQueue – A Real-Time OPD Token\FrontEnd
     
     ```
     
