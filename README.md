@@ -132,8 +132,7 @@ mvn clean install
 # Run the application
 java -jar target/mediqueue-0.0.1-SNAPSHOT.jar
 ### Frontend Setup:
-1.  **Navigate to the frontend folder:**
-2.  C:\Users\USER\Documents\AAD\MediQueue – A Real-Time OPD Token\FrontEnd
+1.  **Navigate to the frontend folder:C:\Users\USER\Documents\AAD\MediQueue – A Real-Time OPD Token\FrontEnd**
     bash
     cd front-end/
     
